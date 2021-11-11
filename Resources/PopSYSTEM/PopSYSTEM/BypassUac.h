@@ -1,0 +1,1 @@
+BOOL ExploitFodhelper(char* PathExeToRun);

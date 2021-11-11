@@ -1,0 +1,1 @@
+BOOL GetHTTPserver(char* ipAddress, int port, char* serverResponce, FILE* pFile);

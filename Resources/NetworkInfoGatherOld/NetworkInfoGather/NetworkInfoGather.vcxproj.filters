@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\AdapterInformation">
+      <UniqueIdentifier>{d46560f2-2f78-4acf-a0b8-153e8493ad8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NetDiscovery">
+      <UniqueIdentifier>{ec10770e-2cad-496d-ae36-93b283a15fda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NetDiscovery\ARPQuery">
+      <UniqueIdentifier>{54148199-9891-4916-9f3a-54121b8c36dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NetDiscovery\ARPTable">
+      <UniqueIdentifier>{217c28ca-f37c-433f-ad14-e947c7e5f3d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NetDiscovery\ICMP">
+      <UniqueIdentifier>{456d66c0-bd0f-448c-9dfe-a01dd32273a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{925da2e4-fc7a-4ae2-a354-3c4994367f81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FingerPrintInfo">
+      <UniqueIdentifier>{05ad2e7e-9416-461f-b422-26453839f8a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FingerPrintInfo\GetMacVendor">
+      <UniqueIdentifier>{04d1b65c-8b9e-4627-a752-2b06763138b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NetDiscovery\PassifPacketSniffing">
+      <UniqueIdentifier>{28321774-0d11-4af2-8c69-57f280235eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan">
+      <UniqueIdentifier>{aadcd73f-d393-4a14-95d5-6abb15d95450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan\EnumHTTP">
+      <UniqueIdentifier>{2c7cf654-39dc-4732-b96d-a1c803494773}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan\EnumHTTP\GetHTTPserver">
+      <UniqueIdentifier>{84845fa4-d0bb-4149-90f6-a6c675a3feaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan\EnumHTTP\GetHTTPSserver">
+      <UniqueIdentifier>{7ae0955e-3f8f-43d1-9839-d9b0cf1aebd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan\EnumHTTP\ToolsHTTP">
+      <UniqueIdentifier>{e92333a9-2362-4863-aa81-b3d8fc5f51f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MgArguments">
+      <UniqueIdentifier>{01941080-0e5f-4b9f-b743-58ba332b8fbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PortScan\EnumSMB">
+      <UniqueIdentifier>{df85d002-0fb8-4d96-92a7-c638609149da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{d0f9f5d4-569b-4777-a5cc-2b0f19c48af9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AdapterInformation.c">
+      <Filter>Source Files\AdapterInformation</Filter>
+    </ClCompile>
+    <ClCompile Include="NetDiscovery.c">
+      <Filter>Source Files\NetDiscovery</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.c">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ICMP.c">
+      <Filter>Source Files\NetDiscovery\ICMP</Filter>
+    </ClCompile>
+    <ClCompile Include="ARPTable.c">
+      <Filter>Source Files\NetDiscovery\ARPTable</Filter>
+    </ClCompile>
+    <ClCompile Include="ARPQuery.c">
+      <Filter>Source Files\NetDiscovery\ARPQuery</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMacVendor.c">
+      <Filter>Source Files\FingerPrintInfo\GetMacVendor</Filter>
+    </ClCompile>
+    <ClCompile Include="PassifPacketSniffing.c">
+      <Filter>Source Files\NetDiscovery\PassifPacketSniffing</Filter>
+    </ClCompile>
+    <ClCompile Include="PortScan.c">
+      <Filter>Source Files\PortScan</Filter>
+    </ClCompile>
+    <ClCompile Include="PortFingerPrint.c">
+      <Filter>Source Files\PortScan</Filter>
+    </ClCompile>
+    <ClCompile Include="GetHTTPserver.c">
+      <Filter>Source Files\PortScan\EnumHTTP\GetHTTPserver</Filter>
+    </ClCompile>
+    <ClCompile Include="GetHTTPSserver.c">
+      <Filter>Source Files\PortScan\EnumHTTP\GetHTTPSserver</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolsHTTP.c">
+      <Filter>Source Files\PortScan\EnumHTTP\ToolsHTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="EnumHTTP.c">
+      <Filter>Source Files\PortScan\EnumHTTP</Filter>
+    </ClCompile>
+    <ClCompile Include="MgArguments.c">
+      <Filter>Source Files\MgArguments</Filter>
+    </ClCompile>
+    <ClCompile Include="EnumSMB.c">
+      <Filter>Source Files\PortScan\EnumSMB</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools.c">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AdapterInformation.h">
+      <Filter>Source Files\AdapterInformation</Filter>
+    </ClInclude>
+    <ClInclude Include="NetDiscovery.h">
+      <Filter>Source Files\NetDiscovery</Filter>
+    </ClInclude>
+    <ClInclude Include="portList.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ICMP.h">
+      <Filter>Source Files\NetDiscovery\ICMP</Filter>
+    </ClInclude>
+    <ClInclude Include="ARPTable.h">
+      <Filter>Source Files\NetDiscovery\ARPTable</Filter>
+    </ClInclude>
+    <ClInclude Include="ARPQuery.h">
+      <Filter>Source Files\NetDiscovery\ARPQuery</Filter>
+    </ClInclude>
+    <ClInclude Include="GetMacVendor.h">
+      <Filter>Source Files\FingerPrintInfo\GetMacVendor</Filter>
+    </ClInclude>
+    <ClInclude Include="PassifPacketSniffing.h">
+      <Filter>Source Files\NetDiscovery\PassifPacketSniffing</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpIpModuel.h">
+      <Filter>Source Files\NetDiscovery\PassifPacketSniffing</Filter>
+    </ClInclude>
+    <ClInclude Include="PortScan.h">
+      <Filter>Source Files\PortScan</Filter>
+    </ClInclude>
+    <ClInclude Include="PortFingerPrint.h">
+      <Filter>Source Files\PortScan</Filter>
+    </ClInclude>
+    <ClInclude Include="GetHTTPserver.h">
+      <Filter>Source Files\PortScan\EnumHTTP\GetHTTPserver</Filter>
+    </ClInclude>
+    <ClInclude Include="GetHTTPSserver.h">
+      <Filter>Source Files\PortScan\EnumHTTP\GetHTTPSserver</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolsHTTP.h">
+      <Filter>Source Files\PortScan\EnumHTTP\ToolsHTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumHTTP.h">
+      <Filter>Source Files\PortScan\EnumHTTP</Filter>
+    </ClInclude>
+    <ClInclude Include="MgArguments.h">
+      <Filter>Source Files\MgArguments</Filter>
+    </ClInclude>
+    <ClInclude Include="EnumSMB.h">
+      <Filter>Source Files\PortScan\EnumSMB</Filter>
+    </ClInclude>
+    <ClInclude Include="wordlist.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mac.db">
+      <Filter>Source Files\FingerPrintInfo\GetMacVendor</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.md" />
+  </ItemGroup>
+</Project>

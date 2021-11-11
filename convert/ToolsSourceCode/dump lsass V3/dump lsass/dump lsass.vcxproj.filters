@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DumpLsass">
+      <UniqueIdentifier>{20007a65-98fb-405b-be06-1a4673334f27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\LoadAPI">
+      <UniqueIdentifier>{07cc849a-1dac-4168-a53b-e59f1019c8c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DebugFunc">
+      <UniqueIdentifier>{537e4802-c192-4355-b934-22bfd43b5f04}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpLsass.c">
+      <Filter>Source Files\DumpLsass</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadAPI\Decryption.c">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadAPI\LoadAPI.c">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="LoadAPI\CalcAPI.c">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DebugFunc\DebugFunc.c">
+      <Filter>Source Files\DebugFunc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DumpLsass.h">
+      <Filter>Source Files\DumpLsass</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadAPI\CalcAPI.h">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadAPI\Decryption.h">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadAPI\LoadAPI.h">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DebugFunc\DebugFunc.h">
+      <Filter>Source Files\DebugFunc</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

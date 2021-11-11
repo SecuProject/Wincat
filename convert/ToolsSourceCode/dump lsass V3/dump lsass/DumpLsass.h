@@ -1,0 +1,1 @@
+BOOL DumpLsass(API_Call APICall);

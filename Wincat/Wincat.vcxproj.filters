@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DropFile">
+      <UniqueIdentifier>{96762605-9c6f-4b4a-beed-40abc075b5ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MgArguments">
+      <UniqueIdentifier>{c17790f5-da1e-4203-8f46-46719d6c9c49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell">
+      <UniqueIdentifier>{7728ff7e-b0f2-4319-8d8b-8bebaeda628f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GetSystem">
+      <UniqueIdentifier>{7931443a-e584-4ebe-a7d1-32e8364b9298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GetSystem\UacBypass">
+      <UniqueIdentifier>{206f5a55-5c15-4758-9c11-07e18fa3d778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GetSystem\GetSystem">
+      <UniqueIdentifier>{21c43195-fb6a-4afd-a68c-1862e5219b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess">
+      <UniqueIdentifier>{f7adfbac-9f5c-49ec-ba37-6fb7c27cb351}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell\RunAs">
+      <UniqueIdentifier>{dc51c75c-7b23-48b9-b4f6-04ad28473f07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell\SocketTools">
+      <UniqueIdentifier>{d42c0ec0-998b-437e-9b34-69016542c683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DropFile\PeFile">
+      <UniqueIdentifier>{267efaca-a57a-46d2-8f80-4c1f87cce77e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DropFile\PeFile\PEx64">
+      <UniqueIdentifier>{37829dca-e177-4351-b3f2-f93424502916}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DropFile\PeFile\PEx86">
+      <UniqueIdentifier>{a628d77e-1096-4e44-a6b0-2ae694560c3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DropFile\PeFile\PsScript">
+      <UniqueIdentifier>{ba20d560-f7b6-4479-be6d-aea3c227a2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell\csExternalC2">
+      <UniqueIdentifier>{cec9604c-bc4f-4588-822d-37984ffa98f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell\CustomShell">
+      <UniqueIdentifier>{ccf00553-b162-43b9-b40d-90f55bb8030e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RunShell\CustomShell\base64">
+      <UniqueIdentifier>{277fb5c5-18da-4ba1-bec2-2fc2425eb784}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MgArguments\GetDefaultPath">
+      <UniqueIdentifier>{8ac582de-09d2-4e1c-9902-5a9d9ecaf24f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess\BypassAMSI">
+      <UniqueIdentifier>{c3a2fe5d-61f3-4f7a-8fff-ebc6ea2b15fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{70addf33-3c9f-4ce9-ae48-0a4d8a5ebcfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\Message">
+      <UniqueIdentifier>{41186577-4312-421b-ba0c-0752044a1fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools\CheckSystem">
+      <UniqueIdentifier>{c9cb738e-89c0-4be1-a9f2-ee3cad0940de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess\EDRChecker">
+      <UniqueIdentifier>{188edb99-e441-405f-9f96-19fc52920781}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DropFile.c">
+      <Filter>Source Files\DropFile</Filter>
+    </ClCompile>
+    <ClCompile Include="MgArguments.c">
+      <Filter>Source Files\MgArguments</Filter>
+    </ClCompile>
+    <ClCompile Include="RunAs.c">
+      <Filter>Source Files\RunShell\RunAs</Filter>
+    </ClCompile>
+    <ClCompile Include="RunShell.c">
+      <Filter>Source Files\RunShell</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckSystem.c">
+      <Filter>Source Files\Tools\CheckSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Tools.c">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="BypassUac.c">
+      <Filter>Source Files\GetSystem\UacBypass</Filter>
+    </ClCompile>
+    <ClCompile Include="GetSystem.c">
+      <Filter>Source Files\GetSystem\GetSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ProtectProcess.c">
+      <Filter>Source Files\ProtectProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="ReverseHttp.c">
+      <Filter>Source Files\RunShell</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketTools.c">
+      <Filter>Source Files\RunShell\SocketTools</Filter>
+    </ClCompile>
+    <ClCompile Include="csExternalC2.c">
+      <Filter>Source Files\RunShell\csExternalC2</Filter>
+    </ClCompile>
+    <ClCompile Include="BypassAMSI.c">
+      <Filter>Source Files\ProtectProcess\BypassAMSI</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomShell.c">
+      <Filter>Source Files\RunShell\CustomShell</Filter>
+    </ClCompile>
+    <ClCompile Include="Base64.c">
+      <Filter>Source Files\RunShell\CustomShell\base64</Filter>
+    </ClCompile>
+    <ClCompile Include="GetDefaultPath.c">
+      <Filter>Source Files\MgArguments\GetDefaultPath</Filter>
+    </ClCompile>
+    <ClCompile Include="Message.c">
+      <Filter>Source Files\Tools\Message</Filter>
+    </ClCompile>
+    <ClCompile Include="EDRChecker.c">
+      <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PeFile\SharpHound.h">
+      <Filter>Source Files\DropFile\PeFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\accesschk64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\chiselx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\winPEASx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\accesschk86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\chiselx86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\winPEASx86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="DropFile.h">
+      <Filter>Source Files\DropFile</Filter>
+    </ClInclude>
+    <ClInclude Include="MgArguments.h">
+      <Filter>Source Files\MgArguments</Filter>
+    </ClInclude>
+    <ClInclude Include="RunAs.h">
+      <Filter>Source Files\RunShell\RunAs</Filter>
+    </ClInclude>
+    <ClInclude Include="RunShell.h">
+      <Filter>Source Files\RunShell</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckSystem.h">
+      <Filter>Source Files\Tools\CheckSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Tools.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="BypassUac.h">
+      <Filter>Source Files\GetSystem\UacBypass</Filter>
+    </ClInclude>
+    <ClInclude Include="GetSystem.h">
+      <Filter>Source Files\GetSystem\GetSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtectProcess.h">
+      <Filter>Source Files\ProtectProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="ReverseHttp.h">
+      <Filter>Source Files\RunShell</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketTools.h">
+      <Filter>Source Files\RunShell\SocketTools</Filter>
+    </ClInclude>
+    <ClInclude Include="csExternalC2.h">
+      <Filter>Source Files\RunShell\csExternalC2</Filter>
+    </ClInclude>
+    <ClInclude Include="PsScript\ADRecon.h">
+      <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PsScript\PowerUp.h">
+      <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PsScript\PrivescCheck.h">
+      <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PsScript\Sherlock.h">
+      <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\dumper86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\dumper64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\NetworkInfoGatherx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BypassAMSI.h">
+      <Filter>Source Files\ProtectProcess\BypassAMSI</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomShell.h">
+      <Filter>Source Files\RunShell\CustomShell</Filter>
+    </ClInclude>
+    <ClInclude Include="Base64.h">
+      <Filter>Source Files\RunShell\CustomShell\base64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\ligolo_ng_agent64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="GetDefaultPath.h">
+      <Filter>Source Files\MgArguments\GetDefaultPath</Filter>
+    </ClInclude>
+    <ClInclude Include="Message.h">
+      <Filter>Source Files\Tools\Message</Filter>
+    </ClInclude>
+    <ClInclude Include="EDRChecker.h">
+      <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
+    </ClInclude>
+    <ClInclude Include="EDRNameHash.h">
+      <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\TestAvEicarx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\TestAvEicarx86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\ligolo_ng_agent86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\NetworkInfoGather86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TODO.md">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VersionInfo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

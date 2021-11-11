@@ -1,0 +1,1 @@
+BOOL UACBypass(API_Call APICall);

@@ -1,0 +1,1 @@
+BOOL DropFiles(Kernel32_API Kernel32Api);
