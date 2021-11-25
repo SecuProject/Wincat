@@ -21,6 +21,8 @@ echo [-] Downloading powershell script
 %wget% https://raw.githubusercontent.com/rasta-mouse/Sherlock/master/Sherlock.ps1 -O PowershellScript/Sherlock.ps1
 %wget% https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PowerUp/PowerUp.ps1 -O PowershellScript/PowerUp.ps1
 %wget% https://raw.githubusercontent.com/itm4n/PrivescCheck/master/PrivescCheck.ps1 -O PowershellScript/PrivescCheck.ps1
+%wget% https://raw.githubusercontent.com/calebstewart/CVE-2021-1675/main/CVE-2021-1675.ps1 -O PowershellScript/PrintNightmare.ps1
+
 
 
 

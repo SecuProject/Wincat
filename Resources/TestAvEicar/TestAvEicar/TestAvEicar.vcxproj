@@ -26,6 +26,10 @@
   <ItemGroup>
     <ClInclude Include="Message.h" />
     <ClInclude Include="MgDownload.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="VersionInfo.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

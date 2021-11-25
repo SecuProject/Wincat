@@ -21,6 +21,7 @@ mono_crash.*
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
+[Rr]eleaseFull/
 x64/
 x86/
 [Ww][Ii][Nn]32/
@@ -54,6 +55,7 @@ nunit-*.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+exe*/
 
 # Benchmark Results
 BenchmarkDotNet.Artifacts/
@@ -91,6 +93,7 @@ StyleCopReport.xml
 *.tmp_proj
 *_wpftmp.csproj
 *.log
+*.tlog
 *.vspscc
 *.vssscc
 .builds
