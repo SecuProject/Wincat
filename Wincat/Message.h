@@ -12,6 +12,7 @@ typedef enum {
 
 typedef enum {
     STATUS_OK,
+    STATUS_OK2,
     STATUS_ERROR,
     STATUS_ERROR2,
     STATUS_WARNING,

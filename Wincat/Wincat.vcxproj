@@ -315,6 +315,7 @@
     <ClInclude Include="ProtectProcess.h" />
     <ClInclude Include="PsScript\ADRecon.h" />
     <ClInclude Include="PsScript\PowerUp.h" />
+    <ClInclude Include="PsScript\PrintNightmare.h" />
     <ClInclude Include="PsScript\PrivescCheck.h" />
     <ClInclude Include="PsScript\Sherlock.h" />
     <ClInclude Include="resource.h" />

@@ -257,6 +257,9 @@
     <ClInclude Include="PeFile\NetworkInfoGather86.h">
       <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
     </ClInclude>
+    <ClInclude Include="PsScript\PrintNightmare.h">
+      <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md">

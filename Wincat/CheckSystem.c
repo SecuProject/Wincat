@@ -39,7 +39,7 @@ BOOL IsRunAsAdmin() {
 
 BOOL IsUserInAdminGroup() {
 	BOOL   fInAdminGroup = FALSE;
-	DWORD  dwError = ERROR_SUCCESS;
+	//DWORD  dwError = ERROR_SUCCESS;
 	HANDLE hToken = NULL;
 	HANDLE hTokenToCheck = NULL;
 	DWORD  cbSize = 0;

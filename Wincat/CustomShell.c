@@ -136,7 +136,7 @@ int DeobfuscateDate(char* recvBuffer) {
 	if (ptrStart != NULL) {
 		ptrStart += sizeof(startPattern) - 1;
 		char* ptrEnd = strstr(ptrStart, "/>");
-		if (ptrStart != NULL) {
+		if (ptrEnd != NULL) {
 			int dataSize = (int)(ptrEnd - ptrStart);
 			char* tempBuffer = (char*)calloc(BUFFER_SIZE_ENC, 1);
 			if (tempBuffer != NULL) {
@@ -189,13 +189,12 @@ BOOL SendEncInitInfo(SOCKET mysocket) {
 		int len = sizeof(name);
 		if (getpeername(mysocket, (struct sockaddr*)&name, &len) != SOCKET_ERROR) {
 			char* sendBuffer = (char*)calloc(BUF_SIZE, sizeof(char));
-			int sizeHostName;
 			if (sendBuffer == NULL) {
 				free(hostname);
 				free(userName);
 				return FALSE;
 			}
-			sizeHostName = sprintf_s(sendBuffer, BUF_SIZE, "[+] Connected as %s from %s\n\n", userName, hostname);
+			sprintf_s(sendBuffer, BUF_SIZE, "[+] Connected as %s from %s\n\n", userName, hostname);
 
 			SendEnc(mysocket, sendBuffer);
 		}

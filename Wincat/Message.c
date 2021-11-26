@@ -3,10 +3,12 @@
 
 #include "Message.h"
 
-
-
+#if !_DEBUG
 MSG_LEVEL msgLevelGlobal = LEVEL_DEFAULT;
-//MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
+#else
+MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
+#endif
+
 
 
 DWORD DisplayError(LPWSTR pszAPI) {
@@ -43,11 +45,14 @@ DWORD DisplayErrorMsgSuffix(BOOL isVerbose) {
 
 void printMsgPrefix(MSG_STATUS msgStatus) {
     switch (msgStatus) {
+    case STATUS_OK2:
+        printf("\t");
     case STATUS_OK:
         printf("[+] ");
         break;
-    case STATUS_ERROR:
     case STATUS_ERROR2:
+        printf("\t");
+    case STATUS_ERROR:
         printf("[x] ");
         break;
     case STATUS_WARNING:

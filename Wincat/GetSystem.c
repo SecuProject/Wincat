@@ -20,9 +20,9 @@ BOOL GetTargetHost(WCHAR** argurments, WCHAR* arg0) {
 	*argurments = (WCHAR*)calloc(argurmentsSize, sizeof(WCHAR));
 	if (*argurments == NULL)
 		return FALSE;
-	char* RHostIPaddress = (char*)calloc(RHostIPaddressSize, 1);
+	char* RHostIPaddress = (char*)malloc(RHostIPaddressSize);
 	if (RHostIPaddress != NULL) {
-		char* RHostPort = (char*)calloc(RHostPortSize, 1);
+		char* RHostPort = (char*)malloc(RHostPortSize);
 		if (RHostPort != NULL) {
 			const char* regKey = "Software\\Wincat";
 			if (ReadRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "RHostIP", RHostIPaddress, RHostIPaddressSize)) {

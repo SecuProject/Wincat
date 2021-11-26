@@ -98,7 +98,7 @@ int wmain(int argc, WCHAR* argv[]){
     else
         printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Fail to enable ACG\n");
 
-    if (CheckCodeSection())
+    if (!CheckCodeSection())
         exit(0);
 
     if (IsDebuggerPresentPEB()) {
@@ -111,7 +111,7 @@ int wmain(int argc, WCHAR* argv[]){
 
     EDRChecker();
 
-    if(CheckCodeSection())
+    if(!CheckCodeSection())
         exit(0);
     //
     //////////////////// Protect process ///////////////////

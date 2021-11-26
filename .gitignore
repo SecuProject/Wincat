@@ -364,3 +364,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+# Cppcheck 
+check-cppcheck-build-dir/
+*.cppcheck
