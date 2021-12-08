@@ -79,6 +79,9 @@
     <Filter Include="Source Files\ProtectProcess\EDRChecker">
       <UniqueIdentifier>{188edb99-e441-405f-9f96-19fc52920781}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GetSystem\UacBypass\DllHijacking">
+      <UniqueIdentifier>{85edc1e3-d3d2-483f-bd4a-a5c700d4ec9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="EDRChecker.c">
       <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
+    </ClCompile>
+    <ClCompile Include="DllHijacking.c">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +265,12 @@
     </ClInclude>
     <ClInclude Include="PsScript\PrintNightmare.h">
       <Filter>Source Files\DropFile\PeFile\PsScript</Filter>
+    </ClInclude>
+    <ClInclude Include="DllHijacking.h">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
+    </ClInclude>
+    <ClInclude Include="TargetDll.h">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

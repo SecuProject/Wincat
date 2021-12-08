@@ -38,6 +38,7 @@ SOCKET ConnectRemoteServer(char* ipAddress, int port) {
 
 	if (connect(clientSocket, (struct sockaddr*)&sAddr, sizeof(sAddr)) != SOCKET_ERROR)
 		return clientSocket;
+	closesocket(clientSocket);
 	return FALSE;
 }
 

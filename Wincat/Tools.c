@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "Message.h"
+#include "Tools.h"
 
 ///////////////////////// Registry //////////////////////////
 //
@@ -54,6 +55,68 @@ BOOL DeleteRegistryKey(HKEY key, char* path, char* name) {
 	return returnValue;*/
 }
 
+BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
+	char* lpEnd;
+	LONG lResult;
+	DWORD dwSize;
+	char szName[MAX_PATH];
+	HKEY hKey;
+	FILETIME ftWrite;
+
+	// First, see if we can delete the key without having
+	// to recurse.
+
+	lResult = RegDeleteKeyA(hKeyRoot, lpSubKey);
+	if (lResult == ERROR_SUCCESS)
+		return TRUE;
+
+	lResult = RegOpenKeyExA(hKeyRoot, lpSubKey, 0, KEY_READ, &hKey);
+
+	if (lResult != ERROR_SUCCESS) {
+		if (lResult == ERROR_FILE_NOT_FOUND) {
+			printf("Key not found.\n");
+			return TRUE;
+		}
+		else {
+			printf("Error opening key.\n");
+			return FALSE;
+		}
+	}
+
+	// Check for an ending slash and add one if it is missing.
+	lpEnd = lpSubKey + strlen(lpSubKey);
+	if (*(lpEnd - 1) != TEXT('\\')) {
+		*lpEnd = TEXT('\\');
+		lpEnd++;
+		*lpEnd = TEXT('\0');
+	}
+
+	// Enumerate the keys
+
+	dwSize = MAX_PATH;
+	lResult = RegEnumKeyExA(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
+	if (lResult == ERROR_SUCCESS) {
+		do {
+			*lpEnd = TEXT('\0');
+			strcpy_s(lpSubKey, MAX_PATH, szName);
+			if (!RegDelnodeRecurse(hKeyRoot, lpSubKey)) {
+				break;
+			}
+			dwSize = MAX_PATH;
+			lResult = RegEnumKeyExA(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
+		} while (lResult == ERROR_SUCCESS);
+	}
+	lpEnd--;
+	*lpEnd = TEXT('\0');
+	RegCloseKey(hKey);
+	// Try again to delete the key.
+	lResult = RegDeleteKeyA(hKeyRoot, lpSubKey);
+	if (lResult == ERROR_SUCCESS)
+		return TRUE;
+
+	return FALSE;
+}
+
 BOOL isArgHostSet() {
 	BOOL result = FALSE;
 	DWORD RHostIPaddressSize = 128;
@@ -64,6 +127,32 @@ BOOL isArgHostSet() {
 		free(RHostIPaddress);
 	}
 	return result;
+}
+
+BOOL SaveRHostInfo(WCHAR* UipAddress, char* port) {
+	const char* regKey = "Software\\Wincat";
+	BOOL returnValue = FALSE;
+	char* ipAddress = (char*)malloc(IP_ADDRESS_SIZE + 1);
+	if (ipAddress == NULL)
+		return FALSE;
+	sprintf_s(ipAddress, IP_ADDRESS_SIZE +1, "%ws", UipAddress);
+
+	if (checkKey(regKey)) {
+		returnValue = SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "RHostIP", ipAddress);
+		returnValue &= SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "RHostPORT", port);
+	}
+
+	free(ipAddress);
+	return returnValue;
+}
+
+BOOL SaveCPathInfo(char* currentPath) {
+	const char* regKey = "Software\\Wincat";
+
+	if (checkKey(regKey)) {
+		return SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "CPath", currentPath);
+	}
+	return FALSE;
 }
 //
 ///////////////////////// Registry //////////////////////////

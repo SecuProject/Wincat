@@ -42,7 +42,8 @@ typedef enum {
 typedef enum {
     UAC_BYPASS_COMP_DEF = 0,
     UAC_BYPASS_COMP_WSREST = 1,
-    UAC_BYPASS_COMP_SILENT_CLEAN = 2
+    UAC_BYPASS_COMP_SILENT_CLEAN = 2,
+    UAC_BYPASS_COMP_TRUSTED_DIR = 3
 }UAC_BYPASS_TEC;
 
 typedef struct Argument {

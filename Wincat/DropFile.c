@@ -75,7 +75,7 @@ StrucFile fileStruc[] = {
 
 'DecompressedBufferSize' was corrupted.
 */
-int DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSize) {
+BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSize) {
     DECOMPRESSOR_HANDLE Decompressor = NULL;
     PBYTE DecompressedBuffer = NULL;
     HANDLE InputFile = INVALID_HANDLE_VALUE;

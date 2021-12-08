@@ -269,6 +269,7 @@
     <ClCompile Include="CheckSystem.c" />
     <ClCompile Include="csExternalC2.c" />
     <ClCompile Include="CustomShell.c" />
+    <ClCompile Include="DllHijacking.c" />
     <ClCompile Include="DropFile.c" />
     <ClCompile Include="EDRChecker.c" />
     <ClCompile Include="GetDefaultPath.c" />
@@ -290,6 +291,7 @@
     <ClInclude Include="CheckSystem.h" />
     <ClInclude Include="csExternalC2.h" />
     <ClInclude Include="CustomShell.h" />
+    <ClInclude Include="DllHijacking.h" />
     <ClInclude Include="DropFile.h" />
     <ClInclude Include="EDRChecker.h" />
     <ClInclude Include="EDRNameHash.h" />
@@ -323,6 +325,7 @@
     <ClInclude Include="RunAs.h" />
     <ClInclude Include="RunShell.h" />
     <ClInclude Include="SocketTools.h" />
+    <ClInclude Include="TargetDll.h" />
     <ClInclude Include="Tools.h" />
   </ItemGroup>
   <ItemGroup>

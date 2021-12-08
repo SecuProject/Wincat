@@ -20,6 +20,7 @@ typedef enum {
     STATUS_NONE,
     STATUS_DEBUG,
     STATUS_INFO,
+    STATUS_INFO2,
 }MSG_STATUS;
 
 extern MSG_LEVEL msgLevelGlobal;

@@ -106,9 +106,11 @@ VOID PrintMenu(char* workingDirecotry) {
 
     printf("Others:\n");
     printf("\tgetsystem\tExploit that bypass UAC and upgrade to system (Need to be in the admin group).\n");
-    printf("\t\t\t-uac\t1: UAC bypass technique: 'computerdefaults'.\n");
-    printf("\t\t\t-uac\t2: UAC bypass technique: 'WSReset'. \t\t[DEFAULT]\n");
-    printf("\t\t\t-uac\t3: UAC bypass technique: 'Silent Cleanup'.\n");
+    printf("\t\t\tUAC bypass technique:\n");
+    printf("\t\t\t\t-uac\t1: computerdefaults.\n");
+    printf("\t\t\t\t-uac\t2: WSReset. \t\t[DEFAULT]\n");
+    printf("\t\t\t\t-uac\t3: Silent Cleanup.\n");
+    printf("\t\t\t\t-uac\t4: DLL hijacking - Trusted Directories.\n");
     printf("\tdetached\tRun wincat with a new process.\n\n");
     //printf("Note:\n");
     //printf("\tThe path where the tools are drop is in '%s'.\n\n",workingDirecotry);
@@ -189,14 +191,15 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
     }
 
     for (int count = 3; count < argc; count++) {
-        if ((argv[count][0] == L'-' ||   argv[count][0] == L'/') && lstrlenW(argv[count]) > 1) {
+        if (lstrlenW(argv[count]) > 1 && (argv[count][0] == L'-' ||   argv[count][0] == L'/')) {
             if ((argv[count][1] == L'h' || argv[count][1] == L'?' || MATCHW(argv[count], L"--help"))) { //  && argc >= count
                 PrintMenu(listAgrument->wincatDefaultDir);
                 return FALSE;
             }else if (argc >= count) {
                 switch (argv[count][1]){
                 case L'u':
-                    lstrcpyW(listAgrument->lpszUsername, argv[count + 1]);
+                    if(argv[count][2] == 0x00)
+                        lstrcpyW(listAgrument->lpszUsername, argv[count + 1]);
                     break;
                 case L'p':
                     lstrcpyW(listAgrument->lpszPassword, argv[count + 1]);
@@ -235,7 +238,7 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 listAgrument->UacBypassTec = UAC_BYPASS_COMP_WSREST;
                 if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
                     int tecNum = _wtoi(argv[count + 2]);
-                    if (tecNum > 0 && tecNum < 4) {
+                    if (tecNum > 0 && tecNum < 5) {
                         listAgrument->UacBypassTec = tecNum - 1;
                         count += 2;
                     }

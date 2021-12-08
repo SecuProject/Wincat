@@ -19,7 +19,7 @@ DWORD DisplayError(LPWSTR pszAPI) {
         (LPWSTR)&lpvMessageBuffer, 0, NULL);
 
     if (lpvMessageBuffer != NULL) {
-        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR (%d): API:%ws - %ws", lastError, pszAPI, (LPWSTR)lpvMessageBuffer);
+        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR (%lu): API:%ws - %ws", lastError, pszAPI, (LPWSTR)lpvMessageBuffer);
         LocalFree(lpvMessageBuffer);
     }
     return lastError;
@@ -27,7 +27,7 @@ DWORD DisplayError(LPWSTR pszAPI) {
 
 DWORD DisplayErrorMsgSuffix(BOOL isVerbose) {
     DWORD lastError = GetLastError();
-    printf(" (%d) !\n", lastError);
+    printf(" (%lu) !\n", lastError);
 
     if (isVerbose && lastError != 0) {
         LPVOID lpvMessageBuffer;
@@ -64,6 +64,8 @@ void printMsgPrefix(MSG_STATUS msgStatus) {
     case STATUS_DEBUG:
         printf("[D] ");
         break;
+    case STATUS_INFO2:
+        printf("\t");
     case STATUS_INFO:
         printf("[i] ");
         break;
@@ -74,6 +76,7 @@ void printMsgPrefix(MSG_STATUS msgStatus) {
 }
 void printMsgSuffix(MSG_STATUS msgStatus) {
     switch (msgStatus) {
+    case STATUS_ERROR2:
     case STATUS_ERROR:
         DisplayErrorMsgSuffix(msgLevelGlobal > LEVEL_DEFAULT);
         break;

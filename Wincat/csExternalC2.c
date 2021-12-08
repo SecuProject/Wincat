@@ -98,7 +98,7 @@ BOOL MgPayload(SOCKET socket_extc2) {
 	payloadSize = recv_frame(socket_extc2, payload, PAYLOAD_MAX_SIZE);
 
 	// Check if valid PE header 
-	if (payload == NULL || payload[5] == 'M' || payload[6] == 'Z') {
+	if (payloadSize < 10 || payload[5] == 'M' || payload[6] == 'Z') {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Recv payload error");
 		return FALSE;
 	}
