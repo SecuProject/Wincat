@@ -327,7 +327,8 @@
     <ClInclude Include="SocketTools.h" />
     <ClInclude Include="TargetDll.h" />
     <ClInclude Include="Tools.h" />
-    <ClInclude Include="UacBypassDll.h" />
+    <ClInclude Include="UacBypassDll32.h" />
+    <ClInclude Include="UacBypassDll64.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md" />

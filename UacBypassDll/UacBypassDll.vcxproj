@@ -111,6 +111,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>../convert/BuiltDll.bat x86</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -146,7 +149,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>../convert/BuiltDll.bat</Command>
+      <Command>../convert/BuiltDll.bat x64</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
