@@ -1,17 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by VersionInfo.rc
-// UAC BYPASS - DLL hijacking -> Trusted Directories
-
-
-
-#define IDR_DATA2                       102
-// is 32/64 ??? 
-/*#if _WIN64
-#define IDR_DATA2                       102
-#else
-#define IDR_DATA1                       101
-#endif*/
 
 // Next default values for new objects
 // 

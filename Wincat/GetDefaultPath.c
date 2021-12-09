@@ -163,7 +163,7 @@ int main() {
     if (GetDefaultPath(&pathDirecotry))
         printMsg(STATUS_INFO, LEVEL_DEFAULT, "Target path : '%s'\n", pathDirecotry);
     else
-        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "No target path was found !\n");
+        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "No target path was found");
     system("pause");
     return FALSE;
 }*/

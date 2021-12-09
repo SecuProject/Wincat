@@ -131,9 +131,13 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
     listAgrument->payloadType = PAYLOAD_RECV_CMD;
     listAgrument->Detached = FALSE;
     listAgrument->GetSystem = FALSE;
+    listAgrument->UacBypassTec = UAC_BYPASS_COMP_WSREST;
     listAgrument->toDROP = Nothing;
 
-    if (argc == 2) {
+    if (argc == 1) {
+        PrintMenu(listAgrument->wincatDefaultDir);
+        return FALSE;
+    }else if (argc == 2) {
         if (MATCHW(argv[1], L"accesschk"))
             listAgrument->toDROP = Dropaccesschk;
         else if (MATCHW(argv[1], L"winpeas"))
@@ -173,10 +177,6 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "No target path was found");
         }
         return TRUE;
-    }
-    if (argc < 3) {
-        PrintMenu(listAgrument->wincatDefaultDir);
-        return FALSE;
     }
     lstrcpyW(listAgrument->host, argv[1]);
     listAgrument->port = _wtoi(argv[2]);
@@ -227,7 +227,8 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                     checkTypeCShell++;
                     count++;
                 default:
-                    printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
+                    //printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
+                   printMsg(STATUS_WARNING, LEVEL_VERBOSE, "Unknown argument %ws\n", argv[count]);
                     break;
                 }
             }else
@@ -235,7 +236,6 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
         }else{
             if (MATCHW(argv[count], L"getsystem")) {
                 listAgrument->GetSystem = TRUE;
-                listAgrument->UacBypassTec = UAC_BYPASS_COMP_WSREST;
                 if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
                     int tecNum = _wtoi(argv[count + 2]);
                     if (tecNum > 0 && tecNum < 5) {

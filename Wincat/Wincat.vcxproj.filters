@@ -272,6 +272,9 @@
     <ClInclude Include="TargetDll.h">
       <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
     </ClInclude>
+    <ClInclude Include="UacBypassDll.h">
+      <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md">

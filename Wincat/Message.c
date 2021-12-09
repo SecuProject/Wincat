@@ -4,7 +4,8 @@
 #include "Message.h"
 
 #if !_DEBUG
-MSG_LEVEL msgLevelGlobal = LEVEL_DEFAULT;
+//MSG_LEVEL msgLevelGlobal = LEVEL_DEFAULT;
+MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
 #else
 MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
 #endif
@@ -25,7 +26,7 @@ DWORD DisplayError(LPWSTR pszAPI) {
     return lastError;
 }
 
-DWORD DisplayErrorMsgSuffix(BOOL isVerbose) {
+DWORD DisplayErrorMsgSuffix(BOOL isTab, BOOL isVerbose) {
     DWORD lastError = GetLastError();
     printf(" (%lu) !\n", lastError);
 
@@ -36,7 +37,10 @@ DWORD DisplayErrorMsgSuffix(BOOL isVerbose) {
             (LPWSTR)&lpvMessageBuffer, 0, NULL);
 
         if (lpvMessageBuffer != NULL) {
-            printMsg(STATUS_INFO, LEVEL_VERBOSE, "%ws\n", (LPWSTR)lpvMessageBuffer);
+            if(isTab)
+                printMsg(STATUS_INFO2, LEVEL_VERBOSE, "%ws\n", (LPWSTR)lpvMessageBuffer);
+            else
+                printMsg(STATUS_INFO, LEVEL_VERBOSE, "%ws\n", (LPWSTR)lpvMessageBuffer);
             LocalFree(lpvMessageBuffer);
         }
     }
@@ -45,16 +49,19 @@ DWORD DisplayErrorMsgSuffix(BOOL isVerbose) {
 
 void printMsgPrefix(MSG_STATUS msgStatus) {
     switch (msgStatus) {
+
     case STATUS_OK2:
         printf("\t");
     case STATUS_OK:
         printf("[+] ");
         break;
+
     case STATUS_ERROR2:
         printf("\t");
     case STATUS_ERROR:
         printf("[x] ");
         break;
+
     case STATUS_WARNING:
         printf("[!] "); // [w]
         break;
@@ -64,11 +71,13 @@ void printMsgPrefix(MSG_STATUS msgStatus) {
     case STATUS_DEBUG:
         printf("[D] ");
         break;
+
     case STATUS_INFO2:
         printf("\t");
     case STATUS_INFO:
         printf("[i] ");
         break;
+
     case STATUS_NONE:
     default:
         break;
@@ -77,8 +86,10 @@ void printMsgPrefix(MSG_STATUS msgStatus) {
 void printMsgSuffix(MSG_STATUS msgStatus) {
     switch (msgStatus) {
     case STATUS_ERROR2:
+        DisplayErrorMsgSuffix(TRUE,msgLevelGlobal > LEVEL_DEFAULT);
+        break;
     case STATUS_ERROR:
-        DisplayErrorMsgSuffix(msgLevelGlobal > LEVEL_DEFAULT);
+        DisplayErrorMsgSuffix(FALSE,msgLevelGlobal > LEVEL_DEFAULT);
         break;
     case STATUS_NONE:
     default:

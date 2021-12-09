@@ -11,7 +11,7 @@ BOOL createFile(char* fileBuffer, DWORD fileSize, char* outputStrArg, char* name
 	FILE* pFile;
 	if (fopen_s(&pFile, outputStrArg, "w") == 0) {
 		size_t defVarSize = strlen(nameStrArg);
-		char* defVar = (char*)calloc(defVarSize + 1, sizeof(char));
+		char* defVar = (char*)malloc(defVarSize + 1);
 		if (defVar != NULL) {
 			strcpy_s(defVar, defVarSize +1, nameStrArg);
 			strToupper(defVar);
@@ -45,14 +45,31 @@ int main(int argc, char* argv[]) {
 	char* outputStrArg = "payload.h";
 	char* nameStrArg = "payload";
 
-
-	if (argc < 3) {
-		printf("[X] Error: Invalid argument number !\n");
+	if (argc < 3 || argc > 8) {
+		printf("[!] Usage: FileToHex.exe -i InputFile.exe [-o Output.h] [-n FileName]\n");
 		return TRUE;
 	}
 
 	for (int i = 1; i < argc -1; i++) {
-		if (strcmp(argv[i], "-i") == 0 && argv[i + 1] != NULL) {
+		if (strlen(argv[i]) == 2 && (argv[i][0] == '-' || argv[i][0] == '/')) {
+			switch (argv[i][1])
+			{
+			case 'i':
+				inputStrArg = argv[i + 1];
+				break;
+			case 'o':
+				outputStrArg = argv[i + 1];
+				break;
+			case 'n':
+				nameStrArg = argv[i + 1];
+				break;
+			default:
+				printf("[!] Unknow argument: %s\n", argv[i]);
+				break;
+			}
+			i++;
+		}
+		/*if (strcmp(argv[i], "-i") == 0 && argv[i + 1] != NULL) {
 			inputStrArg = argv[i + 1];
 		}
 		if (strcmp(argv[i], "-o") == 0 && argv[i + 1] != NULL) {
@@ -60,7 +77,7 @@ int main(int argc, char* argv[]) {
 		}
 		if (strcmp(argv[i], "-n") == 0 && argv[i + 1] != NULL) {
 			nameStrArg = argv[i + 1];
-		}
+		}*/
 	}
 	if (inputStrArg == NULL) {
 		printf("[X] Error: inputStrArg Not set !\n");
@@ -68,7 +85,7 @@ int main(int argc, char* argv[]) {
 	}
 	hFile = CreateFileA(inputStrArg, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		printf("[X] Error: Unable to open the replacement executable. CreateFile failed with error %d\n", GetLastError());
+		printf("[X] Error: Unable to open the replacement executable. CreateFile failed with error %lu\n", GetLastError());
 		return TRUE;
 	}
 
@@ -85,7 +102,7 @@ int main(int argc, char* argv[]) {
 		//PIMAGE_NT_HEADERS pINH;
 			
 		if (!ReadFile(hFile, fileBuffer, fileSize, &dataRead, NULL)){
-			printf("[X] Error: Unable to read the replacement executable. ReadFile failed with error %d\n", GetLastError());
+			printf("[X] Error: Unable to read the replacement executable. ReadFile failed with error %lu\n", GetLastError());
 			free(fileBuffer);
 			return TRUE;
 		}
@@ -105,7 +122,7 @@ int main(int argc, char* argv[]) {
 		}
 		*/
 		if (createFile(fileBuffer, fileSize, outputStrArg, nameStrArg)) {
-			printf("[+] File %s create successfully (Size: %i bytes).\n", outputStrArg, fileSize);
+			printf("[+] File %s create successfully (Size: %lu bytes).\n", outputStrArg, fileSize);
 		}else {
 			printf("[X] Error: creating the file %s !\n", outputStrArg);
 			free(fileBuffer);

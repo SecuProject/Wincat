@@ -34,7 +34,7 @@ BOOL initWSAS() {
     WSADATA wsaData;
     int WSAStartupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (WSAStartupResult != 0) {
-        printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "WSAStartup failed: %d.\n", WSAStartupResult);
+        printf("[x] WSAStartup failed: %d.\n", WSAStartupResult);
         return FALSE;
     }
     return TRUE;

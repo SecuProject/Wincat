@@ -19,9 +19,9 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     BOOL retValue = FALSE;
    
     //  Open input file for reading, existing file only.
-    InputFile = CreateFile(InputFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    InputFile = CreateFileW(InputFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (InputFile == INVALID_HANDLE_VALUE) {
-        wprintf(L"[X] Cannot open \t%s\n", InputFilePath);
+        printf("[X] Cannot open \t%ws\n", InputFilePath);
         retValue = TRUE;
         goto done;
     }
@@ -29,7 +29,7 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     //  Get input file size.
     Success = GetFileSizeEx(InputFile, &FileSize);
     if ((!Success) || (FileSize.QuadPart > 0xFFFFFFFF)) {
-        wprintf(L"[X] Cannot get input file size or file is larger than 4GB.\n");
+        printf("[X] Cannot get input file size or file is larger than 4GB.\n");
         retValue = TRUE;
         goto done;
     }
@@ -38,7 +38,7 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     //  Allocate memory for file content.
     InputBuffer = (PBYTE)malloc(InputFileSize);
     if (!InputBuffer) {
-        wprintf(L"[X] Cannot allocate memory for uncompressed buffer.\n");
+        printf("[X] Cannot allocate memory for uncompressed buffer.\n");
         retValue = TRUE;
         goto done;
     }
@@ -46,16 +46,16 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     //  Read input file.
     Success = ReadFile(InputFile, InputBuffer, InputFileSize, &ByteRead, NULL);
     if ((!Success) || (ByteRead != InputFileSize)) {
-        wprintf(L"[X] Cannot read from \t%s\n", InputFilePath);
+        printf("[X] Cannot read from \t%ws\n", InputFilePath);
         retValue = TRUE;
         goto done;
     }
 
     //  Open an empty file for writing, if exist, overwrite it.
-    CompressedFile = CreateFile(OutputFilePath, GENERIC_WRITE | DELETE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    CompressedFile = CreateFileW(OutputFilePath, GENERIC_WRITE | DELETE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
     if (CompressedFile == INVALID_HANDLE_VALUE) {
-        wprintf(L"[X] Cannot create file \t%s\n", OutputFilePath);
+        printf("[X] Cannot create file \t%ws\n", OutputFilePath);
         retValue = TRUE;
         goto done;
     }
@@ -67,7 +67,7 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
         &Compressor);                   //  Handle
 
     if (!Success) {
-        printf("[X] Cannot create a compressor %ld.\n", GetLastError());
+        printf("[X] Cannot create a compressor %lu.\n", GetLastError());
         retValue = TRUE;
         goto done;
     }
@@ -80,7 +80,7 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
         DWORD ErrorCode = GetLastError();
 
         if (ErrorCode != ERROR_INSUFFICIENT_BUFFER) {
-            printf("[X] Cannot compress data: %ld.\n", ErrorCode);
+            printf("[X] Cannot compress data: %lu.\n", ErrorCode);
             retValue = TRUE;
             goto done;
         }
@@ -98,7 +98,7 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     Success = Compress(Compressor, InputBuffer, InputFileSize, CompressedBuffer, CompressedBufferSize, &CompressedDataSize);
 
     if (!Success) {
-        printf("[X] Cannot compress data: %d\n", GetLastError());
+        printf("[X] Cannot compress data: %lu\n", GetLastError());
         goto done;
     }
 
@@ -106,12 +106,12 @@ int CompressFile(LPCWSTR InputFilePath, LPCWSTR OutputFilePath) {
     Success = WriteFile(CompressedFile, CompressedBuffer, CompressedDataSize, &ByteWritten, NULL);
 
     if ((ByteWritten != CompressedDataSize) || (!Success)) {
-        printf("[X] Cannot write compressed data to file: %d.\n", GetLastError());
+        printf("[X] Cannot write compressed data to file: %lu.\n", GetLastError());
         retValue = TRUE;
         goto done;
     }
     float compressionRatio = (float)CompressedDataSize / (float)InputFileSize;
-    wprintf(L"[i] Compression ratio: %.3f%%\n", (1 - compressionRatio)*100);
+    printf("[i] Compression ratio: %.3f%%\n", (1 - compressionRatio)*100);
     DeleteTargetFile = FALSE;
 done:
     if (Compressor != NULL)
@@ -141,8 +141,9 @@ done:
 
 int wmain(_In_ int argc, _In_ WCHAR* argv[]) {
     if (argc != 3) {
-        wprintf(L"Usage:\n\t%s <input_file_name> <compressd_file_name>\n", argv[0]);
-        return 1;
+        printf("Usage:\n");
+        printf("\t%ws <input_file_name> <compressd_file_name>\n", argv[0]);
+        return TRUE;
     }
-    return CompressFile(argv[1], argv[2]);
+    return !CompressFile(argv[1], argv[2]);
 }
