@@ -57,7 +57,7 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\nMultiple reverse shell (CMD/PS/CS/MSF_RECV_TCP/MSF_RECV_HTTP/MSF_RECV_HTTPS).\n\n");
 
     printf("wincat.exe RHOST RPORT [-u USERNAME] [-p PASSWORD] [-d DOMAIN] [-P cmd/ps/cs/cshell/rtcp/http/https] [winpeas/chisel/shound/all/safe/...]\n");
-    printf("wincat.exe RHOST RPORT getsystem [-uac 1/2/3]\n");
+    printf("wincat.exe RHOST RPORT getsystem [-uac 1/2/3/4]\n");
     printf("wincat.exe RHOST RPORT detached\n");
     printf("wincat.exe [wget/winpeas/chisel/shound/all/safe/...]\n\n");
 

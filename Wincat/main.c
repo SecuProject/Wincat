@@ -26,7 +26,7 @@
 #pragma comment(lib, "Wininet.lib")
 
 
-#pragma warning(disable:4996)
+//#pragma warning(disable:4996)
 
 
 

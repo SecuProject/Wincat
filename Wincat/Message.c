@@ -4,8 +4,7 @@
 #include "Message.h"
 
 #if !_DEBUG
-//MSG_LEVEL msgLevelGlobal = LEVEL_DEFAULT;
-MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
+MSG_LEVEL msgLevelGlobal = LEVEL_DEFAULT;
 #else
 MSG_LEVEL msgLevelGlobal = LEVEL_VERBOSE;
 #endif
