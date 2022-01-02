@@ -144,6 +144,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -206,6 +207,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -277,6 +279,8 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="Message.c" />
     <ClCompile Include="MgArguments.c" />
+    <ClCompile Include="PipeServer.c" />
+    <ClCompile Include="PrintNightmareLPE.c" />
     <ClCompile Include="ProtectProcess.c" />
     <ClCompile Include="ReverseHttp.c" />
     <ClCompile Include="RunAs.c" />
@@ -314,6 +318,8 @@
     <ClInclude Include="PeFile\TestAvEicarx86.h" />
     <ClInclude Include="PeFile\winPEASx64.h" />
     <ClInclude Include="PeFile\winPEASx86.h" />
+    <ClInclude Include="PipeServer.h" />
+    <ClInclude Include="PrintNightmareLPE.h" />
     <ClInclude Include="ProtectProcess.h" />
     <ClInclude Include="PsScript\ADRecon.h" />
     <ClInclude Include="PsScript\PowerUp.h" />

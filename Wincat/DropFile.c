@@ -193,12 +193,15 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
 
 
 
-    if(DecompressDrop(pathFile, (PBYTE)fileStruc.buffer, fileStruc.size))
+    if (DecompressDrop(pathFile, (PBYTE)fileStruc.buffer, fileStruc.size)){
         printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Dropping: '%ws' %i kb\n", pathFile, fileStruc.size / 100);
-    else
-        printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to dropFile %ws", fileStruc.filename);
+        free(pathFile);
+        return TRUE;
+    }
+
+    printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to dropFile %ws", fileStruc.filename);
 	free(pathFile);
-	return TRUE;
+	return FALSE;
 }
 
 

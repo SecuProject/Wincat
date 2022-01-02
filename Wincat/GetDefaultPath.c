@@ -57,7 +57,7 @@ BOOL SetVariable(const char* pathDirecotry, char** ppTestFileValue, char** ppTes
     }
 
     srand((UINT)time(0));
-    gen_random(testFileValue, TEST_FILE_VALUE_LENGTH);
+    GenRandDriverName(testFileValue, TEST_FILE_VALUE_LENGTH);
 
 
 
@@ -75,7 +75,7 @@ BOOL SetVariable(const char* pathDirecotry, char** ppTestFileValue, char** ppTes
         return FALSE;
     }
 
-    gen_random(testFileName, TEST_FILE_NAME_SORT_LENGTH);
+    GenRandDriverName(testFileName, TEST_FILE_NAME_SORT_LENGTH);
     strcat_s(testFileName, TEST_FILE_NAME_LENGTH + 1, ".txt");
     sprintf_s(testFilePath, testFilePathSize, "%s\\%s", pathDirecotry, testFileName);
     free(testFileName);

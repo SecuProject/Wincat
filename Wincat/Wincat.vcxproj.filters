@@ -85,6 +85,12 @@
     <Filter Include="Source Files\GetSystem\UacBypass\DllHijacking\DllToDrop">
       <UniqueIdentifier>{b18cc967-7b1e-447e-9c3b-ab16825fa027}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GetSystem\PrintNightmareLPE">
+      <UniqueIdentifier>{41c433bd-4bc3-4240-a460-b8f6f66ba0bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GetSystem\PipeServer">
+      <UniqueIdentifier>{e7338d53-96c3-4814-8804-e1c7b1b0075b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -146,6 +152,12 @@
     </ClCompile>
     <ClCompile Include="DllHijacking.c">
       <Filter>Source Files\GetSystem\UacBypass\DllHijacking</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintNightmareLPE.c">
+      <Filter>Source Files\GetSystem\PrintNightmareLPE</Filter>
+    </ClCompile>
+    <ClCompile Include="PipeServer.c">
+      <Filter>Source Files\GetSystem\PipeServer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="UacBypassDll64.h">
       <Filter>Source Files\GetSystem\UacBypass\DllHijacking\DllToDrop</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintNightmareLPE.h">
+      <Filter>Source Files\GetSystem\PrintNightmareLPE</Filter>
+    </ClInclude>
+    <ClInclude Include="PipeServer.h">
+      <Filter>Source Files\GetSystem\PipeServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

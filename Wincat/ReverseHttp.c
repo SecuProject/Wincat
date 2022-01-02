@@ -32,7 +32,7 @@ void genURL(char* FullURL, int urlLenght) {
 
 	srand((unsigned int)time(0));
 	while (checksum != 92) { // const int URI_CHECKSUM_INITW = 92;
-		gen_random(URI, urlLenght - 2);
+		GenRandDriverName(URI, urlLenght - 2);
 		checksum = TextChecksum8(URI);
 	}
 	FullURL[0] = '/';

@@ -25,7 +25,7 @@ BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWS
     if (LogonUserW(lpszUsername, lpszDomain, lpszPassword, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken)) {
         if (CreateEnvironmentBlock(&lpvEnv, hToken, TRUE)) {
             if (GetUserProfileDirectoryW(hToken, szUserProfile, &dwSize)) {
-                if (!CreateProcessWithLogonW(lpszUsername, lpszDomain, lpszPassword, LOGON_WITH_PROFILE, NULL, appName, CREATE_UNICODE_ENVIRONMENT, lpvEnv, szUserProfile,&si, ProcessInfo))
+                if (!CreateProcessWithLogonW(lpszUsername, lpszDomain, lpszPassword, LOGON_WITH_PROFILE, NULL, (LPWSTR)appName, CREATE_UNICODE_ENVIRONMENT, lpvEnv, szUserProfile,&si, ProcessInfo))
                     retVal = DisplayError(L"CreateProcessWithLogonW");
             }else
                 retVal = DisplayError(L"GetUserProfileDirectory");

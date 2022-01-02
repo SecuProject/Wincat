@@ -19,7 +19,7 @@ BOOL ReadRegistryValue(HKEY key, char* path, char* name, LPBYTE valueOutput, DWO
 
 BOOL checkKey(const char* subKeyTab) {
 	HKEY hKey;
-	long regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
+	LSTATUS regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
 	if (ERROR_FILE_NOT_FOUND == regKey) {
 		printMsg(STATUS_INFO, LEVEL_VERBOSE, "Creating registry key %s\n", subKeyTab);
 		if (RegCreateKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS) {
@@ -28,7 +28,7 @@ BOOL checkKey(const char* subKeyTab) {
 		}
 	}
 	RegCloseKey(hKey);
-	return 1;
+	return TRUE;
 }
 
 BOOL SetRegistryValue(HKEY key, char* path, char* name, char* value) {
@@ -74,11 +74,10 @@ BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
 
 	if (lResult != ERROR_SUCCESS) {
 		if (lResult == ERROR_FILE_NOT_FOUND) {
-			printf("Key not found.\n");
+			printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Key not found.\n");
 			return TRUE;
-		}
-		else {
-			printf("Error opening key.\n");
+		}else {
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Error opening key");
 			return FALSE;
 		}
 	}
@@ -96,9 +95,11 @@ BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
 	dwSize = MAX_PATH;
 	lResult = RegEnumKeyExA(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
 	if (lResult == ERROR_SUCCESS) {
+		//strcpy_s(szName, MAX_PATH, lpSubKey);
 		do {
 			*lpEnd = TEXT('\0');
-			strcpy_s(lpSubKey, MAX_PATH, szName);
+			//strcpy_s(lpSubKey, MAX_PATH, szName);
+			strcat_s(lpSubKey, MAX_PATH, szName);
 			if (!RegDelnodeRecurse(hKeyRoot, lpSubKey)) {
 				break;
 			}
@@ -162,14 +163,12 @@ BOOL SaveCPathInfo(char* currentPath) {
 //
 
 void DisableWindowsRedirection(PVOID* pOldVal) {
-	Wow64DisableWow64FsRedirection(pOldVal);
-	/*if (!Wow64DisableWow64FsRedirection(pOldVal))
-		printf("\t[X] Wow64DisableWow64FsRedirection Failed !!!\n");*/
+	if (!Wow64DisableWow64FsRedirection(pOldVal))
+		printMsg(STATUS_ERROR, LEVEL_VERBOSE, "Wow64DisableWow64FsRedirection Failed");
 }
 void RevertWindowsRedirection(PVOID pOldVal) {
-	Wow64RevertWow64FsRedirection(pOldVal);
-	/*if (!Wow64RevertWow64FsRedirection(pOldVal))
-		printf("\t[X] Wow64RevertWow64FsRedirection Failed !!!\n");*/
+	if (!Wow64RevertWow64FsRedirection(pOldVal))
+		printMsg(STATUS_ERROR, LEVEL_VERBOSE, "Wow64RevertWow64FsRedirection Failed");
 }
 
 //
@@ -218,7 +217,7 @@ BOOL IsFileExist(char* filePath) {
 	return FALSE;
 }
 
-void gen_random(char* string, const int len) {
+VOID GenRandDriverName(char* string, UINT len) {
 	char alphanum[63];
 	int ich = 0;
 	for (char l = 'a'; l <= 'z'; ++l, ich++)
@@ -229,9 +228,10 @@ void gen_random(char* string, const int len) {
 		alphanum[ich] = l;
 
 
-	for (int i = 0; i < len; ++i)
+	for (UINT i = 0; i < len; ++i)
 		string[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
 	string[len] = 0;
+	return;
 }
 
 

