@@ -91,6 +91,9 @@
     <Filter Include="Source Files\GetSystem\PipeServer">
       <UniqueIdentifier>{e7338d53-96c3-4814-8804-e1c7b1b0075b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GetSystem\MgService">
+      <UniqueIdentifier>{79ae273e-2d15-4226-ae15-441f9f079ce9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -158,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="PipeServer.c">
       <Filter>Source Files\GetSystem\PipeServer</Filter>
+    </ClCompile>
+    <ClCompile Include="MgService.c">
+      <Filter>Source Files\GetSystem\MgService</Filter>
+    </ClCompile>
+    <ClCompile Include="PrivEsc.c">
+      <Filter>Source Files\GetSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +307,12 @@
     </ClInclude>
     <ClInclude Include="PipeServer.h">
       <Filter>Source Files\GetSystem\PipeServer</Filter>
+    </ClInclude>
+    <ClInclude Include="MgService.h">
+      <Filter>Source Files\GetSystem\MgService</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivEsc.h">
+      <Filter>Source Files\GetSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,8 @@
 #include <windows.h> 
 #include <stdio.h>
+
 #include "PipeServer.h"
+#include "Message.h"
 
 BOOL AuthClient(HANDLE hPipe, const char* password, char* pchRequest, char* pchReply){
     size_t passwordSize = strlen(password);
@@ -11,9 +13,9 @@ BOOL AuthClient(HANDLE hPipe, const char* password, char* pchRequest, char* pchR
 
         if (!ReadFile(hPipe, pchRequest, BUFSIZE, &cbBytesRead, NULL) || cbBytesRead == 0){
             if (GetLastError() == ERROR_BROKEN_PIPE)
-                printf("\t[i] Client disconnected.\n");
+                printMsg(STATUS_WARNING2, LEVEL_DEFAULT, "Client disconnected.\n");
             else
-                printf("\t[x] ReadFile failed, GLE=%d.\n", GetLastError());
+                printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "ReadFile failed");
             return FALSE;
         }
         if (MATCH_S(pchRequest, password, passwordSize)){
@@ -26,7 +28,7 @@ BOOL AuthClient(HANDLE hPipe, const char* password, char* pchRequest, char* pchR
 
 
         if (!WriteFile(hPipe, pchReply, cbReplyBytes, &cbWritten, NULL) || cbReplyBytes != cbWritten){
-            printf("\t[x] WriteFile failed, GLE=%d.\n", GetLastError());
+            printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "WriteFile failed");
             return FALSE;
         }
     }
@@ -35,16 +37,12 @@ BOOL AuthClient(HANDLE hPipe, const char* password, char* pchRequest, char* pchR
 
 BOOL HeapAllocF(HANDLE hHeap, char** pchRequest, char** pchReply){
     *pchRequest = (char*)HeapAlloc(hHeap, 0, BUFSIZE);
-    *pchReply = (char*)HeapAlloc(hHeap, 0, BUFSIZE);
-
     if (pchRequest == NULL){
-        if (pchReply != NULL)
-            HeapFree(hHeap, 0, pchReply);
         return FALSE;
     }
+    *pchReply = (char*)HeapAlloc(hHeap, 0, BUFSIZE);
     if (pchReply == NULL){
-        if (pchRequest != NULL)
-            HeapFree(hHeap, 0, pchRequest);
+        HeapFree(hHeap, 0, pchRequest);
         return FALSE;
     }
     return TRUE;
@@ -58,7 +56,7 @@ BOOL GetAnswerToRequest(PipeDataStruct* pipeDataStruct, char* pchRequest, char* 
             int nbData = sscanf_s(pchRequest, "%s %s", setting, BUFSIZE, value, BUFSIZE);
             switch (nbData){
             case 1:
-                printf("\t[+] Client> \"%s\"\n", setting);
+                printMsg(STATUS_OK2, LEVEL_DEFAULT, "Client> \"%s\"\n", setting);
                 if (MATCH(pchRequest, "GET_IP_ADDRESS")){
                     strcpy_s(pchReply, BUFSIZE, pipeDataStruct->ipAddress);
                 } else if (MATCH(pchRequest, "GET_PORT")){
@@ -75,7 +73,7 @@ BOOL GetAnswerToRequest(PipeDataStruct* pipeDataStruct, char* pchRequest, char* 
                 free(setting);
                 return TRUE;
             case 2:
-                printf("\t[+] Client Request SET> \"%s\"\n", value);
+                printMsg(STATUS_OK2, LEVEL_DEFAULT, "Client SET> \"%s\"\n", value);
                 if (MATCH(setting, "SET_IP_ADDRESS")){
                     strcpy_s(pchReply, BUFSIZE, "ACK");
                     strcpy_s(pipeDataStruct->ipAddress, 16, value);
@@ -84,7 +82,10 @@ BOOL GetAnswerToRequest(PipeDataStruct* pipeDataStruct, char* pchRequest, char* 
                     pipeDataStruct->port = atoi(value);
                 } else if (MATCH(setting, "STATUS")){
                     strcpy_s(pchReply, BUFSIZE, "ACK");
-                    pipeDataStruct->exploitStatus = TRUE;
+                    if(value[0] == '1')
+                        pipeDataStruct->exploitStatus = TRUE;
+                    else
+                        pipeDataStruct->exploitStatus = FALSE;
                 } else{
                     strcpy_s(pchReply, BUFSIZE, "???");
                 }
@@ -106,9 +107,9 @@ BOOL ServerReplay(HANDLE hPipe, PipeDataStruct* pipeDataStruct, char* pchRequest
     BOOL fSuccess = ReadFile(hPipe, pchRequest, BUFSIZE, &cbBytesRead, NULL);
     if (!fSuccess || cbBytesRead == 0){
         if (GetLastError() == ERROR_BROKEN_PIPE)
-            printf("\t[i] Client disconnected.\n");
+            printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Client disconnected.\n");
         else
-            printf("\t[x] ReadFile failed, GLE=%d.\n", GetLastError());
+            printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "ReadFile failed");
         return FALSE;
     }
     // Process the incoming message.
@@ -117,7 +118,7 @@ BOOL ServerReplay(HANDLE hPipe, PipeDataStruct* pipeDataStruct, char* pchRequest
     // Write the reply to the pipe. 
     fSuccess = WriteFile(hPipe, pchReply, cbReplyBytes, &cbWritten, NULL);
     if (!fSuccess || cbReplyBytes != cbWritten){
-        printf("\t[x] WriteFile failed, GLE=%d.\n", GetLastError());
+        printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "WriteFile failed");
         return FALSE;
     }
     return TRUE;
@@ -134,13 +135,13 @@ BOOL SendInfoPipe(PipeDataStruct* pipeDataStruct, const char* lpszPipename, cons
             HANDLE hHeap = GetProcessHeap();
             char* pchRequest = NULL, * pchReply = NULL;
             if (HeapAllocF(hHeap, &pchRequest, &pchReply)){
-                DWORD cbBytesRead = 0, cbReplyBytes = 0, cbWritten = 0;
+                //DWORD cbBytesRead = 0, cbReplyBytes = 0, cbWritten = 0;
 
-                printf("\t[i] Client connected.\n");
+                printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Client connected.\n");
                 if (!AuthClient(hPipe, password, pchRequest, pchReply)){
                     return FALSE;
                 }
-                printf("\t[i] Client authenticate successfully !\n");
+                printMsg(STATUS_OK, LEVEL_DEFAULT, "Client authenticate successfully !\n");
 
 
                 // Loop until done reading
@@ -156,6 +157,6 @@ BOOL SendInfoPipe(PipeDataStruct* pipeDataStruct, const char* lpszPipename, cons
             }
         }
     } else
-        printf("[x] CreateNamedPipe failed, GLE=%d.\n", GetLastError());
+        printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "CreateNamedPipe failed");
     return TRUE;
 }

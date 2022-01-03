@@ -21,9 +21,9 @@ BOOL checkKey(const char* subKeyTab) {
 	HKEY hKey;
 	LSTATUS regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
 	if (ERROR_FILE_NOT_FOUND == regKey) {
-		printMsg(STATUS_INFO, LEVEL_VERBOSE, "Creating registry key %s\n", subKeyTab);
+		printMsg(STATUS_INFO2, LEVEL_VERBOSE, "Creating registry key %s\n", subKeyTab);
 		if (RegCreateKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS) {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Critical fail RegCreateKeyExA");
+			printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Critical fail RegCreateKeyExA");
 			return FALSE;
 		}
 	}
@@ -74,10 +74,10 @@ BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
 
 	if (lResult != ERROR_SUCCESS) {
 		if (lResult == ERROR_FILE_NOT_FOUND) {
-			printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Key not found.\n");
+			printMsg(STATUS_WARNING2, LEVEL_DEFAULT, "Key not found.\n");
 			return TRUE;
 		}else {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Error opening key");
+			printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error opening key");
 			return FALSE;
 		}
 	}
@@ -252,4 +252,14 @@ BOOL CheckStrMatch(char* str1, const char* str2) {
 		free(temp1);
 	}
 	return returnVal;
+}
+
+BOOL initWSAS(){
+	WSADATA wsaData;
+	int WSAStartupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (WSAStartupResult != 0){
+		printf("[x] WSAStartup failed: %d.\n", WSAStartupResult);
+		return FALSE;
+	}
+	return TRUE;
 }

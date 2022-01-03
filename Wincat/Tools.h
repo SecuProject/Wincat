@@ -33,4 +33,6 @@ VOID GenRandDriverName(char* string, UINT len);
 VOID ToLower(char* str1, size_t sizeStr1, char* str2);
 BOOL CheckStrMatch(char* str1, const char* str2);
 
+BOOL initWSAS();
+
 #endif

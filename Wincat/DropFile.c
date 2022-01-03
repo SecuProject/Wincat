@@ -187,9 +187,9 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
         return FALSE;
 	
     if(fileStruc.isExe || !isDirPs)
-	    swprintf_s(pathFile, (MAX_PATH +1) * sizeof(WCHAR), L"%s\\%s", defaultDropPath, fileStruc.filename);
+	    swprintf_s(pathFile, (MAX_PATH +1), L"%s\\%s", defaultDropPath, fileStruc.filename);
     else
-        swprintf_s(pathFile, (MAX_PATH + 1) * sizeof(WCHAR), L"%s\\%s", defaultPsDropPath, fileStruc.filename);
+        swprintf_s(pathFile, (MAX_PATH + 1), L"%s\\%s", defaultPsDropPath, fileStruc.filename);
 
 
 

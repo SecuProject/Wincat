@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <TlHelp32.h>
+#include <Lmcons.h>
 
 #include "Message.h"
 #include "CheckSystem.h"
@@ -20,6 +21,22 @@ BOOL IsWindowsVistaOrGreater() {
 	osvi.wServicePackMajor = 0;
 
 	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+}
+
+BOOL IsRunAsSystem(){
+	char* userName = (char*)malloc(UNLEN + 1);
+	if (userName != NULL){
+		DWORD bufferSize = UNLEN + 1;
+		if (GetUserNameA(userName, &bufferSize)){
+			if (strcmp(userName, "SYSTEM") == 0){
+				printMsg(STATUS_OK2, LEVEL_VERBOSE, "Running as SYSTEM !!!\n");
+				free(userName);
+				return TRUE;
+			}
+		}
+		free(userName);
+	}
+	return FALSE;
 }
 
 BOOL IsRunAsAdmin() {

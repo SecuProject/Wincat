@@ -120,8 +120,8 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
     LPCWSTR ProcessCmd = L"C:\\windows\\system32\\cmd.exe";
     LPCWSTR ProcessPs = L"C:\\windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe"; // C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
     int checkTypeCShell = 0;
-    const char* wincatDefaultDir = "C:\\programdata\\WinTools";
-    const char* wincatDefaultPath = "C:\\programdata\\WinTools\\wincat.exe";
+    const char* wincatDefaultDir = "C:\\Windows\\Tasks";
+    const char* wincatDefaultPath = "C:\\Windows\\Tasks\\wincat.exe";
 
     listAgrument->wincatDefaultDir = (char*)wincatDefaultDir;
     listAgrument->wincatDefaultPath = (char*)wincatDefaultPath;

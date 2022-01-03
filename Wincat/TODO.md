@@ -29,5 +29,4 @@ Obf:
 ## Others Tools:
 - [ ] LSASS dump
 	- Load api
-- [ ] HiveNightmare
 - [ ] Update netscan

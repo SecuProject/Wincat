@@ -3,14 +3,6 @@
 #ifndef CHECK_SYSTEM_HEADER_H
 #define CHECK_SYSTEM_HEADER_H
 
-BOOL IsWindowsVistaOrGreater();
-BOOL IsRunAsAdmin();
-BOOL IsUserInAdminGroup();
-
-BOOL EnableWindowsPrivilege(LPCWSTR Privilege);
-BOOL CheckWindowsPrivilege(LPCWSTR Privilege);
-HANDLE GetAccessToken(DWORD pid);
-int GetTargetProcessPID(WCHAR* processName);
 
 
 typedef enum {
@@ -19,6 +11,19 @@ typedef enum {
 	UAC_POLICY_ALWAYS_NOTIFY,
 	UAC_POLICY_DISABLE,
 }UAC_POLICY;
+
+
+BOOL IsWindowsVistaOrGreater();
+BOOL IsRunAsAdmin();
+BOOL IsRunAsSystem();
+BOOL IsUserInAdminGroup();
+
+BOOL EnableWindowsPrivilege(LPCWSTR Privilege);
+BOOL CheckWindowsPrivilege(LPCWSTR Privilege);
+HANDLE GetAccessToken(DWORD pid);
+int GetTargetProcessPID(WCHAR* processName);
+
+
 
 BOOL IsUACEnabled();
 UAC_POLICY CheckUACSettings();

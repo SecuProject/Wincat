@@ -279,8 +279,10 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="Message.c" />
     <ClCompile Include="MgArguments.c" />
+    <ClCompile Include="MgService.c" />
     <ClCompile Include="PipeServer.c" />
     <ClCompile Include="PrintNightmareLPE.c" />
+    <ClCompile Include="PrivEsc.c" />
     <ClCompile Include="ProtectProcess.c" />
     <ClCompile Include="ReverseHttp.c" />
     <ClCompile Include="RunAs.c" />
@@ -303,6 +305,7 @@
     <ClInclude Include="GetSystem.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MgArguments.h" />
+    <ClInclude Include="MgService.h" />
     <ClInclude Include="PeFile\accesschk64.h" />
     <ClInclude Include="PeFile\accesschk86.h" />
     <ClInclude Include="PeFile\chiselx64.h" />
@@ -320,6 +323,7 @@
     <ClInclude Include="PeFile\winPEASx86.h" />
     <ClInclude Include="PipeServer.h" />
     <ClInclude Include="PrintNightmareLPE.h" />
+    <ClInclude Include="PrivEsc.h" />
     <ClInclude Include="ProtectProcess.h" />
     <ClInclude Include="PsScript\ADRecon.h" />
     <ClInclude Include="PsScript\PowerUp.h" />

@@ -59,7 +59,7 @@ CHAR OriginalBytes[50];
 
 VOID HookLoadDll64(LPVOID lpAddr) {
     DWORD oldProtect;// , oldOldProtect;
-    void* hLdrLoadDll = &_LdrLoadDll;
+    //void* hLdrLoadDll = &_LdrLoadDll;
 
     // our trampoline 
     unsigned char patch[] = {
@@ -82,7 +82,7 @@ VOID HookLoadDll64(LPVOID lpAddr) {
 #else
 VOID HookLoadDll32(LPVOID lpAddr) {
     DWORD oldProtect;// , oldOldProtect;
-    void* hLdrLoadDll = &_LdrLoadDll;
+    //void* hLdrLoadDll = &_LdrLoadDll;
 
     // our trampoline 
     unsigned char patch[6] = {
@@ -195,14 +195,13 @@ BOOL CheckForDebugger(VOID) {
     const UINT ProcessDebugPort = 7;
 
     pfnNtQueryInformationProcess NtQueryInformationProcess = NULL;
-    NTSTATUS status;
     DWORD isDebuggerPresent = 0;
     HMODULE hNtDll = LoadLibrary(TEXT("ntdll.dll"));
 
     if (NULL != hNtDll) {
         NtQueryInformationProcess = (pfnNtQueryInformationProcess)GetProcAddress(hNtDll, "NtQueryInformationProcess");
         if (NULL != NtQueryInformationProcess) {
-            status = NtQueryInformationProcess(GetCurrentProcess(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
+            NTSTATUS status = NtQueryInformationProcess(GetCurrentProcess(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
             return status == 0x0 && isDebuggerPresent != 0;
         }
     }

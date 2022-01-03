@@ -74,11 +74,11 @@ BOOL ConnectServerPipeLow(HANDLE* pHanPipe, PipeDataStruct* pipeDataStruct){
     const CHAR* pipeName = "\\\\.\\pipe\\mynamedpipeLow";
 
     if (ConnectServerPipe(&hPipe, pipeName)){
-        const char* password = "ekttKwf3PFzRCc9egZ5AKfd8FKvGjRu3DrHCTdwT5YKCk2dm9rSxByFzFNKb";
         DWORD dwMode = PIPE_READMODE_MESSAGE;
 
         if (SetNamedPipeHandleState(hPipe, &dwMode, NULL, NULL)){
             CHAR  chBuf[BUFSIZE];
+            const char* password = "ekttKwf3PFzRCc9egZ5AKfd8FKvGjRu3DrHCTdwT5YKCk2dm9rSxByFzFNKb";
 
             if (RequestInfoFromServer(hPipe, (char*)password, chBuf) && MATCH("AUTH_OK", chBuf)){
                 RequestInfoFromServer(hPipe, "GET_IP_ADDRESS", pipeDataStruct->ipAddress);
@@ -100,12 +100,12 @@ BOOL ConnectSernerPipeHight(PipeDataStruct pipeDataStruct){
     const CHAR* pipeName = "\\\\.\\pipe\\mynamedpipeHigh";
 
     if (ConnectServerPipe(&hPipe, pipeName)){
-        const char* password = "SeMf523hqsXxaAy8bUaCRPbW62UT7R4ybXqJZjNVDnKya9ggXJ6UjKku77mB";
         DWORD dwMode = PIPE_READMODE_MESSAGE;
 
         if (SetNamedPipeHandleState(hPipe, &dwMode, NULL, NULL)){
             CHAR  input[BUFSIZE];
             CHAR  output[BUFSIZE];
+            const char* password = "SeMf523hqsXxaAy8bUaCRPbW62UT7R4ybXqJZjNVDnKya9ggXJ6UjKku77mB";
 
             if (RequestInfoFromServer(hPipe, (char*)password, output) && MATCH("AUTH_OK", output)){
                 sprintf_s(input, BUFSIZE, "SET_IP_ADDRESS %s", pipeDataStruct.ipAddress);
@@ -131,7 +131,8 @@ BOOL CreateProcessWincat(char* pathExeToRun){
     ZeroMemory(&pi, sizeof(pi));
 
     //DWORD creationFlags = DETACHED_PROCESS;
-    DWORD creationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW;
+    //DWORD creationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW;
+    DWORD creationFlags = NORMAL_PRIORITY_CLASS | CREATE_NEW_CONSOLE | CREATE_NEW_PROCESS_GROUP;
 
     if (!CreateProcessA(NULL, pathExeToRun, NULL, NULL, FALSE, creationFlags, NULL, NULL, &si, &pi)){
         printf("CreateProcess failed (%d).\n", GetLastError());

