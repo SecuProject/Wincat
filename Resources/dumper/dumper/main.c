@@ -1,3 +1,7 @@
+#include <Windows.h>
+#include <stdio.h>
+#include <DbgHelp.h>
+
 
 #define IFEO_REG_KEY "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\lsass.exe"
 #define SILENT_PROCESS_EXIT_REG_KEY "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\SilentProcessExit\\lsass.exe"

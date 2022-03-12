@@ -23,6 +23,7 @@
 	#include "dumper64.h"
 	#include "NetworkInfoGatherx64.h"
 	#include "TestAvEicarx64.h"
+    #include "killdefenderx64.h"
 #else
 	#include "winPEASx86.h"
 	#include "ligolo_ng_agent86.h"
@@ -31,8 +32,8 @@
 	#include "dumper86.h"
     #include "NetworkInfoGather86.h"
     #include "TestAvEicarx86.h"
+    #include "killdefenderx86.h"
 #endif
-
 
 
 StrucFile fileStruc[] = {
@@ -45,6 +46,7 @@ StrucFile fileStruc[] = {
 	{L"NetworkInfoGatherx64.exe",NetworkInfoGatherx64   ,FILE_SIZE_NETWORKINFOGATHERX64 ,TRUE,  TRUE},		// 0.89 MB
 	{L"ligolo_ng_agent64.exe"	,ligolo_ng_agent64      ,FILE_SIZE_LIGOLO_NG_AGENT64    ,TRUE,  TRUE},		// 1.449 MB
 	{L"TestAvEicarx64.exe"	    ,TestAvEicarx64         ,FILE_SIZE_TESTAVEICARX64       ,TRUE,  TRUE},		// 70 kb
+	{L"killdefenderx64.exe"	    ,killdefenderx64         ,FILE_SIZE_KILLDEFENDERX64     ,TRUE,  TRUE},		// 1.488 MB
 #else
 	{L"accesschk.exe"	        ,accesschk86            ,FILE_SIZE_ACCESSCHK86          ,TRUE,  TRUE},	    // 0.21 MB
 	{L"winPEAS.exe"		        ,winPEASx86	            ,FILE_SIZE_WINPEASX86           ,TRUE,  FALSE},	    // 0.47 MB
@@ -53,6 +55,7 @@ StrucFile fileStruc[] = {
     {L"NetworkInfoGather.exe"	,NetworkInfoGather86    ,FILE_SIZE_NETWORKINFOGATHER86  ,TRUE,  TRUE},		// 0.89 MB
     {L"ligolo_ng_agent.exe"	    ,ligolo_ng_agent86      ,FILE_SIZE_LIGOLO_NG_AGENT86    ,TRUE,  TRUE},		// 1.449 MB
     {L"TestAvEicar.exe"	        ,TestAvEicarx86         ,FILE_SIZE_TESTAVEICARX86       ,TRUE,  TRUE},		// 
+    {L"killdefender.exe"	    ,killdefenderx86        ,FILE_SIZE_KILLDEFENDERX86      ,TRUE,  TRUE},		// 70 kb
 #endif
     {L"SharpHound.exe"	        ,SharpHound             ,FILE_SIZE_SHARPHOUND           ,TRUE,  FALSE},	    //  732 KB
 

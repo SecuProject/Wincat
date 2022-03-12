@@ -314,6 +314,12 @@
     <ClInclude Include="PrivEsc.h">
       <Filter>Source Files\GetSystem</Filter>
     </ClInclude>
+    <ClInclude Include="PeFile\killdefenderx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\killdefenderx86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.md">

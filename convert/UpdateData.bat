@@ -9,9 +9,9 @@ rem https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk
 
 echo [-] Stating to download tools
 echo     [+] Downloading winPEAS 32
-%wget% https://github.com/carlospolop/PEASS-ng/raw/master/winPEAS/winPEASexe/binaries/x86/Release/winPEASx86.exe -O exeX86/winPEASx86.exe
+%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220310/winPEASx86_ofs.exe -O exeX86/winPEASx86.exe
 echo     [+] Downloading winPEAS 64
-%wget% https://github.com/carlospolop/PEASS-ng/raw/master/winPEAS/winPEASexe/binaries/x64/Release/winPEASx64.exe -O exeX64/winPEASx64.exe
+%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220310/winPEASx64_ofs.exe -O exeX64/winPEASx64.exe
 echo     [+] Downloading SharpHound
 %wget% https://github.com/BloodHoundAD/BloodHound/blob/master/Ingestors/SharpHound.exe?raw=true -O exeAll/SharpHound.exe
 echo     [+] Downloading windows privesc check2
@@ -40,4 +40,5 @@ tar -xf ligolo-ng_agent64.zip
 move agent.exe ../exeX64/ligolo_ng_agent64.exe
 cd ..
 rmdir temp /s /q
-echo "[+] Done !"
+echo [+] Done !
+pause

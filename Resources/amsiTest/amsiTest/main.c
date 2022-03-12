@@ -206,6 +206,7 @@ BOOL testVersion2() {
 
 
 int main() {
+	//testVersion1();
 	testVersion2();
 	system("pause");
 	return FALSE;

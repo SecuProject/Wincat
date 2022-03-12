@@ -89,9 +89,11 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\taccesschk\tSysinternals\t\tCheck access permission for specific users or groups.\n");
     printf("\twinpeas\t\tWinPEAS(%s)\t\tPrivilege Escalation Awesome Scripts SUITE.\n", isX64 ? "x64" : "x86");
     printf("\tchisel\t\tChisel(%s)\t\tA fast TCP tunnel over HTTP.\n", isX64 ? "x64" : "x86");
+    
     printf("\tlsass\t\tCustom tools(%s)\tDump process lsass.\n", isX64 ? "x64" : "x86");
     printf("\tnetIG\t\tCustom tools(%s)\tPerform a network scan and gather information.\n", isX64 ? "x64" : "x86");
     printf("\ttestav\t\tCustom tools(%s)\tTest EDR detection with eicar files\n", isX64 ? "x64" : "x86");
+    
     printf("\tligolong\tligolo-ng\t\tTunneling like a VPN.\n");
     printf("\tshound\t\tSharpHound\t\tBloodHound Ingestor.\n");
     printf("\tpowerup\t\tPowershell\t\tTool to assist with LPE.\n");

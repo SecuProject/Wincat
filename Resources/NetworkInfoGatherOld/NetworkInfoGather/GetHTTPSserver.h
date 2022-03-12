@@ -1,1 +1,0 @@
-BOOL GetHTTPSserver(char* ipAddress, int port, char* serverResponce, FILE* pFile);

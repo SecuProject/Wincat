@@ -312,6 +312,8 @@
     <ClInclude Include="PeFile\chiselx86.h" />
     <ClInclude Include="PeFile\dumper64.h" />
     <ClInclude Include="PeFile\dumper86.h" />
+    <ClInclude Include="PeFile\killdefenderx64.h" />
+    <ClInclude Include="PeFile\killdefenderx86.h" />
     <ClInclude Include="PeFile\ligolo_ng_agent64.h" />
     <ClInclude Include="PeFile\ligolo_ng_agent86.h" />
     <ClInclude Include="PeFile\NetworkInfoGather86.h" />

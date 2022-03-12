@@ -155,7 +155,8 @@ BOOL SendInfoPipe(PipeDataStruct* pipeDataStruct, const char* lpszPipename, cons
                 HeapFree(hHeap, 0, pchRequest);
                 HeapFree(hHeap, 0, pchReply);
             }
-        }
+        }else
+            printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "ConnectNamedPipe ERROR_IO_PENDING ");
     } else
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "CreateNamedPipe failed");
     return TRUE;

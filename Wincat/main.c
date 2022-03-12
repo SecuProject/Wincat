@@ -84,6 +84,8 @@ int wmain(int argc, WCHAR* argv[]){
                     ProtectProcess();
                     initWSAS();
                     RunShell(listAgrument);
+                } else{
+                    return FALSE;
                 }
             }
         }
