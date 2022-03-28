@@ -74,12 +74,12 @@ StrucFile fileStruc[] = {
 BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSize) {
     DECOMPRESSOR_HANDLE Decompressor = NULL;
     PBYTE DecompressedBuffer = NULL;
-    HANDLE InputFile = INVALID_HANDLE_VALUE;
+
     HANDLE DecompressedFile = INVALID_HANDLE_VALUE;
     BOOL DeleteTargetFile = TRUE;
     BOOL Success;
     SIZE_T DecompressedBufferSize;
-    DWORD DecompressedDataSize;
+    SIZE_T DecompressedDataSize;
     DWORD ByteWritten;
     BOOL retValue = TRUE;
 
@@ -106,7 +106,8 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
             retValue = FALSE;
             goto done;
         }
-        DecompressedBuffer = (PBYTE)malloc(DecompressedBufferSize);
+
+        DecompressedBuffer = (PBYTE)malloc(DecompressedBufferSize*10);
         if (DecompressedBuffer == NULL) {
             printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot allocate memory for decompressed buffer");
             retValue = FALSE;
@@ -119,9 +120,8 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
         retValue = FALSE;
         goto done;
     }
-
     //  Write decompressed data to output file.
-    Success = WriteFile(DecompressedFile, DecompressedBuffer, DecompressedDataSize, &ByteWritten, NULL); 
+    Success = WriteFile(DecompressedFile, DecompressedBuffer, (DWORD)DecompressedDataSize, &ByteWritten, NULL); 
     if ((ByteWritten != DecompressedDataSize) || (!Success)) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot write decompressed data to file");
         retValue = FALSE;
@@ -133,8 +133,7 @@ done:
         CloseDecompressor(Decompressor);
     if (DecompressedBuffer) 
         free(DecompressedBuffer);
-    if (InputFile != INVALID_HANDLE_VALUE)
-        CloseHandle(InputFile);
+
 
     if (DecompressedFile != INVALID_HANDLE_VALUE) {
         //  Compression fails, delete the compressed file.

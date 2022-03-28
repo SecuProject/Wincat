@@ -119,8 +119,8 @@ BOOL TestPathValide(const char* pathDirecotry) {
 
 BOOL GetDefaultPath(char** ppathDirecotry, char** ppwincatDefaultPath) {
     const char* pathToTest[] = {
-        "C:\\Windows\\System32",
         "C:\\Windows\\Tasks",
+        "C:\\Windows\\System32\\Tasks",
         "C:\\Windows\\Temp\\WinTools",
         "C:\\programdata\\WinTools",
         "C:\\Users\\Public\\Documents\\WinTools"
@@ -141,7 +141,6 @@ BOOL GetDefaultPath(char** ppathDirecotry, char** ppwincatDefaultPath) {
             return FALSE;
         strcpy_s(pathDirecotry, pathDirecotrySize, pathToTest[i]);
         
-
 
         UINT wincatDefaultPathSize = (UINT)strlen(pathToTest[i]) + sizeof(programName) + 1 + 1;
         char* wincatDefaultPath = (char*)malloc(wincatDefaultPathSize);
