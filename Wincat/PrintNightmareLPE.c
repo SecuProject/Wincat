@@ -103,7 +103,10 @@ DWORD WINAPI ThreadPipeServer(LPVOID lpvParam){
 
 	if (SendInfoPipe(pPipeDataStruct, lpszPipename, password)){
 		printMsg(STATUS_TITLE, LEVEL_DEFAULT, "Result:\n");
-		printMsg(STATUS_OK2, LEVEL_DEFAULT, "Status: %i\n", pPipeDataStruct->exploitStatus);
+		if(pPipeDataStruct->exploitStatus)
+			printMsg(STATUS_OK2, LEVEL_DEFAULT, "Status: %i\n", pPipeDataStruct->exploitStatus);
+		else
+			printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Status: %i\n", pPipeDataStruct->exploitStatus);
 		return FALSE;
 	}
 	return -1;

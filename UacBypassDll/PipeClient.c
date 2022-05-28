@@ -94,7 +94,7 @@ BOOL ConnectServerPipeLow(HANDLE* pHanPipe, PipeDataStruct* pipeDataStruct){
     return FALSE;
 }
 
-BOOL ConnectSernerPipeHight(PipeDataStruct pipeDataStruct){
+BOOL ConnectServerPipeHigh(PipeDataStruct pipeDataStruct){
 
     HANDLE hPipe;
     const CHAR* pipeName = "\\\\.\\pipe\\mynamedpipeHigh";
@@ -151,7 +151,7 @@ BOOL PipeHandler(BOOL isAdmin){
         CreateProcessWincat(pipeDataStruct.pathExeToRun)){
         char* tmpBuffer = (char*)malloc(BUFSIZE);
         if (tmpBuffer != NULL){
-            if (ConnectSernerPipeHight(pipeDataStruct) && isAdmin){
+            if (ConnectServerPipeHigh(pipeDataStruct) && isAdmin){
                 RequestInfoFromServer(hPipeLow, "STATUS 1", tmpBuffer);
             } else{
                 RequestInfoFromServer(hPipeLow, "STATUS 0", tmpBuffer);

@@ -8,6 +8,7 @@
 
 BOOL ReadRegistryValue(HKEY key, char* path, char* name, LPBYTE valueOutput, DWORD valueOutputSize);
 BOOL checkKey(const char* subKeyTab);
+BOOL CheckExistKey(const char* subKeyTab);
 BOOL SetRegistryValue(HKEY key, char* path, char* name, char* value);
 BOOL DeleteRegistryKey(HKEY key, char* path, char* name);
 BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey);

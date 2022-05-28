@@ -60,10 +60,8 @@ BOOL GetAnswerToRequest(PipeDataStruct* pipeDataStruct, char* pchRequest, char* 
                 if (MATCH(pchRequest, "GET_IP_ADDRESS")){
                     strcpy_s(pchReply, BUFSIZE, pipeDataStruct->ipAddress);
                 } else if (MATCH(pchRequest, "GET_PORT")){
-                    // conver int to str !!!
-                    // pipeDataStruct.port
-                    strcpy_s(pchReply, BUFSIZE, "1337");
-                } else if (MATCH("GET_EXE_PATH", pchRequest)){
+                    sprintf_s(pchReply, BUFSIZE, "%i", pipeDataStruct->port);
+                } else if (MATCH(pchRequest, "GET_EXE_PATH")){
                     strcpy_s(pchReply, BUFSIZE, pipeDataStruct->pathExeToRun);
                 } else{
                     strcpy_s(pchReply, BUFSIZE, "???");
@@ -76,7 +74,7 @@ BOOL GetAnswerToRequest(PipeDataStruct* pipeDataStruct, char* pchRequest, char* 
                 printMsg(STATUS_OK2, LEVEL_DEFAULT, "Client SET> \"%s\"\n", value);
                 if (MATCH(setting, "SET_IP_ADDRESS")){
                     strcpy_s(pchReply, BUFSIZE, "ACK");
-                    strcpy_s(pipeDataStruct->ipAddress, 16, value);
+                    strcpy_s(pipeDataStruct->ipAddress, IP_ADDRESS_LEN, value);
                 } else if (MATCH(setting, "SET_GET_PORT")){
                     strcpy_s(pchReply, BUFSIZE, "ACK");
                     pipeDataStruct->port = atoi(value);

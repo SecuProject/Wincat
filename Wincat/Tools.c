@@ -30,7 +30,14 @@ BOOL checkKey(const char* subKeyTab) {
 	RegCloseKey(hKey);
 	return TRUE;
 }
-
+BOOL CheckExistKey(const char* subKeyTab){
+	HKEY hKey;
+	long regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
+	if (ERROR_FILE_NOT_FOUND == regKey)
+		return FALSE;
+	RegCloseKey(hKey);
+	return TRUE;
+}
 BOOL SetRegistryValue(HKEY key, char* path, char* name, char* value) {
 	BOOL returnValue = FALSE;
 	HKEY hKey;

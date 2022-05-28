@@ -113,7 +113,8 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\t\t\t\t-uac\t2: WSReset.\n");
     printf("\t\t\t\t-uac\t3: Silent Cleanup.\n");
     printf("\t\t\t\t-uac\t4: DLL hijacking - Trusted Directories. \t[DEFAULT]\n");
-    printf("\t\t\t\t-uac\t5: PrintNightmare LPE - (CVE-2021-1675)\n");
+    printf("\t\t\t\t-uac\t5: Fodhelper - CurVer\n");
+    printf("\t\t\t\t-uac\t6: PrintNightmare LPE - (CVE-2021-1675)\n");
     printf("\tdetached\tRun wincat with a new process.\n\n");
     //printf("Note:\n");
     //printf("\tThe path where the tools are drop is in '%s'.\n\n",workingDirecotry);
@@ -241,7 +242,7 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 listAgrument->GetSystem = TRUE;
                 if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
                     int tecNum = _wtoi(argv[count + 2]);
-                    if (tecNum > 0 && tecNum < 6) {
+                    if (tecNum > 0 && tecNum < 7) {
                         listAgrument->UacBypassTec = tecNum - 1;
                         count += 2;
                     }
