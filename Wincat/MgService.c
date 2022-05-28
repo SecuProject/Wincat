@@ -73,3 +73,96 @@ int StartServer(char* serviceName){
 		printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "OpenSCManager(), Open a handle to the SC Manager database failed");
 	return SERVICE_ERROR;
 }
+
+VOID PrintServiceType(DWORD dwServiceType) {
+	printf("\tType:\t\t");
+	switch (dwServiceType) {
+	case SERVICE_FILE_SYSTEM_DRIVER:
+		printf("FILE_SYSTEM_DRIVER");
+		break;
+	case SERVICE_KERNEL_DRIVER:
+		printf("KERNEL_DRIVER");
+		break;
+	case SERVICE_WIN32_OWN_PROCESS:
+		printf("WIN32_OWN_PROCESS");
+		break;
+	case SERVICE_WIN32_SHARE_PROCESS:
+		printf("WIN32_SHARE_PROCESS");
+		break;
+	default:
+		break;
+	}
+	printf(" (0x%x)\n", dwServiceType);
+}
+VOID PrintServiceStartType(DWORD dwStartType) {
+	printf("\tStart Type:\t");
+	switch (dwStartType) {
+	case SERVICE_AUTO_START:
+		printf("AUTO_START");
+		break;
+	case SERVICE_BOOT_START:
+		printf("BOOT_START");
+		break;
+	case SERVICE_DEMAND_START:
+		printf("DEMAND_START");
+		break;
+	case SERVICE_DISABLED:
+		printf("DISABLED");
+		break;
+	case SERVICE_SYSTEM_START:
+		printf("SYSTEM_START");
+		break;
+	default:
+		break;
+	}
+	printf(" (0x%x)\n", dwStartType);
+}
+BOOL CheckServiceStatusConfig(char* szSvcName, BOOL isDebug) {
+	SC_HANDLE schSCManager;
+	SC_HANDLE schService;
+	BOOL isAutoStart = FALSE;
+
+	schSCManager = OpenSCManagerA(NULL, NULL, SC_MANAGER_ENUMERATE_SERVICE);
+	if (NULL == schSCManager) {
+		printf("[x] OpenSCManager failed (%d)\n", GetLastError());
+		return FALSE;
+	}
+	schService = OpenServiceA(schSCManager, szSvcName, SERVICE_QUERY_CONFIG);
+	if (schService == NULL) {
+		printf("[x] OpenService failed (%d)\n", GetLastError());
+		CloseServiceHandle(schSCManager);
+		return FALSE;
+	}
+	// Get the configuration information.
+	LPQUERY_SERVICE_CONFIGA lpsc = NULL;
+	DWORD dwBytesNeeded, cbBufSize, dwError;
+	if (!QueryServiceConfigA(schService, NULL, 0, &dwBytesNeeded)) {
+		dwError = GetLastError();
+		if (ERROR_INSUFFICIENT_BUFFER == dwError) {
+			cbBufSize = dwBytesNeeded;
+			lpsc = (LPQUERY_SERVICE_CONFIGA)LocalAlloc(LMEM_FIXED, cbBufSize);
+			if (lpsc != NULL && QueryServiceConfigA(schService, lpsc, cbBufSize, &dwBytesNeeded)) {
+				if (isDebug) {
+					printf("[i] %s configuration:\n", szSvcName);
+					PrintServiceType(lpsc->dwServiceType);
+					PrintServiceStartType(lpsc->dwStartType);
+					//printf("\tError Control:\t0x%x\n", lpsc->dwErrorControl);
+					printf("\tBinary path:\t%s\n", lpsc->lpBinaryPathName);
+					printf("\tAccount:\t%s\n", lpsc->lpServiceStartName);
+				}
+				isAutoStart = lpsc->dwStartType & SERVICE_SYSTEM_START || lpsc->dwStartType & SERVICE_AUTO_START || lpsc->dwStartType & SERVICE_BOOT_START;
+			}
+			else
+				printf("[x] QueryServiceConfig failed (%d)", GetLastError());
+
+		}
+		else {
+			printf("[x] QueryServiceConfig failed (%d)", dwError);
+		}
+	}
+	LocalFree(lpsc);
+
+	CloseServiceHandle(schService);
+	CloseServiceHandle(schSCManager);
+	return isAutoStart;
+}

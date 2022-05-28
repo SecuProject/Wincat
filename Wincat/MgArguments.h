@@ -56,6 +56,7 @@ typedef struct Argument {
     int port;
     LPCWSTR Process;
     PAYLOAD_TYPE payloadType;
+    BOOL CheckPriEsc;
     BOOL GetSystem;
     UAC_BYPASS_TEC UacBypassTec;
     BOOL Detached;

@@ -268,11 +268,13 @@
     <ClCompile Include="Base64.c" />
     <ClCompile Include="BypassAMSI.c" />
     <ClCompile Include="BypassUac.c" />
+    <ClCompile Include="CheckCdpSvcLPE.c" />
     <ClCompile Include="CheckSystem.c" />
     <ClCompile Include="csExternalC2.c" />
     <ClCompile Include="CustomShell.c" />
     <ClCompile Include="DllHijacking.c" />
     <ClCompile Include="DropFile.c" />
+    <ClCompile Include="EasyPrivEsc.c" />
     <ClCompile Include="EDRChecker.c" />
     <ClCompile Include="GetDefaultPath.c" />
     <ClCompile Include="GetSystem.c" />
@@ -283,6 +285,7 @@
     <ClCompile Include="PipeServer.c" />
     <ClCompile Include="PrintNightmareLPE.c" />
     <ClCompile Include="PrivEsc.c" />
+    <ClCompile Include="ProcessPrivilege.c" />
     <ClCompile Include="ProtectProcess.c" />
     <ClCompile Include="ReverseHttp.c" />
     <ClCompile Include="RunAs.c" />
@@ -294,11 +297,13 @@
     <ClInclude Include="Base64.h" />
     <ClInclude Include="BypassAMSI.h" />
     <ClInclude Include="BypassUac.h" />
+    <ClInclude Include="CheckCdpSvcLPE.h" />
     <ClInclude Include="CheckSystem.h" />
     <ClInclude Include="csExternalC2.h" />
     <ClInclude Include="CustomShell.h" />
     <ClInclude Include="DllHijacking.h" />
     <ClInclude Include="DropFile.h" />
+    <ClInclude Include="EasyPrivEsc.h" />
     <ClInclude Include="EDRChecker.h" />
     <ClInclude Include="EDRNameHash.h" />
     <ClInclude Include="GetDefaultPath.h" />
@@ -326,6 +331,7 @@
     <ClInclude Include="PipeServer.h" />
     <ClInclude Include="PrintNightmareLPE.h" />
     <ClInclude Include="PrivEsc.h" />
+    <ClInclude Include="ProcessPrivilege.h" />
     <ClInclude Include="ProtectProcess.h" />
     <ClInclude Include="PsScript\ADRecon.h" />
     <ClInclude Include="PsScript\PowerUp.h" />

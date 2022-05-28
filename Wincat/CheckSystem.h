@@ -20,6 +20,8 @@ BOOL IsUserInAdminGroup();
 
 BOOL EnableWindowsPrivilege(LPCWSTR Privilege);
 BOOL CheckWindowsPrivilege(LPCWSTR Privilege);
+BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv);
+
 HANDLE GetAccessToken(DWORD pid);
 int GetTargetProcessPID(WCHAR* processName);
 

@@ -94,6 +94,15 @@
     <Filter Include="Source Files\GetSystem\MgService">
       <UniqueIdentifier>{79ae273e-2d15-4226-ae15-441f9f079ce9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\EasyPrivEsc">
+      <UniqueIdentifier>{885719d0-f410-47d3-bfa4-836291c15ba7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EasyPrivEsc\ProcessPrivilege">
+      <UniqueIdentifier>{f03d84d6-0984-42df-857a-720128eb9686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\EasyPrivEsc\CheckCdpSvcLPE">
+      <UniqueIdentifier>{f7686ad0-f79c-41a8-a6a1-bf67d675b65d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -167,6 +176,15 @@
     </ClCompile>
     <ClCompile Include="PrivEsc.c">
       <Filter>Source Files\GetSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EasyPrivEsc.c">
+      <Filter>Source Files\EasyPrivEsc</Filter>
+    </ClCompile>
+    <ClCompile Include="ProcessPrivilege.c">
+      <Filter>Source Files\EasyPrivEsc\ProcessPrivilege</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckCdpSvcLPE.c">
+      <Filter>Source Files\EasyPrivEsc\CheckCdpSvcLPE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -319,6 +337,15 @@
     </ClInclude>
     <ClInclude Include="PeFile\killdefenderx86.h">
       <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="EasyPrivEsc.h">
+      <Filter>Source Files\EasyPrivEsc</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessPrivilege.h">
+      <Filter>Source Files\EasyPrivEsc\ProcessPrivilege</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckCdpSvcLPE.h">
+      <Filter>Source Files\EasyPrivEsc\CheckCdpSvcLPE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

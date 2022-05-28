@@ -29,7 +29,7 @@ SOCKET ConnectRemoteServer(char* ipAddress, int port) {
 	SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (clientSocket == INVALID_SOCKET) {
-		printf("Could not create socket : %d", WSAGetLastError());
+		printf("[x] Could not create socket : %d", WSAGetLastError());
 		return FALSE;
 	}
 	sAddr.sin_addr.s_addr = inet_addr(ipAddress);

@@ -82,7 +82,7 @@ BOOL IsUserInAdminGroup() {
 		}
 		if (!hTokenToCheck) {
 			if (!DuplicateToken(hToken, SecurityIdentification, &hTokenToCheck)) {
-				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail of DuplicateToken");
+				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: DuplicateToken");
 				CloseHandle(hTokenToCheck);
 				CloseHandle(hToken);
 				return FALSE;
@@ -92,14 +92,14 @@ BOOL IsUserInAdminGroup() {
 		BYTE adminSID[SECURITY_MAX_SID_SIZE];
 		cbSize = sizeof(adminSID);
 		if (!CreateWellKnownSid(WinBuiltinAdministratorsSid, NULL, &adminSID, &cbSize)) {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail of CreateWellKnownSid");
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CreateWellKnownSid");
 			CloseHandle(hTokenToCheck);
 			CloseHandle(hToken);
 			return FALSE;
 		}
 
 		if (!CheckTokenMembership(hTokenToCheck, &adminSID, &fInAdminGroup)) {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail of CheckTokenMembership");
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CheckTokenMembership");
 			CloseHandle(hTokenToCheck);
 			CloseHandle(hToken);
 			return FALSE;
@@ -123,13 +123,35 @@ BOOL EnableWindowsPrivilege(LPCWSTR Privilege) {
 	tp.Privileges[0].Luid = luid;
 	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-	if (!OpenProcessToken(currentProcess, TOKEN_ALL_ACCESS, &currentToken)) return FALSE;
-	if (!AdjustTokenPrivileges(currentToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL)) return FALSE;
+	if (!OpenProcessToken(currentProcess, TOKEN_ALL_ACCESS, &currentToken)) 
+		return FALSE;
+	if (!AdjustTokenPrivileges(currentToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL)) 
+		return FALSE;
 	return TRUE;
 }
 
 
+BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv) {
+	LUID luid;
+	BOOL bRes;
+	PRIVILEGE_SET tokPrivSet;
 
+	if (!LookupPrivilegeValueA(NULL, priv, &luid)) {
+		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: LookupPrivilegeValue");
+		return FALSE;
+	}
+
+	tokPrivSet.Control = PRIVILEGE_SET_ALL_NECESSARY;
+	tokPrivSet.PrivilegeCount = 1;
+	tokPrivSet.Privilege[0].Luid = luid;
+	tokPrivSet.Privilege[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+	if (!PrivilegeCheck(hToken, &tokPrivSet, &bRes)) {
+		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: PrivilegeCheck");
+		return FALSE;
+	}
+	return bRes;
+}
 BOOL CheckWindowsPrivilege(LPCWSTR Privilege) {
 	/* Checks for Privilege and returns True or False. */
 	LUID luid;
