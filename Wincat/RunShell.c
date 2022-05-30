@@ -167,7 +167,7 @@ BOOL RunShell(Arguments listAgrument) {
 				STARTUPINFOA StartupInfo;
 				PROCESS_INFORMATION ProcessInfo;
 				printMsg(STATUS_OK, LEVEL_DEFAULT, "Connected to %s:%i\n", ipAddress, listAgrument.port);
-				SendInitInfo(mySocket);
+				SendInitInfo(mySocket, NULL);
 
 				memset(&StartupInfo, 0, sizeof(STARTUPINFOA));
 				memset(&ProcessInfo, 0, sizeof(PROCESS_INFORMATION));

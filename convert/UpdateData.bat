@@ -9,11 +9,14 @@ rem https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk
 
 echo [-] Stating to download tools
 echo     [+] Downloading winPEAS 32
-%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220310/winPEASx86_ofs.exe -O exeX86/winPEASx86.exe
+%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220529/winPEASx86_ofs.exe -O exeX86/winPEASx86.exe
 echo     [+] Downloading winPEAS 64
-%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220310/winPEASx64_ofs.exe -O exeX64/winPEASx64.exe
+%wget% https://github.com/carlospolop/PEASS-ng/releases/download/20220529/winPEASx64_ofs.exe -O exeX64/winPEASx64.exe
 echo     [+] Downloading SharpHound
-%wget% https://github.com/BloodHoundAD/BloodHound/blob/master/Ingestors/SharpHound.exe?raw=true -O exeAll/SharpHound.exe
+rem %wget% https://github.com/BloodHoundAD/BloodHound/blob/master/Ingestors/SharpHound.exe?raw=true -O exeAll/SharpHound.exe
+%wget% https://github.com/BloodHoundAD/BloodHound/blob/master/Collectors/SharpHound.exe?raw=true -O exeAll/SharpHound.exe
+copy exeAll\SharpHound.exe exeX86\SharpHound.exe
+copy exeAll\SharpHound.exe exeX64\SharpHound.exe
 echo     [+] Downloading windows privesc check2
 %wget% https://github.com/pentestmonkey/windows-privesc-check/blob/master/windows-privesc-check2.exe?raw=true -O exeAll/windowsPrivescCheck.exe
 
@@ -29,13 +32,13 @@ echo [-] Downloading powershell script
 mkdir temp
 cd temp 
 echo     [+] Downloading ligolo-ng agent 32 bit
-..\%wget% https://github.com/tnpitsecurity/ligolo-ng/releases/download/v0.2/ligolo-ng_agent_0.2_Windows_32bit.zip -O ligolo-ng_agent32.zip
+%wget% https://github.com/tnpitsecurity/ligolo-ng/releases/download/v0.3.1/ligolo-ng_agent_0.3.1_Windows_32bit.zip -O ligolo-ng_agent32.zip
 tar -xf ligolo-ng_agent32.zip
 move agent.exe ../exeX86/ligolo_ng_agent32.exe
 
 
 echo     [+] Downloading ligolo-ng agent 64 bit
-..\%wget% https://github.com/tnpitsecurity/ligolo-ng/releases/download/v0.2/ligolo-ng_agent_0.2_Windows_64bit.zip -O ligolo-ng_agent64.zip
+..\%wget% https://github.com/tnpitsecurity/ligolo-ng/releases/download/v0.3.3/ligolo-ng_agent_0.3.3_Windows_64bit.zip -O ligolo-ng_agent64.zip
 tar -xf ligolo-ng_agent64.zip
 move agent.exe ../exeX64/ligolo_ng_agent64.exe
 cd ..

@@ -130,7 +130,7 @@
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
     <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -237,7 +237,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>..\convert\Others\DefenderCheckC.exe -f E:\Projects\Wincat\x64\Release\Wincat.exe</Command>
+      <Command>..\convert\Others\WindowsDefenderCheck.exe ..\x64\Release\Wincat.exe</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|x64'">
@@ -313,7 +313,6 @@
     <ClInclude Include="MgService.h" />
     <ClInclude Include="PeFile\accesschk64.h" />
     <ClInclude Include="PeFile\accesschk86.h" />
-    <ClInclude Include="PeFile\chiselx64.h" />
     <ClInclude Include="PeFile\chiselx86.h" />
     <ClInclude Include="PeFile\dumper64.h" />
     <ClInclude Include="PeFile\dumper86.h" />
@@ -321,11 +320,15 @@
     <ClInclude Include="PeFile\killdefenderx86.h" />
     <ClInclude Include="PeFile\ligolo_ng_agent64.h" />
     <ClInclude Include="PeFile\ligolo_ng_agent86.h" />
+    <ClInclude Include="PeFile\mimikatz86.h" />
+    <ClInclude Include="PeFile\mimikatzx64.h" />
     <ClInclude Include="PeFile\NetworkInfoGather86.h" />
     <ClInclude Include="PeFile\NetworkInfoGatherx64.h" />
+    <ClInclude Include="PeFile\PsExec64.h" />
     <ClInclude Include="PeFile\SharpHound.h" />
     <ClInclude Include="PeFile\TestAvEicarx64.h" />
     <ClInclude Include="PeFile\TestAvEicarx86.h" />
+    <ClInclude Include="PeFile\Watson.h" />
     <ClInclude Include="PeFile\winPEASx64.h" />
     <ClInclude Include="PeFile\winPEASx86.h" />
     <ClInclude Include="PipeServer.h" />

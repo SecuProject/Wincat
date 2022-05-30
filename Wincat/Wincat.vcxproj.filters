@@ -194,9 +194,6 @@
     <ClInclude Include="PeFile\accesschk64.h">
       <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
     </ClInclude>
-    <ClInclude Include="PeFile\chiselx64.h">
-      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
-    </ClInclude>
     <ClInclude Include="PeFile\winPEASx64.h">
       <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
     </ClInclude>
@@ -346,6 +343,18 @@
     </ClInclude>
     <ClInclude Include="CheckCdpSvcLPE.h">
       <Filter>Source Files\EasyPrivEsc\CheckCdpSvcLPE</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\mimikatz86.h">
+      <Filter>Source Files\DropFile\PeFile\PEx86</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\mimikatzx64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\Watson.h">
+      <Filter>Source Files\DropFile\PeFile</Filter>
+    </ClInclude>
+    <ClInclude Include="PeFile\PsExec64.h">
+      <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

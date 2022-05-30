@@ -1,12 +1,13 @@
 #Remove-Item .\StructHeader.h
 
 $currentPath = (Get-Location).Path
-
+$fileHash = "AntiVirus\fileHash.csv"
+Remove-Item $fileHash 2>$null
 
 Get-ChildItem "exeX64" -Filter *.exe |Foreach-Object{
     $currentExe = $_
 
-    $name = $currentExe -replace ".exe"
+    $name = $currentExe -replace "\.exe"
     $nameUPX = "comp\"+ $name +"UPX.exe"
     $nameCAB = "comp\"+ $name +"CAB.exe"
     $headerPath = "../Wincat/PeFile/"+ $name +".h"
@@ -21,9 +22,12 @@ Get-ChildItem "exeX64" -Filter *.exe |Foreach-Object{
             Copy-Item $currentExe.FullName $nameUPX
         }
     }
-    ./Others/DefenderCheckC.exe -f "$currentPath\$nameUPX"
+
+    Get-FileHash "$currentPath\$nameUPX" | Export-Csv -Path $fileHash -NoTypeInformation -Append
+    ./Others/WindowsDefenderCheck.exe "$currentPath\$nameUPX"
+    #./Others/DefenderCheckC.exe -f "$currentPath\$nameUPX"
     ./Others/CabCompression.exe $nameUPX $nameCAB
-    ./Others/FileToHex.exe -i $nameCAB -o $headerPath -n "$name"
+    ./Others/FileToHex.exe  -i $nameCAB -o $headerPath -n "$name"
 }
 Get-ChildItem "PowershellScript" -Filter *.ps1 |Foreach-Object{
     $currentPs = $_
@@ -33,7 +37,9 @@ Get-ChildItem "PowershellScript" -Filter *.ps1 |Foreach-Object{
     $headerPath = "../Wincat/PsScript/"+ $name +".h"
     Remove-Item $headerPath 2>$null
     
-    ./Others/DefenderCheckC.exe -f $currentPs.FullName
+    Get-FileHash $currentPs.FullName | Export-Csv -Path $fileHash -NoTypeInformation -Append
+    ./Others/WindowsDefenderCheck.exe $currentPs.FullName
+    #./Others/DefenderCheckC.exe -f $currentPs.FullName
     ./Others/CabCompression.exe $currentPs.FullName $nameCAB
     ./Others/FileToHex.exe -i $nameCAB -o $headerPath -n "$name"
 }

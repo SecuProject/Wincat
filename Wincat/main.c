@@ -45,7 +45,6 @@ BOOL CopyWinNC(const char* wincatDefaultPath) {
 int wmain(int argc, WCHAR* argv[]){
     Arguments listAgrument;
 
-
     //////////////////// Protect process ///////////////////
     //  (Anti-DLL injection)
     //SetHook();
@@ -73,8 +72,6 @@ int wmain(int argc, WCHAR* argv[]){
     //
     //////////////////// Protect process ///////////////////
 
-
-
     if (!GetArguments(argc, argv, &listAgrument)) {
         if (IsRunAsAdmin()) {
             if (isArgHostSet()) {
@@ -92,8 +89,6 @@ int wmain(int argc, WCHAR* argv[]){
         }
         return TRUE;
     }
-    
-
 
     ////////////////////// Copy Wincat /////////////////////
     // 

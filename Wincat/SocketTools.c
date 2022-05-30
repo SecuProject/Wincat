@@ -1,13 +1,56 @@
 #include <WinSock2.h>
 #include <stdio.h>
+#include <	ws2tcpip.h>
 
+#include "CheckSystem.h"
 #include "SocketTools.h"
 #include "Message.h"
+#include "Tools.h"
 
 #define UNLEN					256
 #define BUF_SIZE				1000
 
-BOOL SendInitInfo(SOCKET mysocket) {
+
+BOOL GetIpAddress(SOCKET mysocket,char* ipAddress) {
+	struct sockaddr_in name;
+	int namelen = sizeof(struct sockaddr_in);
+
+	if (getsockname(mysocket, (struct sockaddr*)&name, &namelen) != SOCKET_ERROR) {
+		const char* p = inet_ntop(AF_INET, &name.sin_addr, ipAddress, IP_ADDRESS_SIZE);
+		return p != NULL;
+
+	}
+	return FALSE;
+}
+
+// hToken
+BOOL SendInitInfo(SOCKET mysocket, HANDLE hToken) {
+	AccountInformation* accountInformation = NULL;
+
+	if (GetAccountInformation(hToken, &accountInformation) && accountInformation != NULL) {
+		char* sendBuffer = (char*)malloc(BUF_SIZE);
+		if (sendBuffer != NULL) {
+			char* ipAddress = (char*)malloc(IP_ADDRESS_SIZE);
+			if (ipAddress != NULL) {
+				int sizeBuffer;
+
+				if (GetIpAddress(mysocket, ipAddress))
+					sizeBuffer = sprintf_s(sendBuffer, BUF_SIZE, "[+] Connected as %s\\%s from %s\n\n", accountInformation->DomainName, accountInformation->UserName, ipAddress);
+				else
+					sizeBuffer = sprintf_s(sendBuffer, BUF_SIZE, "[+] Connected as %s\\%s\n\n", accountInformation->DomainName, accountInformation->UserName);
+				send(mysocket, sendBuffer, sizeBuffer, 0);
+				free(ipAddress);
+			}
+			free(sendBuffer);
+			free(accountInformation);
+			return TRUE;
+		}
+		free(accountInformation);
+	}
+	return FALSE;
+}
+/*
+BOOL SendInitInfo(SOCKET mysocket, HANDLE hToken) {
 	char* userName;
 	char* hostname;
 	int sizeBufUsername = UNLEN + 1;

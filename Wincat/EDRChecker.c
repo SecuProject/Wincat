@@ -64,7 +64,7 @@ BOOL EDRChecker() {
 
 			ToLower(pe32.szExeFile, outputSize, buffer);
 			if (crc32(buffer, outputSize) == processNameHash[j])
-				printMsg(STATUS_WARNING, LEVEL_DEFAULT, "EDR Detected: %s (%i)\n", pe32.szExeFile, pe32.th32ProcessID);
+				printMsg(STATUS_WARNING2, LEVEL_DEFAULT, "EDR Detected: %s (%i)\n", pe32.szExeFile, pe32.th32ProcessID);
 		}
 	} while (Process32Next(hProcessSnap, &pe32));
 

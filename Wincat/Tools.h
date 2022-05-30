@@ -3,8 +3,8 @@
 #ifndef TOOLS_HEADER_H
 #define TOOLS_HEADER_H
 
-//#define IP_ADDRESS_SIZE		40
 #define IP_ADDRESS_SIZE		16
+#define NOT_FOUND			-1
 
 BOOL ReadRegistryValue(HKEY key, char* path, char* name, LPBYTE valueOutput, DWORD valueOutputSize);
 BOOL checkKey(const char* subKeyTab);
@@ -33,6 +33,7 @@ VOID GenRandDriverName(char* string, UINT len);
 
 VOID ToLower(char* str1, size_t sizeStr1, char* str2);
 BOOL CheckStrMatch(char* str1, const char* str2);
+int isStrInTable(char* string, char** strTable, int tableSize);
 
 BOOL initWSAS();
 

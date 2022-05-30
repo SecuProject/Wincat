@@ -1,9 +1,9 @@
 #include <windows.h>
 #include <stdio.h>
-#include <sddl.h>
 
 #include "Message.h"
 #include "CheckSystem.h"
+#include "Tools.h"
 
 
 BOOL CheckUserPrivilege(HANDLE hToken) {
@@ -12,7 +12,16 @@ BOOL CheckUserPrivilege(HANDLE hToken) {
 		"SeImpersonatePrivilege",
 		"SeAssignPrimaryTokenPrivilege",
 		"SeBackupPrivilege",
-		"SeRestorePrivilege"
+		"SeRestorePrivilege",
+
+		// TO CHECK -> https://github.com/hatRiot/token-priv/tree/master/poptoke/poptoke
+		"SeCreateTokenPrivilege",
+		"SeLoadDriver",
+		"SeTakeOwnershipPrivilege",
+		"SeTcbPrivilege",
+		"SeDebugPrivilege",
+		"SeSecurityPrivilege",
+
 	};
 
 	printMsg(STATUS_TITLE, LEVEL_VERBOSE, "Check User Privilege\n");
@@ -24,47 +33,22 @@ BOOL CheckUserPrivilege(HANDLE hToken) {
 }
 
 BOOL IsTokenService(HANDLE hToken) {
-	DWORD tokenSize = 0;
-	TOKEN_USER* User;
+	AccountInformation* accountInformation = NULL;
 
-	if (!GetTokenInformation(hToken, TokenUser, NULL, 0, &tokenSize)) {
-		DWORD dwResult = GetLastError();
-		if (dwResult != ERROR_INSUFFICIENT_BUFFER) {
-			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "GetTokenInformation Error");
-			return FALSE;
+	if (GetAccountInformation(hToken, &accountInformation) && accountInformation != NULL) {
+		const char* targetUsers[] = {
+			"NETWORK SERVICE",
+			"LOCAL SERVICE",
+			"SERVICE",
+			"SYSTEM",
+		};
+		int iUser = isStrInTable(accountInformation->UserName, (char**)targetUsers, sizeof(targetUsers) / sizeof(char*));
+		if (iUser != NOT_FOUND) {
+			printMsg(STATUS_OK, LEVEL_DEFAULT, "User account:\t%s\\%s\n", accountInformation->DomainName, accountInformation->UserName);
+			printMsg(STATUS_OK, LEVEL_DEFAULT, "User SID:\t\t%s\n", accountInformation->SID);
+			return TRUE;
 		}
+		free(accountInformation);
 	}
-	User = (TOKEN_USER*)malloc(tokenSize);
-	if (User != NULL) {
-		if (GetTokenInformation(hToken, TokenUser, User, tokenSize, &tokenSize)) {
-			SID_NAME_USE SidType;
-			char UserName[64], DomainName[64];
-			DWORD UserSize = 64 - 1, DomainSize = 64 - 1;
-
-			if (LookupAccountSidA(NULL, User->User.Sid, UserName, &UserSize, DomainName, &DomainSize, &SidType)) {
-				const char* targetUsers[] = {
-					"NETWORK SERVICE",
-					"LOCAL SERVICE",
-					"SYSTEM"
-				};
-
-				for (int i = 0; i < sizeof(targetUsers) / sizeof(char*); i++) {
-					if (strcmp(UserName, (char*)targetUsers[i]) == 0) {
-						LPSTR lpSID = NULL;
-
-						printMsg(STATUS_TITLE, LEVEL_DEFAULT, "Check Token Service\n");
-						if (ConvertSidToStringSidA(User->User.Sid, &lpSID)) {
-							printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Account SID: %s\n", lpSID);
-							LocalFree(lpSID);
-						}
-						else
-							printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Account SID: N/A\n");
-						printMsg(STATUS_WARNING2, LEVEL_DEFAULT, "User account: %s\\%s\n", DomainName, UserName);
-					}
-				}
-			}
-		}
-		free(User);
-	}
-	return TRUE;
+	return FALSE;
 }

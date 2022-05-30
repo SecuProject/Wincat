@@ -7,6 +7,12 @@
 #include "ProcessPrivilege.h"
 #include "CheckCdpSvcLPE.h"
 
+typedef struct {
+	BOOL IsAlwaysInstallElevated;
+	BOOL IsCdpSvcLPE;
+	BOOL IsUserPrivilege;
+	BOOL IsTokenService;
+}EasyPriEsc;
 
 BOOL IsAlwaysInstallElevated() {
 	const char regKey[] = "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer";
@@ -25,18 +31,17 @@ BOOL IsAlwaysInstallElevated() {
 
 BOOL EasyPrivEsc() {
 	HANDLE hToken;
+	EasyPriEsc easyPriEsc;
 
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ALL_ACCESS, &hToken)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to OpenProcessToken");
 		return FALSE;
 	}
 
-	CheckUserPrivilege(hToken);
-	IsTokenService(hToken);
-
-	CheckCdpSvcLPE();
-
-	IsAlwaysInstallElevated();
+	easyPriEsc.IsTokenService = IsTokenService(hToken);
+	easyPriEsc.IsUserPrivilege = CheckUserPrivilege(hToken);
+	easyPriEsc.IsCdpSvcLPE = CheckCdpSvcLPE();
+	easyPriEsc.IsAlwaysInstallElevated = IsAlwaysInstallElevated();
 
 	CloseHandle(hToken);
 	return TRUE;

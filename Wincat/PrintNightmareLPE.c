@@ -74,16 +74,18 @@ BOOL PrintNightmareLPE(char* dllPath){
 			DWORD lastError = GetLastError();
 			switch (lastError){
 			case ERROR_PRINTER_DRIVER_BLOCKED:
-				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx: PRINTER DRIVER BLOCKED \n");
+				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx: PRINTER DRIVER BLOCKED");
 				break;
 			case ERROR_PRINTER_DRIVER_WARNED:
-				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx: PRINTER DRIVER WARNED \n");
+				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx: PRINTER DRIVER WARNED");
+				break;
+			case RPC_E_ACCESS_DENIED:
+				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx: RPC_E_REMOTE_DISABLED");
 				break;
 			case RPC_S_CALL_FAILED:
 				// OK
 				free(pInfo);
 				return TRUE;
-				break;
 			default:
 				printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Error with AddPrinterDriverEx");
 				break;

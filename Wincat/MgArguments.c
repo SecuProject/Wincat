@@ -85,15 +85,20 @@ VOID PrintMenu(char* workingDirecotry) {
 
     printf("File to drop:\n");
     printf("\taccesschk\tSysinternals\t\tCheck access permission for specific users or groups.\n");
+    printf("\tpsexec\t\tSysinternals\t\tUtilities like Telnet and remote control programs.\n");
     printf("\twinpeas\t\tWinPEAS(%s)\t\tPrivilege Escalation Awesome Scripts SUITE.\n", isX64 ? "x64" : "x86");
-    printf("\tchisel\t\tChisel(%s)\t\tA fast TCP tunnel over HTTP.\n", isX64 ? "x64" : "x86");
+    printf("\tmimi\t\tmimikatz(%s)\t\tAllows users to view and save authentication credentials.\n", isX64 ? "x64" : "x86");
+    //printf("\tchisel\t\tChisel(%s)\t\tA fast TCP tunnel over HTTP.\n", isX64 ? "x64" : "x86");
     
     printf("\tlsass\t\tCustom tools(%s)\tDump process lsass.\n", isX64 ? "x64" : "x86");
     printf("\tnetIG\t\tCustom tools(%s)\tPerform a network scan and gather information.\n", isX64 ? "x64" : "x86");
     printf("\ttestav\t\tCustom tools(%s)\tTest EDR detection with eicar files\n", isX64 ? "x64" : "x86");
+    printf("\tkilldef\t\tCustom tools(%s)\tTools that will neutralize windows defender\n", isX64 ? "x64" : "x86");
     
     printf("\tligolong\tligolo-ng\t\tTunneling like a VPN.\n");
     printf("\tshound\t\tSharpHound\t\tBloodHound Ingestor.\n");
+    printf("\twatson\t\tWatson\t\t\tEnumerate missing KBs and suggest exploits for Priv Esc.\n");
+
     printf("\tpowerup\t\tPowershell\t\tTool to assist with LPE.\n");
     printf("\tprivesccheck\tPowershell\t\tTool to assist with LPE.\n");
     printf("\tsherlock\tPowershell\t\tTool to quickly find missing software patches for LPE.\n");
@@ -117,6 +122,45 @@ VOID PrintMenu(char* workingDirecotry) {
     printf("\t-c\t\tChecking for easy privilege escalation\n\n");
     //printf("Note:\n");
     //printf("\tThe path where the tools are drop is in '%s'.\n\n",workingDirecotry);
+}
+ToDropEnum CheckArgDrop(WCHAR* argStr) {
+    if (MATCHW(argStr, L"accesschk"))
+        return DropAccesschk;
+    else if (MATCHW(argStr, L"winpeas"))
+        return DropWinPEAS;
+    /* else if (MATCHW(argStr, L"chisel"))
+        return DropChisel;*/
+    else if (MATCHW(argStr, L"mimi"))
+        return DropMimi;
+    else if (MATCHW(argStr, L"psexec"))
+        return DropPsexec;
+    else if (MATCHW(argStr, L"lsass"))
+        return DroppertLsass;
+    else if (MATCHW(argStr, L"netIG"))
+        return DropNetworkInfoGather;
+    else if (MATCHW(argStr, L"testav"))
+        return DropTestAvEicat;
+    else if (MATCHW(argStr, L"killdef"))
+        return DropKillDef;
+    else if (MATCHW(argStr, L"ligolong"))
+        return DropLigolong_agent;
+    else if (MATCHW(argStr, L"shound"))
+        return DropSharpHound;
+    else if (MATCHW(argStr, L"watson"))
+        return DropWatson;
+    else if (MATCHW(argStr, L"powerup"))
+        return DropPowerUp;
+    else if (MATCHW(argStr, L"privesccheck"))
+        return DropPrivescCheck;
+    else if (MATCHW(argStr, L"sherlock"))
+        return DropSherlock;
+    else if (MATCHW(argStr, L"adrecon"))
+        return DropADRecon;
+    else if (MATCHW(argStr, L"all") || MATCHW(argStr, L"ALL"))
+        return ALL;
+    else if (MATCHW(argStr, L"safe") || MATCHW(argStr, L"SAFE"))
+        return SAFE;
+    return Nothing;
 }
 BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
     LPCWSTR ProcessCmd = L"C:\\windows\\system32\\cmd.exe";
@@ -142,38 +186,14 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
         PrintMenu(listAgrument->wincatDefaultDir);
         return FALSE;
     }else if (argc == 2) {
-        if (MATCHW(argv[1], L"accesschk"))
-            listAgrument->toDROP = Dropaccesschk;
-        else if (MATCHW(argv[1], L"winpeas"))
-            listAgrument->toDROP = DropWinPEAS;
-        else if (MATCHW(argv[1], L"chisel"))
-            listAgrument->toDROP = DropChisel;
-        else if (MATCHW(argv[1], L"lsass"))
-            listAgrument->toDROP = DroppertLsass;
-        else if (MATCHW(argv[1], L"netIG"))
-            listAgrument->toDROP = DropNetworkInfoGather;
-        else if (MATCHW(argv[1], L"testav"))
-            listAgrument->toDROP = DropTestAvEicat;
-        else if (MATCHW(argv[1], L"ligolong"))
-            listAgrument->toDROP = DropLigolong_agent;
-        else if (MATCHW(argv[1], L"shound"))
-            listAgrument->toDROP = DropSharpHound;
-        else if (MATCHW(argv[1], L"powerup"))
-            listAgrument->toDROP = DropPowerUp;
-        else if (MATCHW(argv[1], L"privesccheck"))
-            listAgrument->toDROP = DropPrivescCheck;
-        else if (MATCHW(argv[1], L"sherlock"))
-            listAgrument->toDROP = DropSherlock;
-        else if (MATCHW(argv[1], L"adrecon"))
-            listAgrument->toDROP = DropADRecon;
-        else if (MATCHW(argv[1], L"all") || MATCHW(argv[1], L"ALL"))
-            listAgrument->toDROP = ALL;
-        else if (MATCHW(argv[1], L"safe") || MATCHW(argv[1], L"SAFE"))
-            listAgrument->toDROP = SAFE;
-        else if (MATCHW(argv[1], L"-c"))
-            listAgrument->CheckPriEsc = TRUE;
-        else {
-            PrintMenu(listAgrument->wincatDefaultDir);
+        listAgrument->toDROP = CheckArgDrop(argv[1]);
+            if (listAgrument->toDROP == Nothing) {
+                if (MATCHW(argv[1], L"-c"))
+                    listAgrument->CheckPriEsc = TRUE;
+                else {
+                    printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[1]);
+                    PrintMenu(listAgrument->wincatDefaultDir);
+                }
             return FALSE;
         }
         if (MATCH(listAgrument->wincatDefaultDir, wincatDefaultDir)) {
@@ -206,12 +226,15 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 case L'u':
                     if(argv[count][2] == 0x00)
                         lstrcpyW(listAgrument->lpszUsername, argv[count + 1]);
+                    count++;
                     break;
                 case L'p':
                     lstrcpyW(listAgrument->lpszPassword, argv[count + 1]);
+                    count++;
                     break;
                 case L'd':
                     lstrcpyW(listAgrument->lpszDomain, argv[count + 1]);
+                    count++;
                     break;
                 case L'P':
                     if (MATCHW(argv[count + 1], L"ps")) {
@@ -232,71 +255,32 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                         listAgrument->payloadType = PAYLOAD_CUSTOM_SHELL;
                     checkTypeCShell++;
                     count++;
+                    break;
                 default:
-                    //printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
-                   printMsg(STATUS_WARNING, LEVEL_VERBOSE, "Unknown argument %ws\n", argv[count]);
+                    printMsg(STATUS_WARNING, LEVEL_VERBOSE, "Unknown argument %ws\n", argv[count]);
                     break;
                 }
             }else
                 printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
-        }
-        else {
-            if (MATCHW(argv[count], L"getsystem")) {
-                listAgrument->GetSystem = TRUE;
-                if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
-                    int tecNum = _wtoi(argv[count + 2]);
-                    if (tecNum > 0 && tecNum < 7) {
-                        listAgrument->UacBypassTec = tecNum - 1;
-                        count += 2;
+        } else {
+            listAgrument->toDROP = CheckArgDrop(argv[count]);
+            if (listAgrument->toDROP == Nothing) {
+                if (MATCHW(argv[count], L"getsystem")) {
+                    listAgrument->GetSystem = TRUE;
+                    if (argc == count + 2 + 1 && MATCHW(argv[count + 1], L"-uac")) {
+                        int tecNum = _wtoi(argv[count + 2]);
+                        if (tecNum > 0 && tecNum < 7) {
+                            listAgrument->UacBypassTec = tecNum - 1;
+                            count += 2;
+                        }
                     }
-                }
-            }
-            else if (MATCHW(argv[count], L"detached")) {
-                listAgrument->Detached = TRUE;
-            }
-            else if (MATCHW(argv[count], L"accesschk")) {
-                listAgrument->toDROP = Dropaccesschk;
-            }
-            else if (MATCHW(argv[count], L"winpeas")) {
-                listAgrument->toDROP = DropWinPEAS;
-            }
-            else if (MATCHW(argv[count], L"chisel")) {
-                listAgrument->toDROP = DropChisel;
-            }
-            else if (MATCHW(argv[count], L"lsass")) {
-                listAgrument->toDROP = DroppertLsass;
-            }
-            else if (MATCHW(argv[count], L"netIG")) {
-                listAgrument->toDROP = DropNetworkInfoGather;
-            }
-            else if (MATCHW(argv[count], L"ligolong")) {
-                listAgrument->toDROP = DropLigolong_agent;
-            }
-            else if (MATCHW(argv[count], L"shound")) {
-                listAgrument->toDROP = DropSharpHound;
-            }
-            else if (MATCHW(argv[count], L"powerup")) {
-                listAgrument->toDROP = DropPowerUp;
-            }
-            else if (MATCHW(argv[count], L"privesccheck")) {
-                listAgrument->toDROP = DropPrivescCheck;
-            }
-            else if (MATCHW(argv[count], L"sherlock")) {
-                listAgrument->toDROP = DropSherlock;
-            }
-            else if (MATCHW(argv[count], L"adrecon")) {
-                listAgrument->toDROP = DropADRecon;
-            }
-            else if (MATCHW(argv[count], L"all") || MATCHW(argv[count], L"ALL")) {
-                listAgrument->toDROP = ALL;
-            }
-            else if (MATCHW(argv[count], L"safe") || MATCHW(argv[count], L"SAFE")) {
-                listAgrument->toDROP = SAFE;
-            }
-            else if (MATCHW(argv[1], L"-c")){
+                } else if (MATCHW(argv[count], L"detached"))
+                    listAgrument->Detached = TRUE;
+                else if (MATCHW(argv[count], L"-c"))
                     listAgrument->CheckPriEsc = TRUE;
-            }else 
-                printMsg(STATUS_INFO, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
+                else
+                    printMsg(STATUS_INFO, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[count]);
+            }
         }
     }
     if (MATCH(listAgrument->wincatDefaultDir, wincatDefaultDir)) {
@@ -305,7 +289,6 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
         else
             printMsg(STATUS_ERROR, LEVEL_DEFAULT, "No target path was found");
     }
-
     if (checkTypeCShell > 1) {
         PrintMenu(listAgrument->wincatDefaultDir);
         return FALSE;

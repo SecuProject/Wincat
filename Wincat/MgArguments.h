@@ -10,21 +10,26 @@
 
 typedef enum MyEnums{
     Nothing                     = 99,
-    Dropaccesschk               = 0,
+    DropAccesschk               = 0,
     DropWinPEAS                 = 1,
-    DropChisel                  = 2,
-    DroppertLsass               = 3,
-    DropNetworkInfoGather       = 4,
-    DropLigolong_agent          = 5,
-    DropTestAvEicat             = 6,
-    DropSharpHound              = 7,
-    
+    //DropChisel                = 2,
+    DroppertLsass               = 2,
+    DropNetworkInfoGather       = 3,
+    DropLigolong_agent          = 4,
+    DropTestAvEicat             = 5,
+    DropKillDef                 = 6,
+    DropMimi                    = 7, 
+    DropPsexec                  = 8,
+    DropSharpHound              = 9,
+    DropWatson                  = 10,
 
-    DropPowerUp                 = 8,
-    DropPrivescCheck            = 9,
-    DropSherlock                = 10,
-    DropADRecon                 = 11,
+    DropPowerUp                 = 11,
+    DropPrivescCheck            = 12,
+    DropSherlock                = 13,
+    DropADRecon                 = 14,
+
     ALL                         = 50,
+
     SAFE                        = 100
 }ToDropEnum;
 

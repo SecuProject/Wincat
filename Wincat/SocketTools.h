@@ -6,7 +6,7 @@
 typedef UINT_PTR        SOCKET;
 
 DWORD DisplayError(LPWSTR pszAPI);
-BOOL SendInitInfo(SOCKET mySocket);
+BOOL SendInitInfo(SOCKET mySocket, HANDLE hToken);
 
 
 #endif

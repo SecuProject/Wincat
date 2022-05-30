@@ -3,7 +3,13 @@
 #ifndef CHECK_SYSTEM_HEADER_H
 #define CHECK_SYSTEM_HEADER_H
 
+#define MAX_NAME	256
 
+typedef struct {
+	char UserName[MAX_NAME];
+	char DomainName[MAX_NAME];
+	char SID[MAX_NAME];
+}AccountInformation, * PAccountInformation;
 
 typedef enum {
 	UAC_POLICY_ERROR,
@@ -24,7 +30,7 @@ BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv);
 
 HANDLE GetAccessToken(DWORD pid);
 int GetTargetProcessPID(WCHAR* processName);
-
+BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformation);
 
 
 BOOL IsUACEnabled();

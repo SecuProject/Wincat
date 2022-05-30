@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <TlHelp32.h>
 #include <Lmcons.h>
+#include <sddl.h>
 
 #include "Message.h"
 #include "CheckSystem.h"
@@ -176,9 +177,9 @@ HANDLE GetAccessToken(DWORD pid) {
 	HANDLE currentProcess;
 	HANDLE AccessToken;
 
-	if (pid == 0) {
+	if (pid == 0)
 		currentProcess = GetCurrentProcess();
-	} else {
+	else {
 		currentProcess = OpenProcess(PROCESS_QUERY_INFORMATION, TRUE, pid);
 		if (!currentProcess) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: OpenProcess");
@@ -187,10 +188,75 @@ HANDLE GetAccessToken(DWORD pid) {
 	}
 	if (!OpenProcessToken(currentProcess, TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY, &AccessToken)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: OpenProcessToken");
+		CloseHandle(currentProcess);
 		return (HANDLE)NULL;
 	}
+	CloseHandle(currentProcess);
 	return AccessToken;
 }
+BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformation) {
+	DWORD tokenSize = 0;
+	TOKEN_USER* User;
+	BOOL isCleanToken = FALSE;
+
+	if (hToken == NULL) {
+		hToken = GetAccessToken(0);
+		if (hToken == NULL)
+			return FALSE;
+		isCleanToken = TRUE;
+	}
+
+	if (!GetTokenInformation(hToken, TokenUser, NULL, 0, &tokenSize)) {
+		DWORD dwResult = GetLastError();
+		if (dwResult != ERROR_INSUFFICIENT_BUFFER) {
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: GetTokenInformation");
+			if (isCleanToken)
+				CloseHandle(hToken);
+			return FALSE;
+		}
+	}
+	User = (TOKEN_USER*)malloc(tokenSize);
+	if (User != NULL) {
+		if (GetTokenInformation(hToken, TokenUser, User, tokenSize, &tokenSize)) {
+			SID_NAME_USE SidType;
+			DWORD UserSize = MAX_NAME, DomainSize = MAX_NAME;
+			PAccountInformation pAccountInformation = (PAccountInformation)malloc(sizeof(AccountInformation));
+			if (pAccountInformation == NULL) {
+				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to alloc PAccountInformation");
+				free(User);
+				if (isCleanToken)
+					CloseHandle(hToken);
+				return FALSE;
+			}
+
+
+			if (LookupAccountSidA(NULL, User->User.Sid, pAccountInformation->UserName, &UserSize, pAccountInformation->DomainName, &DomainSize, &SidType)) {
+				LPSTR lpSID = NULL;
+
+				if (ConvertSidToStringSidA(User->User.Sid, &lpSID)) {
+					strcpy_s(pAccountInformation->SID, MAX_NAME, lpSID);
+					LocalFree(lpSID);
+				}
+				else
+					strcpy_s(pAccountInformation->SID, MAX_NAME, "N/A");
+
+				free(User);
+				*ppAccountInformation = pAccountInformation;
+				if (isCleanToken)
+					CloseHandle(hToken);
+				return TRUE;
+
+			}
+			else
+				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: LookupAccountSidA");
+			free(pAccountInformation);
+		}else
+			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: GetTokenInformation");
+		free(User);
+	}
+	return FALSE;
+}
+
 
 int GetTargetProcessPID(WCHAR* processName) {
 	HANDLE snap;
@@ -205,6 +271,7 @@ int GetTargetProcessPID(WCHAR* processName) {
 
 	if (!Process32FirstW(snap, &pe32)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: Process32First");
+		CloseHandle(snap);
 		return FALSE;
 	}
 

@@ -127,6 +127,8 @@ BOOL SendInfoPipe(PipeDataStruct* pipeDataStruct, const char* lpszPipename, cons
     printf("\n[-] Pipe Server: Waiting client connection on %s\n", lpszPipename);
 
     DWORD dwPipeMode = PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT;
+
+    // PIPE_WAIT ? PIPE_NOWAIT
     hPipe = CreateNamedPipeA(lpszPipename, PIPE_ACCESS_DUPLEX, dwPipeMode, PIPE_UNLIMITED_INSTANCES, BUFSIZE, BUFSIZE, 0, NULL);
     if (hPipe != INVALID_HANDLE_VALUE){
         if (ConnectNamedPipe(hPipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED)){
@@ -140,7 +142,6 @@ BOOL SendInfoPipe(PipeDataStruct* pipeDataStruct, const char* lpszPipename, cons
                     return FALSE;
                 }
                 printMsg(STATUS_OK, LEVEL_DEFAULT, "Client authenticate successfully !\n");
-
 
                 // Loop until done reading
                 while (ServerReplay(hPipe, pipeDataStruct, pchRequest, pchReply));

@@ -260,6 +260,13 @@ BOOL CheckStrMatch(char* str1, const char* str2) {
 	}
 	return returnVal;
 }
+int isStrInTable(char* string, char** strTable, int tableSize) {
+	int i;
+	for (i = 0; i < tableSize && strcmp(string, (char*)strTable[i]) != 0; i++);
+	if (i < tableSize && strcmp(string, (char*)strTable[i]) == 0)
+		return i;
+	return NOT_FOUND;
+}
 
 BOOL initWSAS(){
 	WSADATA wsaData;
