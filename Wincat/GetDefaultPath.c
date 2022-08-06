@@ -5,7 +5,7 @@
 #include "Message.h"
 #include "Tools.h"
 #include "GetDefaultPath.h"
-
+#include "LoadAPI.h"
 
 #define TEST_FILE_PATH_LENGTH       
 #define TEST_FILE_NAME_LENGTH       30

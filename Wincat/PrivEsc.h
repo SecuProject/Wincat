@@ -3,7 +3,7 @@
 #ifndef PRIV_ESC_HEADER_H
 #define PRIV_ESC_HEADER_H
 
-BOOL PrivEsc(Arguments listAgrument);
+BOOL PrivEsc(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Arguments listAgrument);
 BOOL GetInfoPipeSystem(Arguments* listAgrument);
 
 #endif

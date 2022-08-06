@@ -11,6 +11,7 @@
 #include "Message.h"
 
 #include "SocketTools.h"
+#include "LoadAPI.h"
 
 #define DEFAULT_BUFLEN 1024
 #define MAX_ARG_LENGHT 65535
@@ -107,9 +108,9 @@ BOOL RunShellAs(Arguments listAgrument) {
     return TRUE;
 }
 
-BOOL RunProcessDetached(int argc, WCHAR* argv[]) {
+BOOL RunProcessDetached(Kernel32_API kernal32, int argc, WCHAR* argv[]) {
     WCHAR szExeFileName[MAX_PATH * sizeof(WCHAR)];
-    GetModuleFileNameW(NULL, szExeFileName, MAX_PATH * sizeof(WCHAR));
+    kernal32.GetModuleFileNameWF(NULL, szExeFileName, MAX_PATH * sizeof(WCHAR));
     printMsg(STATUS_INFO, LEVEL_VERBOSE, "Process %ws\n", szExeFileName);
 
     WCHAR* argBuffer = (WCHAR*)calloc(MAX_ARG_LENGHT, sizeof(WCHAR));
@@ -132,10 +133,10 @@ BOOL RunProcessDetached(int argc, WCHAR* argv[]) {
         StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
         StartupInfo.wShowWindow = SW_HIDE;
 
-        if (CreateProcessW(szExeFileName, argBuffer, NULL, NULL, FALSE, CREATE_NO_WINDOW | DETACHED_PROCESS, NULL, NULL, &StartupInfo, &ProcessInfo)) {
+        if (kernal32.CreateProcessWF(szExeFileName, argBuffer, NULL, NULL, FALSE, CREATE_NO_WINDOW | DETACHED_PROCESS, NULL, NULL, &StartupInfo, &ProcessInfo)) {
             printMsg(STATUS_INFO, LEVEL_DEFAULT, "Process Started (PID: %i)\n", GetProcessId(ProcessInfo.hProcess));
-            CloseHandle(ProcessInfo.hThread);
-            CloseHandle(ProcessInfo.hProcess);
+            kernal32.CloseHandleF(ProcessInfo.hThread);
+            kernal32.CloseHandleF(ProcessInfo.hProcess);
             free(argBuffer);
             return TRUE;
         } else

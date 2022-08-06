@@ -4,6 +4,8 @@
 #include "PipeServer.h"
 #include "Message.h"
 
+#include "LoadAPI.h"
+
 BOOL AuthClient(HANDLE hPipe, const char* password, char* pchRequest, char* pchReply){
     size_t passwordSize = strlen(password);
     BOOL authValid = FALSE;

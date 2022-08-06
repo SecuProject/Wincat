@@ -5,6 +5,8 @@
 
 #define MAX_NAME	256
 
+#include "LoadAPI.h"
+
 typedef struct {
 	char UserName[MAX_NAME];
 	char DomainName[MAX_NAME];
@@ -20,7 +22,7 @@ typedef enum {
 
 
 BOOL IsWindowsVistaOrGreater();
-BOOL IsRunAsAdmin();
+BOOL IsRunAsAdmin(Advapi32_API advapi32Api);
 BOOL IsRunAsSystem();
 BOOL IsUserInAdminGroup();
 
@@ -33,7 +35,7 @@ int GetTargetProcessPID(WCHAR* processName);
 BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformation);
 
 
-BOOL IsUACEnabled();
-UAC_POLICY CheckUACSettings();
+BOOL IsUACEnabled(Advapi32_API advapi32);
+UAC_POLICY CheckUACSettings(Advapi32_API advapi32);
 
 #endif

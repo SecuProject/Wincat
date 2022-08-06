@@ -67,15 +67,6 @@
     <Filter Include="Source Files\ProtectProcess\BypassAMSI">
       <UniqueIdentifier>{c3a2fe5d-61f3-4f7a-8fff-ebc6ea2b15fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tools">
-      <UniqueIdentifier>{70addf33-3c9f-4ce9-ae48-0a4d8a5ebcfe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Tools\Message">
-      <UniqueIdentifier>{41186577-4312-421b-ba0c-0752044a1fb6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Tools\CheckSystem">
-      <UniqueIdentifier>{c9cb738e-89c0-4be1-a9f2-ee3cad0940de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ProtectProcess\EDRChecker">
       <UniqueIdentifier>{188edb99-e441-405f-9f96-19fc52920781}</UniqueIdentifier>
     </Filter>
@@ -103,6 +94,18 @@
     <Filter Include="Source Files\EasyPrivEsc\CheckCdpSvcLPE">
       <UniqueIdentifier>{f7686ad0-f79c-41a8-a6a1-bf67d675b65d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\LoadAPI">
+      <UniqueIdentifier>{2edaff8b-af48-4b40-9d5f-98efdb63a345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess\Tools">
+      <UniqueIdentifier>{70addf33-3c9f-4ce9-ae48-0a4d8a5ebcfe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess\Tools\Message">
+      <UniqueIdentifier>{41186577-4312-421b-ba0c-0752044a1fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ProtectProcess\Tools\CheckSystem">
+      <UniqueIdentifier>{c9cb738e-89c0-4be1-a9f2-ee3cad0940de}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -121,10 +124,10 @@
       <Filter>Source Files\RunShell</Filter>
     </ClCompile>
     <ClCompile Include="CheckSystem.c">
-      <Filter>Source Files\Tools\CheckSystem</Filter>
+      <Filter>Source Files\ProtectProcess\Tools\CheckSystem</Filter>
     </ClCompile>
     <ClCompile Include="Tools.c">
-      <Filter>Source Files\Tools</Filter>
+      <Filter>Source Files\ProtectProcess\Tools</Filter>
     </ClCompile>
     <ClCompile Include="BypassUac.c">
       <Filter>Source Files\GetSystem\UacBypass</Filter>
@@ -157,7 +160,7 @@
       <Filter>Source Files\MgArguments\GetDefaultPath</Filter>
     </ClCompile>
     <ClCompile Include="Message.c">
-      <Filter>Source Files\Tools\Message</Filter>
+      <Filter>Source Files\ProtectProcess\Tools\Message</Filter>
     </ClCompile>
     <ClCompile Include="EDRChecker.c">
       <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
@@ -185,6 +188,15 @@
     </ClCompile>
     <ClCompile Include="CheckCdpSvcLPE.c">
       <Filter>Source Files\EasyPrivEsc\CheckCdpSvcLPE</Filter>
+    </ClCompile>
+    <ClCompile Include="loadAPI\LoadAPI.c">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="loadAPI\CalcAPI.c">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="loadAPI\Decryption.c">
+      <Filter>Source Files\LoadAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -219,10 +231,10 @@
       <Filter>Source Files\RunShell</Filter>
     </ClInclude>
     <ClInclude Include="CheckSystem.h">
-      <Filter>Source Files\Tools\CheckSystem</Filter>
+      <Filter>Source Files\ProtectProcess\Tools\CheckSystem</Filter>
     </ClInclude>
     <ClInclude Include="Tools.h">
-      <Filter>Source Files\Tools</Filter>
+      <Filter>Source Files\ProtectProcess\Tools</Filter>
     </ClInclude>
     <ClInclude Include="BypassUac.h">
       <Filter>Source Files\GetSystem\UacBypass</Filter>
@@ -282,7 +294,7 @@
       <Filter>Source Files\MgArguments\GetDefaultPath</Filter>
     </ClInclude>
     <ClInclude Include="Message.h">
-      <Filter>Source Files\Tools\Message</Filter>
+      <Filter>Source Files\ProtectProcess\Tools\Message</Filter>
     </ClInclude>
     <ClInclude Include="EDRChecker.h">
       <Filter>Source Files\ProtectProcess\EDRChecker</Filter>
@@ -355,6 +367,15 @@
     </ClInclude>
     <ClInclude Include="PeFile\PsExec64.h">
       <Filter>Source Files\DropFile\PeFile\PEx64</Filter>
+    </ClInclude>
+    <ClInclude Include="loadAPI\Decryption.h">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="loadAPI\LoadAPI.h">
+      <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="loadAPI\CalcAPI.h">
+      <Filter>Source Files\LoadAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,12 @@
 #include "Message.h"
 #include "MgService.h"
 #include "Tools.h"
+#include "LoadAPI.h"
 
 #define DEFAULT_BUFFER_SIZE 1024 * 4
 #define MAX_NB_PATH 50
 
-BOOL GetSystemEnvPath(char*** pppListEnvPath, UINT* pNbEnvPath) {
+BOOL GetSystemEnvPath(Advapi32_API advapi32, char*** pppListEnvPath, UINT* pNbEnvPath) {
 	BOOL result = FALSE;
 
 	UINT nbEnvPath = 0;
@@ -20,7 +21,7 @@ BOOL GetSystemEnvPath(char*** pppListEnvPath, UINT* pNbEnvPath) {
 	if (tempBuffer == NULL)
 		return FALSE;
 
-	result = ReadRegistryValue(HKEY_LOCAL_MACHINE, "System\\CurrentControlSet\\Control\\Session Manager\\Environment", "PATH", tempBuffer, DEFAULT_BUFFER_SIZE);
+	result = ReadRegistryValue(advapi32,HKEY_LOCAL_MACHINE, "System\\CurrentControlSet\\Control\\Session Manager\\Environment", "PATH", tempBuffer, DEFAULT_BUFFER_SIZE);
 
 	if (result) {
 		char* next_token = NULL;
@@ -40,15 +41,15 @@ BOOL GetSystemEnvPath(char*** pppListEnvPath, UINT* pNbEnvPath) {
 	return TRUE;
 }
 
-BOOL CheckWriteAccess(char* directory) {
+BOOL CheckWriteAccess(Kernel32_API kernel32, char* directory) {
 	char* filePath = (char*)malloc(MAX_PATH);
 	if (filePath != NULL) {
 		sprintf_s(filePath, MAX_PATH, "%s\\frzyufezuy.txt", directory);
 
-		HANDLE hFile = CreateFileA(filePath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE hFile = kernel32.CreateFileAF(filePath, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (hFile != INVALID_HANDLE_VALUE) {
-			CloseHandle(hFile);
-			DeleteFileA(filePath);
+			kernel32.CloseHandleF(hFile);
+			kernel32.DeleteFileAF(filePath);
 			free(filePath);
 			return TRUE;
 		}
@@ -57,20 +58,20 @@ BOOL CheckWriteAccess(char* directory) {
 	return FALSE;
 }
 
-BOOL CheckCdpSvcLPE() {
+BOOL CheckCdpSvcLPE(Kernel32_API kernel32, Advapi32_API advapi32) {
 	char** listEnvPath;
 	UINT nbEnvPath = 0;
 
-	if (!CheckServiceStatusConfig((char*)"CDPSvc", FALSE)) {
+	if (!CheckServiceStatusConfig(kernel32, advapi32,(char*)"CDPSvc", FALSE)) {
 		printMsg(STATUS_TITLE, LEVEL_VERBOSE, "Windows Local Privilege Escalation via CdpSvc\n");
 		printMsg(STATUS_ERROR2, LEVEL_VERBOSE, "Service CdpSvc is disable !\n");
 		return FALSE;
 	}
 
 
-	if (GetSystemEnvPath(&listEnvPath, &nbEnvPath) && nbEnvPath > 0) {
+	if (GetSystemEnvPath(advapi32 ,&listEnvPath, &nbEnvPath) && nbEnvPath > 0) {
 		for (UINT i = 0; i < nbEnvPath; i++) {
-			if (CheckWriteAccess(listEnvPath[i])) {
+			if (CheckWriteAccess(kernel32, listEnvPath[i])) {
 				printMsg(STATUS_TITLE, LEVEL_DEFAULT,	"Windows Local Privilege Escalation via CdpSvc\n");
 				printMsg(STATUS_OK2, LEVEL_DEFAULT,		"Service CdpSvc is enable !\n");
 				printMsg(STATUS_OK2, LEVEL_DEFAULT,		"Directory %s is writable by the current user !\n", listEnvPath[i]);

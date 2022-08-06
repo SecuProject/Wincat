@@ -6,6 +6,7 @@
 #include "Message.h"
 #include "EDRNameHash.h"
 #include "Tools.h"
+#include "LoadAPI.h"
 
 uint32_t crc32(const char* buf, size_t len) {
 	static uint32_t table[256];

@@ -4,10 +4,10 @@
 #include "Message.h"
 #include "CheckSystem.h"
 #include "Tools.h"
-
+#include "LoadAPI.h"
 
 BOOL CheckUserPrivilege(HANDLE hToken) {
-
+	BOOL nbDetection = 0;
 	const char* dangenrousPriv[] = {
 		"SeImpersonatePrivilege",
 		"SeAssignPrimaryTokenPrivilege",
@@ -16,20 +16,25 @@ BOOL CheckUserPrivilege(HANDLE hToken) {
 
 		// TO CHECK -> https://github.com/hatRiot/token-priv/tree/master/poptoke/poptoke
 		"SeCreateTokenPrivilege",
-		"SeLoadDriver",
+		//"SeLoadDriver",  -> A specified privilege does not exist. (Error 1313)
 		"SeTakeOwnershipPrivilege",
 		"SeTcbPrivilege",
 		"SeDebugPrivilege",
 		"SeSecurityPrivilege",
-
 	};
 
-	printMsg(STATUS_TITLE, LEVEL_VERBOSE, "Check User Privilege\n");
+	
 	for (int i = 0; i < sizeof(dangenrousPriv) / sizeof(char*); i++) {
-		if (IsUserPrivilegeEnable(hToken, (char*)dangenrousPriv[i]))
+		if (IsUserPrivilegeEnable(hToken, (char*)dangenrousPriv[i])) {
+			if (nbDetection == 0) {
+				printf("\n");
+				printMsg(STATUS_TITLE, LEVEL_VERBOSE, "Check User Privilege\n");			
+			}
 			printMsg(STATUS_WARNING, LEVEL_DEFAULT, "User as %s privilage -> PrivEsc !!!\n", dangenrousPriv[i]);
+			nbDetection++;
+		}
 	}
-	return FALSE;
+	return nbDetection;
 }
 
 BOOL IsTokenService(HANDLE hToken) {

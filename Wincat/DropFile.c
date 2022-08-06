@@ -6,6 +6,8 @@
 #include "MgArguments.h"
 #include "DropFile.h"
 
+#include "LoadAPI.h"
+
 #pragma comment(lib, "Cabinet.lib")
 
 #include "PsScript/PowerUp.h"

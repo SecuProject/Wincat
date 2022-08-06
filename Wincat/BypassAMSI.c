@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "Message.h"
+#include "LoadAPI.h"
 
 // fake function that always returns S_OK and AMSI_RESULT_CLEAN
 static HRESULT AmsiScanBufferStub(HAMSICONTEXT amsiContext,PVOID buffer,ULONG length,LPCWSTR contentName,

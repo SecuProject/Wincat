@@ -66,9 +66,13 @@ void printMsgPrefix(MSG_STATUS msgStatus) {
     case STATUS_WARNING:
         printf("[!] "); // [w]
         break;
+
+    case STATUS_TITLE2:
+        printf("\t");
     case STATUS_TITLE:
         printf("[-] ");
         break;
+
     case STATUS_DEBUG:
         printf("[D] ");
         break;

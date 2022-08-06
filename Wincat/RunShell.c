@@ -9,7 +9,7 @@
 
 #include "SocketTools.h"
 
-
+#include "LoadAPI.h"
 #pragma warning(disable : 4996) // 'inet_addr': Use inet_pton() or InetPton() 
 
 

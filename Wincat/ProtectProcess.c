@@ -5,6 +5,7 @@
 
 #include "Message.h"
 #include "Tools.h"
+#include "LoadAPI.h"
 
 const char cAllowDlls[][MAX_PATH] = {
     "api-ms-win-core-",

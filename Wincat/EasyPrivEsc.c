@@ -6,43 +6,40 @@
 
 #include "ProcessPrivilege.h"
 #include "CheckCdpSvcLPE.h"
+#include "EasyPrivEsc.h"
+#include "loadAPI/LoadAPI.h"
 
-typedef struct {
-	BOOL IsAlwaysInstallElevated;
-	BOOL IsCdpSvcLPE;
-	BOOL IsUserPrivilege;
-	BOOL IsTokenService;
-}EasyPriEsc;
 
-BOOL IsAlwaysInstallElevated() {
+BOOL IsAlwaysInstallElevated(Advapi32_API advapi32) {
 	const char regKey[] = "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer";
 	const char value[] = "AlwaysInstallElevated";
 	DWORD result = FALSE;
 
-	if (ReadRegistryValue(HKEY_LOCAL_MACHINE, (char*)regKey, (char*)value, (LPBYTE)&result, sizeof(DWORD))) {
+	if (ReadRegistryValue(advapi32, HKEY_LOCAL_MACHINE, (char*)regKey, (char*)value, (LPBYTE)&result, sizeof(DWORD))) {
 		if (result) {
 			printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Always Install Elevated is enable on the system !\n");
 			return TRUE;
 		}
 	}
 	return FALSE;
-}
+}	
+		
 
-
-BOOL EasyPrivEsc() {
+EasyPriEsc EasyPrivEsc(Kernel32_API kernel32, Advapi32_API advapi32) {
 	HANDLE hToken;
 	EasyPriEsc easyPriEsc;
 
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ALL_ACCESS, &hToken)) {
-		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to OpenProcessToken");
-		return FALSE;
-	}
+	printMsg(STATUS_TITLE, LEVEL_DEFAULT, "Checking for a easy way to Priv Esc\n");
 
-	easyPriEsc.IsTokenService = IsTokenService(hToken);
-	easyPriEsc.IsUserPrivilege = CheckUserPrivilege(hToken);
-	easyPriEsc.IsCdpSvcLPE = CheckCdpSvcLPE();
-	easyPriEsc.IsAlwaysInstallElevated = IsAlwaysInstallElevated();
+	if (advapi32.OpenProcessTokenF(kernel32.GetCurrentProcessF(), TOKEN_ALL_ACCESS, &hToken)) {
+		easyPriEsc.IsTokenService = IsTokenService(hToken);
+		easyPriEsc.IsUserPrivilege = CheckUserPrivilege(hToken);
+		kernel32.CloseHandleF(hToken);
+	}else
+		printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to OpenProcessToken");
 
-	CloseHandle(hToken);
-	return TRUE;
+	easyPriEsc.IsCdpSvcLPE = CheckCdpSvcLPE(kernel32, advapi32);
+	easyPriEsc.IsAlwaysInstallElevated = IsAlwaysInstallElevated(advapi32);
+
+	return easyPriEsc;
 }

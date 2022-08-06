@@ -3,55 +3,56 @@
 
 #include "Message.h"
 #include "Tools.h"
+#include "LoadAPI.h"
 
 ///////////////////////// Registry //////////////////////////
 //
 
-BOOL ReadRegistryValue(HKEY key, char* path, char* name, LPBYTE valueOutput, DWORD valueOutputSize) {
+BOOL ReadRegistryValue(Advapi32_API Advapi32,HKEY key, char* path, char* name, LPBYTE valueOutput, DWORD valueOutputSize) {
 	BOOL returnValue = FALSE;
 	HKEY hKey;
-	if (RegOpenKeyExA(key, path, 0, KEY_READ, &hKey) == ERROR_SUCCESS && hKey != NULL) {
-		returnValue = RegQueryValueExA(hKey, name, 0, NULL, valueOutput, &valueOutputSize) == ERROR_SUCCESS;
-		RegCloseKey(hKey);
+	if (Advapi32.RegOpenKeyExAF(key, path, 0, KEY_READ, &hKey) == ERROR_SUCCESS && hKey != NULL) {
+		returnValue = Advapi32.RegQueryValueExAF(hKey, name, 0, NULL, valueOutput, &valueOutputSize) == ERROR_SUCCESS;
+		Advapi32.RegCloseKeyF(hKey);
 	}
 	return returnValue;
 }
 
-BOOL checkKey(const char* subKeyTab) {
+BOOL checkKey(Advapi32_API Advapi32, const char* subKeyTab) {
 	HKEY hKey;
-	LSTATUS regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
+	LSTATUS regKey = Advapi32.RegOpenKeyExAF(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
 	if (ERROR_FILE_NOT_FOUND == regKey) {
 		printMsg(STATUS_INFO2, LEVEL_VERBOSE, "Creating registry key %s\n", subKeyTab);
-		if (RegCreateKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS) {
+		if (Advapi32.RegCreateKeyExAF(HKEY_CURRENT_USER, subKeyTab, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hKey, NULL) != ERROR_SUCCESS) {
 			printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Critical fail RegCreateKeyExA");
 			return FALSE;
 		}
 	}
-	RegCloseKey(hKey);
+	Advapi32.RegCloseKeyF(hKey);
 	return TRUE;
 }
-BOOL CheckExistKey(const char* subKeyTab){
+BOOL CheckExistKey(Advapi32_API Advapi32, const char* subKeyTab){
 	HKEY hKey;
-	long regKey = RegOpenKeyExA(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
+	long regKey = Advapi32.RegOpenKeyExAF(HKEY_CURRENT_USER, subKeyTab, 0, KEY_QUERY_VALUE, &hKey);
 	if (ERROR_FILE_NOT_FOUND == regKey)
 		return FALSE;
-	RegCloseKey(hKey);
+	Advapi32.RegCloseKeyF(hKey);
 	return TRUE;
 }
-BOOL SetRegistryValue(HKEY key, char* path, char* name, char* value) {
+BOOL SetRegistryValue(Advapi32_API Advapi32, HKEY key, char* path, char* name, char* value) {
 	BOOL returnValue = FALSE;
 	HKEY hKey;
 
 	// KEY_ALL_ACCESS
-	if (RegOpenKeyExA(key, path, 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS && hKey != NULL) {
-		returnValue = RegSetValueExA(hKey, name, 0, REG_SZ, (LPBYTE)value, (DWORD)strlen(value)) == ERROR_SUCCESS;
-		RegCloseKey(hKey);
+	if (Advapi32.RegOpenKeyExAF(key, path, 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS && hKey != NULL) {
+		returnValue = Advapi32.RegSetValueExAF(hKey, name, 0, REG_SZ, (LPBYTE)value, (DWORD)strlen(value)) == ERROR_SUCCESS;
+		Advapi32.RegCloseKeyF(hKey);
 	}
 	return returnValue;
 }
 
-BOOL DeleteRegistryKey(HKEY key, char* path, char* name) {
-	return RegDeleteKeyA(key, name) == ERROR_SUCCESS;
+BOOL DeleteRegistryKey(Advapi32_API Advapi32, HKEY key, char* path, char* name) {
+	return Advapi32.RegDeleteKeyAF(key, name) == ERROR_SUCCESS;
 
 	/*BOOL returnValue = !ERROR_SUCCESS;
 	HKEY hKey;
@@ -62,7 +63,7 @@ BOOL DeleteRegistryKey(HKEY key, char* path, char* name) {
 	return returnValue;*/
 }
 
-BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
+BOOL RegDelnodeRecurse(Advapi32_API Advapi32, HKEY hKeyRoot, char* lpSubKey) {
 	char* lpEnd;
 	LONG lResult;
 	DWORD dwSize;
@@ -73,11 +74,11 @@ BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
 	// First, see if we can delete the key without having
 	// to recurse.
 
-	lResult = RegDeleteKeyA(hKeyRoot, lpSubKey);
+	lResult = Advapi32.RegDeleteKeyAF(hKeyRoot, lpSubKey);
 	if (lResult == ERROR_SUCCESS)
 		return TRUE;
 
-	lResult = RegOpenKeyExA(hKeyRoot, lpSubKey, 0, KEY_READ, &hKey);
+	lResult = Advapi32.RegOpenKeyExAF(hKeyRoot, lpSubKey, 0, KEY_READ, &hKey);
 
 	if (lResult != ERROR_SUCCESS) {
 		if (lResult == ERROR_FILE_NOT_FOUND) {
@@ -100,44 +101,44 @@ BOOL RegDelnodeRecurse(HKEY hKeyRoot, char* lpSubKey) {
 	// Enumerate the keys
 
 	dwSize = MAX_PATH;
-	lResult = RegEnumKeyExA(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
+	lResult = Advapi32.RegEnumKeyExAF(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
 	if (lResult == ERROR_SUCCESS) {
 		//strcpy_s(szName, MAX_PATH, lpSubKey);
 		do {
 			*lpEnd = TEXT('\0');
 			//strcpy_s(lpSubKey, MAX_PATH, szName);
 			strcat_s(lpSubKey, MAX_PATH, szName);
-			if (!RegDelnodeRecurse(hKeyRoot, lpSubKey)) {
+			if (!RegDelnodeRecurse(Advapi32,hKeyRoot, lpSubKey)) {
 				break;
 			}
 			dwSize = MAX_PATH;
-			lResult = RegEnumKeyExA(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
+			lResult = Advapi32.RegEnumKeyExAF(hKey, 0, szName, &dwSize, NULL, NULL, NULL, &ftWrite);
 		} while (lResult == ERROR_SUCCESS);
 	}
 	lpEnd--;
 	*lpEnd = TEXT('\0');
-	RegCloseKey(hKey);
+	Advapi32.RegCloseKeyF(hKey);
 	// Try again to delete the key.
-	lResult = RegDeleteKeyA(hKeyRoot, lpSubKey);
+	lResult = Advapi32.RegDeleteKeyAF(hKeyRoot, lpSubKey);
 	if (lResult == ERROR_SUCCESS)
 		return TRUE;
 
 	return FALSE;
 }
 
-BOOL isArgHostSet() {
+BOOL isArgHostSet(Advapi32_API Advapi32) {
 	BOOL result = FALSE;
 	DWORD RHostIPaddressSize = 128;
 	char* RHostIPaddress = (char*)calloc(RHostIPaddressSize, 1);
 	if (RHostIPaddress != NULL) {
-		result = ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostIP", RHostIPaddress, RHostIPaddressSize);
-		result &= ReadRegistryValue(HKEY_CURRENT_USER, "Software\\Wincat", "RHostPORT", RHostIPaddress, RHostIPaddressSize);
+		result = ReadRegistryValue(Advapi32,HKEY_CURRENT_USER, "Software\\Wincat", "RHostIP", RHostIPaddress, RHostIPaddressSize);
+		result &= ReadRegistryValue(Advapi32,HKEY_CURRENT_USER, "Software\\Wincat", "RHostPORT", RHostIPaddress, RHostIPaddressSize);
 		free(RHostIPaddress);
 	}
 	return result;
 }
 
-BOOL SaveRHostInfo(WCHAR* UipAddress, char* port) {
+BOOL SaveRHostInfo(Advapi32_API Advapi32,WCHAR* UipAddress, char* port) {
 	const char* regKey = "Software\\Wincat";
 	BOOL returnValue = FALSE;
 	char* ipAddress = (char*)malloc(IP_ADDRESS_SIZE + 1);
@@ -145,20 +146,20 @@ BOOL SaveRHostInfo(WCHAR* UipAddress, char* port) {
 		return FALSE;
 	sprintf_s(ipAddress, IP_ADDRESS_SIZE +1, "%ws", UipAddress);
 
-	if (checkKey(regKey)) {
-		returnValue = SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "RHostIP", ipAddress);
-		returnValue &= SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "RHostPORT", port);
+	if (checkKey(Advapi32,regKey)) {
+		returnValue = SetRegistryValue(Advapi32,HKEY_CURRENT_USER, (char*)regKey, "RHostIP", ipAddress);
+		returnValue &= SetRegistryValue(Advapi32,HKEY_CURRENT_USER, (char*)regKey, "RHostPORT", port);
 	}
 
 	free(ipAddress);
 	return returnValue;
 }
 
-BOOL SaveCPathInfo(char* currentPath) {
+BOOL SaveCPathInfo(Advapi32_API Advapi32, char* currentPath) {
 	const char* regKey = "Software\\Wincat";
 
-	if (checkKey(regKey)) {
-		return SetRegistryValue(HKEY_CURRENT_USER, (char*)regKey, "CPath", currentPath);
+	if (checkKey(Advapi32, regKey)) {
+		return SetRegistryValue(Advapi32, HKEY_CURRENT_USER, (char*)regKey, "CPath", currentPath);
 	}
 	return FALSE;
 }

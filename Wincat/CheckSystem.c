@@ -8,6 +8,7 @@
 #include "CheckSystem.h"
 #include "Tools.h"
 
+#include "LoadAPI.h"
 
 BOOL IsWindowsVistaOrGreater() {
 	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
@@ -40,17 +41,17 @@ BOOL IsRunAsSystem(){
 	return FALSE;
 }
 
-BOOL IsRunAsAdmin() {
+BOOL IsRunAsAdmin(Advapi32_API advapi32Api) {
 	BOOL  fIsRunAsAdmin = FALSE;
 	PSID  pAdministratorsGroup = NULL;
 
 	SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
-	if (AllocateAndInitializeSid(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &pAdministratorsGroup)) {
-		if (!CheckTokenMembership(NULL, pAdministratorsGroup, &fIsRunAsAdmin)) {
-			FreeSid(pAdministratorsGroup);
+	if (advapi32Api.AllocateAndInitializeSidF(&NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &pAdministratorsGroup)) {
+		if (!advapi32Api.CheckTokenMembershipF(NULL, pAdministratorsGroup, &fIsRunAsAdmin)) {
+			advapi32Api.FreeSidF(pAdministratorsGroup);
 			return fIsRunAsAdmin;
 		}
-		FreeSid(pAdministratorsGroup);
+		advapi32Api.FreeSidF(pAdministratorsGroup);
 	}
 	return fIsRunAsAdmin;
 }
@@ -138,7 +139,7 @@ BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv) {
 	PRIVILEGE_SET tokPrivSet;
 
 	if (!LookupPrivilegeValueA(NULL, priv, &luid)) {
-		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: LookupPrivilegeValue");
+		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: LookupPrivilegeValue %s", priv);
 		return FALSE;
 	}
 
@@ -289,10 +290,10 @@ int GetTargetProcessPID(WCHAR* processName) {
 
 
 
-BOOL IsUACEnabled() {
+BOOL IsUACEnabled(Advapi32_API advapi32) {
 	BOOL dwValue = FALSE;
 	DWORD dwSize = sizeof(DWORD);
-	if (!ReadRegistryValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "EnableLUA", (char*)&dwValue, dwSize)) {
+	if (!ReadRegistryValue(advapi32, HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "EnableLUA", (char*)&dwValue, dwSize)) {
 
 		//if (!ReadRegKeyBOOL(HKEY_LOCAL_MACHINE, &dwValue)) { // "EnableLUA"*/
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to read 'EnableLUA' regkey");
@@ -300,16 +301,16 @@ BOOL IsUACEnabled() {
 	}
 	return dwValue; // Return 1 if the UAC is enabled
 }
-UAC_POLICY CheckUACSettings() {
+UAC_POLICY CheckUACSettings(Advapi32_API advapi32) {
 	DWORD consentPromptBehaviorAdmin = 0;
 	DWORD secureDesktopPrompt = 0;
 	DWORD dwSize = sizeof(DWORD);
 
-	if (!ReadRegistryValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "ConsentPromptBehaviorAdmin", (LPBYTE)&consentPromptBehaviorAdmin, dwSize)) {
+	if (!ReadRegistryValue(advapi32,HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "ConsentPromptBehaviorAdmin", (LPBYTE)&consentPromptBehaviorAdmin, dwSize)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to read 'ConsentPromptBehaviorAdmin' regkey");
 		return UAC_POLICY_ERROR;
 	}
-	if (!ReadRegistryValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "PromptOnSecureDesktop", (LPBYTE)&secureDesktopPrompt, dwSize)) {
+	if (!ReadRegistryValue(advapi32,HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "PromptOnSecureDesktop", (LPBYTE)&secureDesktopPrompt, dwSize)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to read 'SecureDesktopPrompt' regkey");
 		return UAC_POLICY_ERROR;
 	}

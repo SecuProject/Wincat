@@ -193,8 +193,8 @@ BOOL GetArguments(int argc, WCHAR* argv[], pArguments listAgrument) {
                 else {
                     printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Unknown argument %ws\n", argv[1]);
                     PrintMenu(listAgrument->wincatDefaultDir);
+                    return FALSE;
                 }
-            return FALSE;
         }
         if (MATCH(listAgrument->wincatDefaultDir, wincatDefaultDir)) {
             if (GetDefaultPath(&(listAgrument->wincatDefaultDir), &(listAgrument->wincatDefaultPath)))

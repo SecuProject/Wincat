@@ -6,10 +6,12 @@
 #define SERVICE_ERROR		-1
 #define SERVICE_NOT_RUNNING 0
 
-BOOL CheckServiceStatusConfig(char* szSvcName, BOOL isDebug);
+#include "LoadAPI.h"
 
-int CheckServerStatus(char* serviceName);
-int StartServer(char* serviceName);
+BOOL CheckServiceStatusConfig(Kernel32_API kernal32,Advapi32_API advapi32, char* szSvcName, BOOL isDebug);
+
+int CheckServerStatus(Advapi32_API advapi32, char* serviceName);
+int StartServer(Advapi32_API advapi32, char* serviceName);
 
 
 #endif
