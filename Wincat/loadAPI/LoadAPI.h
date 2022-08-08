@@ -3,6 +3,8 @@
 ////// Start static header
 //
 #include <TlHelp32.h>
+#include <shellapi.h>
+#include <wininet.h>
 
 //
 ////// Stop static header
@@ -163,12 +165,24 @@ typedef struct {
 }Ws2_32_API;
 
 
-typedef BOOL(WINAPI *EnumPrinterDrivers_F)(LPTSTR,LPTSTR,DWORD,LPBYTE,DWORD,LPDWORD,LPDWORD);
+typedef HINTERNET(WINAPI *HttpOpenRequestA_F)(HINTERNET,LPCSTR,LPCSTR,LPCSTR,LPCSTR,LPCSTR,DWORD,DWORD_PTR);
+typedef BOOL(WINAPI *InternetSetOptionA_F)(HINTERNET,DWORD,LPVOID,DWORD);
+typedef BOOL(WINAPI *InternetReadFile_F)(HINTERNET,LPVOID,DWORD,LPDWORD);
+typedef HINTERNET(WINAPI *InternetOpenA_F)(LPCSTR,DWORD,LPCSTR,LPCSTR,DWORD);
+typedef BOOL(WINAPI *InternetCloseHandle_F)(HINTERNET);
+typedef HINTERNET(WINAPI *InternetConnectW_F)(HINTERNET,LPCWSTR,INTERNET_PORT,LPCWSTR,LPCWSTR,DWORD,DWORD,DWORD_PTR);
+typedef BOOL(WINAPI *HttpSendRequestA_F)(HINTERNET,LPCSTR,DWORD,LPVOID,DWORD);
 
 
 typedef struct {
-	EnumPrinterDrivers_F EnumPrinterDriversF;
-}Winspool_API;
+	HttpOpenRequestA_F HttpOpenRequestAF;
+	InternetSetOptionA_F InternetSetOptionAF;
+	InternetReadFile_F InternetReadFileF;
+	InternetOpenA_F InternetOpenAF;
+	InternetCloseHandle_F InternetCloseHandleF;
+	InternetConnectW_F InternetConnectWF;
+	HttpSendRequestA_F HttpSendRequestAF;
+}Wininet_API;
 
 
 
@@ -177,7 +191,7 @@ typedef struct {
 	Advapi32_API Advapi32Api;
 	Shell32_API Shell32Api;
 	Ws2_32_API Ws2_32Api;
-	Winspool_API WinspoolApi;
+	Wininet_API WininetApi;
 }API_Call;
 
 

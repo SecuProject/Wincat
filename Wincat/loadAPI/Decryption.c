@@ -11,15 +11,13 @@ void decryptionRoutine(char data[], int size, char* Key) {
 	__asm {
 		PUSH EAX
 		XOR EAX, EAX
-		JZ cSLob
-			__asm __emit(0xb0);
-			__asm __emit(0x96);
-			__asm __emit(0x80);
-			__asm __emit(0xe0);
-			__asm __emit(0x0d);
-			__asm __emit(0x0a);
-			__asm __emit(0x60);
-		cSLob:
+		JZ kjgNI
+			__asm __emit(0x92);
+			__asm __emit(0xd5);
+			__asm __emit(0x58);
+			__asm __emit(0xcf);
+			__asm __emit(0xfb);
+		kjgNI:
 			POP EAX
 	}
 #endif
@@ -29,15 +27,15 @@ void decryptionRoutine(char data[], int size, char* Key) {
 		PUSH EAX
 		MOV EAX, 59
 		CMP EAX, 59
-		JE HbolQVK
-			__asm __emit(0xf7);
-			__asm __emit(0x46);
-			__asm __emit(0x3d);
-			__asm __emit(0x95);
-			__asm __emit(0x1f);
-			__asm __emit(0x9d);
-			__asm __emit(0x26);
-		HbolQVK:
+		JE EMUgdxj
+			__asm __emit(0xcd);
+			__asm __emit(0x80);
+			__asm __emit(0xaf);
+			__asm __emit(0xa2);
+			__asm __emit(0x35);
+			__asm __emit(0xe7);
+			__asm __emit(0x1c);
+		EMUgdxj:
 			POP EAX
 	}
 #endif
