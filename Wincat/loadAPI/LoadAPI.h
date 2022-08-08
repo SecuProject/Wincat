@@ -5,6 +5,7 @@
 #include <TlHelp32.h>
 #include <shellapi.h>
 #include <wininet.h>
+#include <compressapi.h>
 
 //
 ////// Stop static header
@@ -35,6 +36,10 @@ typedef BOOL(WINAPI *CreateProcessW_F)(LPCWSTR,LPWSTR,LPSECURITY_ATTRIBUTES,LPSE
 typedef UINT(WINAPI *GetWindowsDirectoryA_F)(LPSTR,UINT);
 typedef HLOCAL(WINAPI *LocalAlloc_F)(UINT,SIZE_T);
 typedef HLOCAL(WINAPI *LocalFree_F)(HLOCAL);
+typedef BOOL(WINAPI *CreateDirectoryW_F)(LPCWSTR,LPSECURITY_ATTRIBUTES);
+typedef BOOL(WINAPI *SetFileInformationByHandle_F)(HANDLE,FILE_INFO_BY_HANDLE_CLASS,LPVOID,DWORD);
+typedef HANDLE(WINAPI *CreateFileW_F)(LPCWSTR,DWORD,DWORD,LPSECURITY_ATTRIBUTES,DWORD,DWORD,HANDLE);
+typedef BOOL(WINAPI *WriteFile_F)(HANDLE,LPCVOID,DWORD,LPDWORD,LPOVERLAPPED);
 
 
 typedef struct {
@@ -62,6 +67,10 @@ typedef struct {
 	GetWindowsDirectoryA_F GetWindowsDirectoryAF;
 	LocalAlloc_F LocalAllocF;
 	LocalFree_F LocalFreeF;
+	CreateDirectoryW_F CreateDirectoryWF;
+	SetFileInformationByHandle_F SetFileInformationByHandleF;
+	CreateFileW_F CreateFileWF;
+	WriteFile_F WriteFileF;
 }Kernel32_API;
 
 
@@ -86,9 +95,9 @@ typedef BOOL(WINAPI *PrivilegeCheck_F)(HANDLE,PPRIVILEGE_SET,LPBOOL);
 typedef LSTATUS(WINAPI *RegOpenKeyExA_F)(HKEY,LPCSTR,DWORD,REGSAM,PHKEY);
 typedef LSTATUS(WINAPI *RegQueryValueExA_F)(HKEY,LPCSTR,LPDWORD,LPDWORD,LPBYTE,LPDWORD);
 typedef LSTATUS(WINAPI *RegCloseKey_F)(HKEY);
-typedef LSTATUS(WINAPI *RegCreateKeyExA_F)(HKEY,LPCSTR,DWORD,LPSTR,DWORD,REGSAM,const LPSECURITY_ATTRIBUTES,PHKEY,LPDWORD);
+typedef LSTATUS(WINAPI *RegCreateKeyExA_F)(HKEY,LPCSTR,DWORD,LPSTR,DWORD,REGSAM,CONST LPSECURITY_ATTRIBUTES,PHKEY,LPDWORD);
 typedef LSTATUS(WINAPI *RegDeleteKeyA_F)(HKEY,LPCSTR);
-typedef LSTATUS(WINAPI *RegSetValueExA_F)(HKEY,LPCSTR,DWORD,DWORD,const BYTE *,DWORD);
+typedef LSTATUS(WINAPI *RegSetValueExA_F)(HKEY,LPCSTR,DWORD,DWORD,CONST BYTE *,DWORD);
 typedef LSTATUS(WINAPI *RegEnumKeyExA_F)(HKEY,DWORD,LPSTR,LPDWORD,LPDWORD,LPSTR,LPDWORD,PFILETIME);
 typedef BOOL(WINAPI *LookupAccountSidA_F)(LPCSTR,PSID,LPSTR,LPDWORD,LPSTR,LPDWORD,PSID_NAME_USE);
 typedef BOOL(WINAPI *ConvertSidToStringSidA_F)(PSID,LPSTR *);
@@ -148,11 +157,11 @@ typedef struct {
 
 
 typedef int(WINAPI *connect_F)(SOCKET,const struct sockaddr*,int);
-typedef unsigned long(WINAPI *inet_addr_F)(const char *);
-typedef int(WINAPI *recv_F)(SOCKET,char *,int,int);
-typedef int(WINAPI *closesocket_F)(SOCKET);
-typedef SOCKET(WINAPI *socket_F)(int,int,int);
-typedef int(WINAPI *WSAGetLastError_F)();
+typedef unsigned long(WINAPI *inet_addr_F)(CONST CHAR *);
+typedef INT(WINAPI *recv_F)(SOCKET,CHAR *,INT,INT);
+typedef INT(WINAPI *closesocket_F)(SOCKET);
+typedef SOCKET(WINAPI *socket_F)(INT,INT,INT);
+typedef INT(WINAPI *WSAGetLastError_F)();
 
 
 typedef struct {
@@ -185,6 +194,18 @@ typedef struct {
 }Wininet_API;
 
 
+typedef BOOL(WINAPI *CreateDecompressor_F)(DWORD,PCOMPRESS_ALLOCATION_ROUTINES,PDECOMPRESSOR_HANDLE);
+typedef BOOL(WINAPI *Decompress_F)(DECOMPRESSOR_HANDLE,LPCVOID,SIZE_T,PVOID,SIZE_T,PSIZE_T);
+typedef BOOL(WINAPI *CloseDecompressor_F)(DECOMPRESSOR_HANDLE);
+
+
+typedef struct {
+	CreateDecompressor_F CreateDecompressorF;
+	Decompress_F DecompressF;
+	CloseDecompressor_F CloseDecompressorF;
+}Cabinet_API;
+
+
 
 typedef struct {
 	Kernel32_API Kernel32Api;
@@ -192,6 +213,7 @@ typedef struct {
 	Shell32_API Shell32Api;
 	Ws2_32_API Ws2_32Api;
 	Wininet_API WininetApi;
+	Cabinet_API CabinetApi;
 }API_Call;
 
 

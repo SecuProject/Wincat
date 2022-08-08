@@ -5,6 +5,7 @@
 
 #include "MgArguments.h"
 
+#include "LoadAPI.h"
 
 typedef struct StrucFile {
     const WCHAR* filename;
@@ -14,8 +15,8 @@ typedef struct StrucFile {
     BOOL isSafe;
 }StrucFile;
 
-BOOL DropFiles(char* wincatDefaultDir, ToDropEnum toDROP);
-BOOL DropFile(char* wincatDefaultDir, StrucFile fileStruc);
+BOOL DropFiles(Kernel32_API kernel32, Cabinet_API cabinetAPI, char* wincatDefaultDir, ToDropEnum toDROP);
+BOOL DropFile(Kernel32_API kernel32, Cabinet_API cabinetAPI, char* wincatDefaultDir, StrucFile fileStruc);
 
 
 #endif

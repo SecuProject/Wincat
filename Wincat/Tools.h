@@ -21,8 +21,8 @@ BOOL SaveRHostInfo(Advapi32_API Advapi32, WCHAR* UipAddress, char* port);
 
 
 
-BOOL RunAs(char* executablePath, char* lpParameters);
-BOOL Run(char* executablePath, char* lpParameters);
+BOOL RunAs(Shell32_API shell32, char* executablePath, char* lpParameters);
+BOOL Run(Shell32_API shell32, char* executablePath, char* lpParameters);
 
 void DisableWindowsRedirection(PVOID* pOldVal);
 void RevertWindowsRedirection(PVOID pOldVal);

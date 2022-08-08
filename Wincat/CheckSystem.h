@@ -23,16 +23,16 @@ typedef enum {
 
 BOOL IsWindowsVistaOrGreater();
 BOOL IsRunAsAdmin(Advapi32_API advapi32Api);
-BOOL IsRunAsSystem();
-BOOL IsUserInAdminGroup();
+BOOL IsRunAsSystem(Kernel32_API kernel32);
+BOOL IsUserInAdminGroup(Kernel32_API kernel32, Advapi32_API advapi32);
 
-BOOL EnableWindowsPrivilege(LPCWSTR Privilege);
-BOOL CheckWindowsPrivilege(LPCWSTR Privilege);
-BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv);
+BOOL EnableWindowsPrivilege(Advapi32_API advapi32,LPCWSTR Privilege);
+BOOL CheckWindowsPrivilege(Kernel32_API kernel32, Advapi32_API advapi32, LPCWSTR Privilege);
+BOOL IsUserPrivilegeEnable(Advapi32_API advapi32, HANDLE hToken, char* priv);
 
-HANDLE GetAccessToken(DWORD pid);
-int GetTargetProcessPID(WCHAR* processName);
-BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformation);
+HANDLE GetAccessToken(Kernel32_API kernel32, Advapi32_API advapi32, DWORD pid);
+int GetTargetProcessPID(Kernel32_API kernel32, WCHAR* processName);
+BOOL GetAccountInformation(Kernel32_API kernel32, Advapi32_API advapi32, HANDLE hToken, PAccountInformation* ppAccountInformation);
 
 
 BOOL IsUACEnabled(Advapi32_API advapi32);

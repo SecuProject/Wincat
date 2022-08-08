@@ -6,7 +6,7 @@
 #include "Tools.h"
 #include "LoadAPI.h"
 
-BOOL CheckUserPrivilege(HANDLE hToken) {
+BOOL CheckUserPrivilege(Advapi32_API advapi32, HANDLE hToken) {
 	BOOL nbDetection = 0;
 	const char* dangenrousPriv[] = {
 		"SeImpersonatePrivilege",
@@ -25,7 +25,7 @@ BOOL CheckUserPrivilege(HANDLE hToken) {
 
 	
 	for (int i = 0; i < sizeof(dangenrousPriv) / sizeof(char*); i++) {
-		if (IsUserPrivilegeEnable(hToken, (char*)dangenrousPriv[i])) {
+		if (IsUserPrivilegeEnable(advapi32, hToken, (char*)dangenrousPriv[i])) {
 			if (nbDetection == 0) {
 				printf("\n");
 				printMsg(STATUS_TITLE, LEVEL_VERBOSE, "Check User Privilege\n");			
@@ -37,10 +37,10 @@ BOOL CheckUserPrivilege(HANDLE hToken) {
 	return nbDetection;
 }
 
-BOOL IsTokenService(HANDLE hToken) {
+BOOL IsTokenService(Kernel32_API kernel32, Advapi32_API advapi32, HANDLE hToken) {
 	AccountInformation* accountInformation = NULL;
 
-	if (GetAccountInformation(hToken, &accountInformation) && accountInformation != NULL) {
+	if (GetAccountInformation(kernel32, advapi32,hToken, &accountInformation) && accountInformation != NULL) {
 		const char* targetUsers[] = {
 			"NETWORK SERVICE",
 			"LOCAL SERVICE",

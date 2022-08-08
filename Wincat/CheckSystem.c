@@ -25,7 +25,7 @@ BOOL IsWindowsVistaOrGreater() {
 	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
 }
 
-BOOL IsRunAsSystem(){
+BOOL IsRunAsSystem(Kernel32_API kernel32){
 	char* userName = (char*)malloc(UNLEN + 1);
 	if (userName != NULL){
 		DWORD bufferSize = UNLEN + 1;
@@ -56,89 +56,89 @@ BOOL IsRunAsAdmin(Advapi32_API advapi32Api) {
 	return fIsRunAsAdmin;
 }
 
-BOOL IsUserInAdminGroup() {
+BOOL IsUserInAdminGroup(Kernel32_API kernel32,Advapi32_API advapi32) {
 	BOOL   fInAdminGroup = FALSE;
 	//DWORD  dwError = ERROR_SUCCESS;
 	HANDLE hToken = NULL;
 	HANDLE hTokenToCheck = NULL;
 	DWORD  cbSize = 0;
 
-	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY | TOKEN_DUPLICATE, &hToken)) {
+	if (!advapi32.OpenProcessTokenF(GetCurrentProcess(), TOKEN_QUERY | TOKEN_DUPLICATE, &hToken)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: OpenProcessToken");
 		return FALSE;
 	}
 
 	if (IsWindowsVistaOrGreater()) {
 		TOKEN_ELEVATION_TYPE elevType;
-		if (!GetTokenInformation(hToken, TokenElevationType, &elevType, sizeof(elevType), &cbSize)) {
+		if (!advapi32.GetTokenInformationF(hToken, TokenElevationType, &elevType, sizeof(elevType), &cbSize)) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: GetTokenInformation");
-			CloseHandle(hToken);
+			kernel32.CloseHandleF(hToken);
 			return FALSE;
 		}
 		if (TokenElevationTypeLimited == elevType) {
-			if (!GetTokenInformation(hToken, TokenLinkedToken, &hTokenToCheck, sizeof(hTokenToCheck), &cbSize)) {
+			if (!advapi32.GetTokenInformationF(hToken, TokenLinkedToken, &hTokenToCheck, sizeof(hTokenToCheck), &cbSize)) {
 				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: GetTokenInformation");
-				CloseHandle(hToken);
+				kernel32.CloseHandleF(hToken);
 				return FALSE;
 			}
 		}
 		if (!hTokenToCheck) {
-			if (!DuplicateToken(hToken, SecurityIdentification, &hTokenToCheck)) {
+			if (!advapi32.DuplicateTokenF(hToken, SecurityIdentification, &hTokenToCheck)) {
 				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: DuplicateToken");
-				CloseHandle(hTokenToCheck);
-				CloseHandle(hToken);
+				kernel32.CloseHandleF(hTokenToCheck);
+				kernel32.CloseHandleF(hToken);
 				return FALSE;
 			}
 		}
 
 		BYTE adminSID[SECURITY_MAX_SID_SIZE];
 		cbSize = sizeof(adminSID);
-		if (!CreateWellKnownSid(WinBuiltinAdministratorsSid, NULL, &adminSID, &cbSize)) {
+		if (!advapi32.CreateWellKnownSidF(WinBuiltinAdministratorsSid, NULL, &adminSID, &cbSize)) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CreateWellKnownSid");
-			CloseHandle(hTokenToCheck);
-			CloseHandle(hToken);
+			kernel32.CloseHandleF(hTokenToCheck);
+			kernel32.CloseHandleF(hToken);
 			return FALSE;
 		}
 
-		if (!CheckTokenMembership(hTokenToCheck, &adminSID, &fInAdminGroup)) {
+		if (!advapi32.CheckTokenMembershipF(hTokenToCheck, &adminSID, &fInAdminGroup)) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CheckTokenMembership");
-			CloseHandle(hTokenToCheck);
-			CloseHandle(hToken);
+			kernel32.CloseHandleF(hTokenToCheck);
+			kernel32.CloseHandleF(hToken);
 			return FALSE;
 		}
-		CloseHandle(hTokenToCheck);
+		kernel32.CloseHandleF(hTokenToCheck);
 	}
-	CloseHandle(hToken);
+	kernel32.CloseHandleF(hToken);
 	return fInAdminGroup;
 }
 
-BOOL EnableWindowsPrivilege(LPCWSTR Privilege) {
+BOOL EnableWindowsPrivilege(Advapi32_API advapi32, LPCWSTR Privilege) {
 	/* Tries to enable privilege if it is present to the Permissions set. */
 	LUID luid;
 	TOKEN_PRIVILEGES tp;
 	HANDLE currentProcess = GetCurrentProcess();
 	HANDLE currentToken;
 
-	if (!LookupPrivilegeValueW(NULL, Privilege, &luid)) return FALSE;
+	if (!advapi32.LookupPrivilegeValueWF(NULL, Privilege, &luid)) return FALSE;
 
 	tp.PrivilegeCount = 1;
 	tp.Privileges[0].Luid = luid;
 	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-	if (!OpenProcessToken(currentProcess, TOKEN_ALL_ACCESS, &currentToken)) 
+	if (!advapi32.OpenProcessTokenF(currentProcess, TOKEN_ALL_ACCESS, &currentToken))
 		return FALSE;
-	if (!AdjustTokenPrivileges(currentToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL)) 
+	if (!advapi32.AdjustTokenPrivilegesF(currentToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), (PTOKEN_PRIVILEGES)NULL, (PDWORD)NULL))
 		return FALSE;
 	return TRUE;
 }
 
 
-BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv) {
+BOOL IsUserPrivilegeEnable(Advapi32_API advapi32, HANDLE hToken, char* priv) {
 	LUID luid;
 	BOOL bRes;
 	PRIVILEGE_SET tokPrivSet;
 
-	if (!LookupPrivilegeValueA(NULL, priv, &luid)) {
+	if (!advapi32.LookupPrivilegeValueAF(NULL, priv, &luid)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: LookupPrivilegeValue %s", priv);
 		return FALSE;
 	}
@@ -148,77 +148,77 @@ BOOL IsUserPrivilegeEnable(HANDLE hToken, char* priv) {
 	tokPrivSet.Privilege[0].Luid = luid;
 	tokPrivSet.Privilege[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-	if (!PrivilegeCheck(hToken, &tokPrivSet, &bRes)) {
+	if (!advapi32.PrivilegeCheckF(hToken, &tokPrivSet, &bRes)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: PrivilegeCheck");
 		return FALSE;
 	}
 	return bRes;
 }
-BOOL CheckWindowsPrivilege(LPCWSTR Privilege) {
+BOOL CheckWindowsPrivilege(Kernel32_API kernel32, Advapi32_API advapi32, LPCWSTR Privilege) {
 	/* Checks for Privilege and returns True or False. */
 	LUID luid;
 	PRIVILEGE_SET privs;
 	HANDLE hProcess;
 	HANDLE hToken;
-	hProcess = GetCurrentProcess();
-	if (!OpenProcessToken(hProcess, TOKEN_QUERY, &hToken)) return FALSE;
-	if (!LookupPrivilegeValueW(NULL, Privilege, &luid)) return FALSE;
+	hProcess = kernel32.GetCurrentProcessF();
+	if (!advapi32.OpenProcessTokenF(hProcess, TOKEN_QUERY, &hToken)) return FALSE;
+	if (!advapi32.LookupPrivilegeValueWF(NULL, Privilege, &luid)) return FALSE;
 	privs.PrivilegeCount = 1;
 	privs.Control = PRIVILEGE_SET_ALL_NECESSARY;
 	privs.Privilege[0].Luid = luid;
 	privs.Privilege[0].Attributes = SE_PRIVILEGE_ENABLED;
 	BOOL bResult;
-	PrivilegeCheck(hToken, &privs, &bResult);
+	advapi32.PrivilegeCheckF(hToken, &privs, &bResult);
 	return bResult;
 }
 
-HANDLE GetAccessToken(DWORD pid) {
+HANDLE GetAccessToken(Kernel32_API kernel32, Advapi32_API advapi32, DWORD pid) {
 
 	/* Retrieves an access token for a process */
 	HANDLE currentProcess;
 	HANDLE AccessToken;
 
 	if (pid == 0)
-		currentProcess = GetCurrentProcess();
+		currentProcess = kernel32.GetCurrentProcessF();
 	else {
-		currentProcess = OpenProcess(PROCESS_QUERY_INFORMATION, TRUE, pid);
+		currentProcess = kernel32.OpenProcessF(PROCESS_QUERY_INFORMATION, TRUE, pid);
 		if (!currentProcess) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: OpenProcess");
 			return (HANDLE)NULL;
 		}
 	}
-	if (!OpenProcessToken(currentProcess, TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY, &AccessToken)) {
+	if (!advapi32.OpenProcessTokenF(currentProcess, TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE | TOKEN_IMPERSONATE | TOKEN_QUERY, &AccessToken)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: OpenProcessToken");
-		CloseHandle(currentProcess);
+		kernel32.CloseHandleF(currentProcess);
 		return (HANDLE)NULL;
 	}
-	CloseHandle(currentProcess);
+	kernel32.CloseHandleF(currentProcess);
 	return AccessToken;
 }
-BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformation) {
+BOOL GetAccountInformation(Kernel32_API kernel32, Advapi32_API advapi32, HANDLE hToken, PAccountInformation* ppAccountInformation) {
 	DWORD tokenSize = 0;
 	TOKEN_USER* User;
 	BOOL isCleanToken = FALSE;
 
 	if (hToken == NULL) {
-		hToken = GetAccessToken(0);
+		hToken = GetAccessToken(kernel32, advapi32,0);
 		if (hToken == NULL)
 			return FALSE;
 		isCleanToken = TRUE;
 	}
 
-	if (!GetTokenInformation(hToken, TokenUser, NULL, 0, &tokenSize)) {
+	if (!advapi32.GetTokenInformationF(hToken, TokenUser, NULL, 0, &tokenSize)) {
 		DWORD dwResult = GetLastError();
 		if (dwResult != ERROR_INSUFFICIENT_BUFFER) {
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: GetTokenInformation");
 			if (isCleanToken)
-				CloseHandle(hToken);
+				kernel32.CloseHandleF(hToken);
 			return FALSE;
 		}
 	}
 	User = (TOKEN_USER*)malloc(tokenSize);
 	if (User != NULL) {
-		if (GetTokenInformation(hToken, TokenUser, User, tokenSize, &tokenSize)) {
+		if (advapi32.GetTokenInformationF(hToken, TokenUser, User, tokenSize, &tokenSize)) {
 			SID_NAME_USE SidType;
 			DWORD UserSize = MAX_NAME, DomainSize = MAX_NAME;
 			PAccountInformation pAccountInformation = (PAccountInformation)malloc(sizeof(AccountInformation));
@@ -226,17 +226,17 @@ BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformat
 				printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to alloc PAccountInformation");
 				free(User);
 				if (isCleanToken)
-					CloseHandle(hToken);
+					kernel32.CloseHandleF(hToken);
 				return FALSE;
 			}
 
 
-			if (LookupAccountSidA(NULL, User->User.Sid, pAccountInformation->UserName, &UserSize, pAccountInformation->DomainName, &DomainSize, &SidType)) {
+			if (advapi32.LookupAccountSidAF(NULL, User->User.Sid, pAccountInformation->UserName, &UserSize, pAccountInformation->DomainName, &DomainSize, &SidType)) {
 				LPSTR lpSID = NULL;
 
-				if (ConvertSidToStringSidA(User->User.Sid, &lpSID)) {
+				if (advapi32.ConvertSidToStringSidAF(User->User.Sid, &lpSID)) {
 					strcpy_s(pAccountInformation->SID, MAX_NAME, lpSID);
-					LocalFree(lpSID);
+					kernel32.LocalFreeF(lpSID);
 				}
 				else
 					strcpy_s(pAccountInformation->SID, MAX_NAME, "N/A");
@@ -244,7 +244,7 @@ BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformat
 				free(User);
 				*ppAccountInformation = pAccountInformation;
 				if (isCleanToken)
-					CloseHandle(hToken);
+					kernel32.CloseHandleF(hToken);
 				return TRUE;
 
 			}
@@ -259,32 +259,32 @@ BOOL GetAccountInformation(HANDLE hToken, PAccountInformation* ppAccountInformat
 }
 
 
-int GetTargetProcessPID(WCHAR* processName) {
+int GetTargetProcessPID(Kernel32_API kernel32, WCHAR* processName) {
 	HANDLE snap;
 	PROCESSENTRY32W pe32;
 	pe32.dwSize = sizeof(pe32);
-	snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	snap = kernel32.CreateToolhelp32SnapshotF(TH32CS_SNAPPROCESS, 0);
 
 	if (snap == INVALID_HANDLE_VALUE) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: CreateToolhelp32Snapshot");
 		return FALSE;
 	}
 
-	if (!Process32FirstW(snap, &pe32)) {
+	if (!kernel32.Process32FirstWF(snap, &pe32)) {
 		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "ERROR: Process32First");
-		CloseHandle(snap);
+		kernel32.CloseHandleF(snap);
 		return FALSE;
 	}
 
-	while (0 != wcsncmp(processName, pe32.szExeFile, wcslen(processName)) && Process32NextW(snap, &pe32));
+	while (0 != wcsncmp(processName, pe32.szExeFile, wcslen(processName)) && kernel32.Process32NextWF(snap, &pe32));
 	if (0 != wcsncmp(processName, pe32.szExeFile, wcslen(processName)))
 		printMsg(STATUS_WARNING, LEVEL_DEFAULT, "No infomation found about \"%ws\"\n", processName);
 	else {
 		printMsg(STATUS_OK, LEVEL_DEFAULT, "Program name: %ws (PID: %d)\n", pe32.szExeFile, pe32.th32ProcessID);
-		CloseHandle(snap);
+		kernel32.CloseHandleF(snap);
 		return pe32.th32ProcessID;
 	}
-	CloseHandle(snap);
+	kernel32.CloseHandleF(snap);
 	return FALSE;
 }
 

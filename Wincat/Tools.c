@@ -186,7 +186,7 @@ void RevertWindowsRedirection(PVOID pOldVal) {
 ////////////////////// Execute Process //////////////////////
 //
 
-BOOL RunAs(char* executablePath, char* lpParameters) {
+BOOL RunAs(Shell32_API shell32, char* executablePath, char* lpParameters) {
 	SHELLEXECUTEINFOA ShRun = { 0 };
 	ShRun.cbSize = sizeof(SHELLEXECUTEINFOA);
 	ShRun.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -197,9 +197,9 @@ BOOL RunAs(char* executablePath, char* lpParameters) {
 	ShRun.lpDirectory = NULL;
 	ShRun.nShow = SW_HIDE;
 	ShRun.hInstApp = NULL;
-	return ShellExecuteExA(&ShRun);
+	return shell32.ShellExecuteExAF(&ShRun);
 }
-BOOL Run(char* executablePath, char* lpParameters) {
+BOOL Run(Shell32_API shell32,char* executablePath, char* lpParameters) {
 	SHELLEXECUTEINFOA ShRun = { 0 };
 	ShRun.cbSize = sizeof(SHELLEXECUTEINFOA);
 	ShRun.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -209,7 +209,7 @@ BOOL Run(char* executablePath, char* lpParameters) {
 	ShRun.lpDirectory = NULL;
 	ShRun.nShow = SW_HIDE;
 	ShRun.hInstApp = NULL;
-	return ShellExecuteExA(&ShRun);
+	return shell32.ShellExecuteExAF(&ShRun);
 }
 
 // 

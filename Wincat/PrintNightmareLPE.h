@@ -4,6 +4,6 @@
 #define PRINT_NIGHTMARE_LPE_HEADER_H
 
 
-BOOL ExploitPrintNightmareLPE(Advapi32_API advapi32, char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir);
+BOOL ExploitPrintNightmareLPE(Kernel32_API kernel32, Advapi32_API advapi32, Cabinet_API cabinetAPI, char* PathExeToRun, WCHAR* UipAddress, char* port, char* wincatDefaultDir);
 
 #endif

