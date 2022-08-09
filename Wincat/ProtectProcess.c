@@ -185,7 +185,13 @@ BOOL EnableACG(VOID) {
 
 
 
-BOOL CheckForDebugger(VOID) {
+BOOL CheckForDebugger(Kernel32_API kernel32,ntdll_API ntdllApi) {
+
+    DWORD isDebuggerPresent = 0;
+    NTSTATUS status = ntdllApi.NtQueryInformationProcessF(kernel32.GetCurrentProcessF(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
+    return status == 0x0 && isDebuggerPresent != 0;
+
+    /*
     typedef NTSTATUS(NTAPI* pfnNtQueryInformationProcess)(
         _In_      HANDLE           ProcessHandle,
         _In_      UINT             ProcessInformationClass,
@@ -202,11 +208,12 @@ BOOL CheckForDebugger(VOID) {
     if (NULL != hNtDll) {
         NtQueryInformationProcess = (pfnNtQueryInformationProcess)GetProcAddress(hNtDll, "NtQueryInformationProcess");
         if (NULL != NtQueryInformationProcess) {
-            NTSTATUS status = NtQueryInformationProcess(GetCurrentProcess(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
+            //NTSTATUS status = NtQueryInformationProcess(GetCurrentProcess(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
+            NTSTATUS status = ntdllApi.NtQueryInformationProcessF(kernel32.GetCurrentProcessF(), ProcessDebugPort, &isDebuggerPresent, sizeof(DWORD), NULL);
             return status == 0x0 && isDebuggerPresent != 0;
         }
     }
-    return FALSE;
+    return FALSE;*/
 }
 BOOL IsDebuggerPresentPEB(VOID) {
 #if _WIN64
@@ -266,8 +273,8 @@ BOOL CheckCodeSection(VOID) {
     return FALSE;
 }
 
-BOOL ProtectProcess(VOID) {
-    if (CheckForDebugger()) {
+BOOL ProtectProcess(Kernel32_API kernel32, ntdll_API ntdllApi) {
+    if (CheckForDebugger(kernel32, ntdllApi)) {
         printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Debugger detected");
 #if _DEBUG
         return FALSE;

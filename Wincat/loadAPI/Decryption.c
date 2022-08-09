@@ -11,12 +11,12 @@ void decryptionRoutine(char data[], int size, char* Key) {
 	__asm {
 		PUSH EAX
 		XOR EAX, EAX
-		JZ rHDgLK
-			__asm __emit(0x56);
-			__asm __emit(0x6c);
-			__asm __emit(0xd8);
-			__asm __emit(0xb0);
-		rHDgLK:
+		JZ XHnKaQ
+			__asm __emit(0xab);
+			__asm __emit(0xa0);
+			__asm __emit(0x4a);
+			__asm __emit(0xc8);
+		XHnKaQ:
 			POP EAX
 	}
 #endif
@@ -24,15 +24,18 @@ void decryptionRoutine(char data[], int size, char* Key) {
 #ifdef JUNK_OBF
 	__asm {
 		PUSH EAX
-		MOV EAX, 43
-		CMP EAX, 43
-		JE ZDewDdY
-			__asm __emit(0x76);
-			__asm __emit(0xba);
-			__asm __emit(0xef);
-			__asm __emit(0x3e);
-			__asm __emit(0xfb);
-		ZDewDdY:
+		MOV EAX, 37
+		JNZ MEtqi
+			__asm __emit(0x75);
+			__asm __emit(0xae);
+			__asm __emit(0x80);
+			__asm __emit(0xad);
+			__asm __emit(0xb7);
+			__asm __emit(0x1b);
+			__asm __emit(0xcf);
+			__asm __emit(0x9b);
+			__asm __emit(0x25);
+		MEtqi:
 			POP EAX
 	}
 #endif

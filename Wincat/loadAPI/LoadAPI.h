@@ -107,6 +107,7 @@ typedef BOOL(WINAPI *CloseServiceHandle_F)(SC_HANDLE);
 typedef BOOL(WINAPI *QueryServiceConfigA_F)(SC_HANDLE,LPQUERY_SERVICE_CONFIGA,DWORD,LPDWORD);
 typedef BOOL(WINAPI *StartServiceA_F)(SC_HANDLE,DWORD,LPCSTR);
 typedef BOOL(WINAPI *QueryServiceStatusEx_F)(SC_HANDLE,SC_STATUS_TYPE,LPBYTE,DWORD,LPDWORD);
+typedef BOOL(WINAPI *LogonUserW_F)(LPCWSTR,LPCWSTR,LPCWSTR,DWORD,DWORD,PHANDLE);
 
 
 typedef struct {
@@ -143,6 +144,7 @@ typedef struct {
 	QueryServiceConfigA_F QueryServiceConfigAF;
 	StartServiceA_F StartServiceAF;
 	QueryServiceStatusEx_F QueryServiceStatusExF;
+	LogonUserW_F LogonUserWF;
 }Advapi32_API;
 
 
@@ -156,7 +158,7 @@ typedef struct {
 }Shell32_API;
 
 
-typedef int(WINAPI *connect_F)(SOCKET,const struct sockaddr*,int);
+typedef INT(WINAPI *connect_F)(SOCKET,CONST struct sockaddr*,INT);
 typedef unsigned long(WINAPI *inet_addr_F)(CONST CHAR *);
 typedef INT(WINAPI *recv_F)(SOCKET,CHAR *,INT,INT);
 typedef INT(WINAPI *closesocket_F)(SOCKET);
@@ -206,6 +208,26 @@ typedef struct {
 }Cabinet_API;
 
 
+typedef NTSTATUS(WINAPI *NtQueryInformationProcess_F)(HANDLE, UINT, PVOID, ULONG, PULONG);
+
+
+typedef struct {
+	NtQueryInformationProcess_F NtQueryInformationProcessF;
+}ntdll_API;
+
+
+typedef BOOL(WINAPI *CreateEnvironmentBlock_F)(LPVOID*,HANDLE,BOOL);
+typedef BOOL(WINAPI *GetUserProfileDirectoryW_F)(HANDLE,LPWSTR,LPDWORD);
+typedef BOOL(WINAPI *DestroyEnvironmentBlock_F)(LPVOID);
+
+
+typedef struct {
+	CreateEnvironmentBlock_F CreateEnvironmentBlockF;
+	GetUserProfileDirectoryW_F GetUserProfileDirectoryWF;
+	DestroyEnvironmentBlock_F DestroyEnvironmentBlockF;
+}Userenv_API;
+
+
 
 typedef struct {
 	Kernel32_API Kernel32Api;
@@ -214,6 +236,8 @@ typedef struct {
 	Ws2_32_API Ws2_32Api;
 	Wininet_API WininetApi;
 	Cabinet_API CabinetApi;
+	ntdll_API ntdllApi;
+	Userenv_API UserenvApi;
 }API_Call;
 
 

