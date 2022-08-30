@@ -5,6 +5,7 @@
 #include "CalcAPI.h"
 #include "LoadAPI.h"
 #include "Decryption.h"
+#include "../Message.h""
 
 BOOL loadApi(API_Call *APICall) {
 	Kernel32_API* Kernel32Api = &(APICall->Kernel32Api);
@@ -30,7 +31,7 @@ BOOL loadApi(API_Call *APICall) {
 
 	PPEB pPeb = get_peb();
 	if (pPeb->BeingDebugged) {
-		printf("	[X] Debugger Detected !!!\n");
+		printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Debugger detected !\n");
 		//return FALSE;
 	}
 

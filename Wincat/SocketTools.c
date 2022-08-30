@@ -56,12 +56,14 @@ SOCKADDR_IN InitSockAddr(char* ipAddress, int port) {
 	SOCKADDR_IN ssin;
 	IPAddr ipAddressF;
 
+	memset(&ssin, 0, sizeof(SOCKADDR_IN));
 	if (inet_pton(AF_INET, ipAddress, &ipAddressF)) {
-		memset(&ssin, 0, sizeof(SOCKADDR_IN));
 		ssin.sin_family = AF_INET;
 		ssin.sin_addr.s_addr = ipAddressF;
 		ssin.sin_port = htons(port);
-	}
+	}else
+		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "Fail to convert this IP address : %s", ipAddress);
+		printf("[x] Fail to convert this IP address : %s\n", ipAddress);
 	return ssin;
 }
 SOCKET ConnectRemoteServer(char* ipAddress, int port) {
@@ -69,7 +71,7 @@ SOCKET ConnectRemoteServer(char* ipAddress, int port) {
 	SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (clientSocket == INVALID_SOCKET) {
-		printf("[x] Could not create socket : %d", WSAGetLastError());
+		printMsg(STATUS_ERROR, LEVEL_DEFAULT, "[x] Could not create socket : %d", WSAGetLastError());
 		return FALSE;
 	}
 	sAddr = InitSockAddr(ipAddress, port);

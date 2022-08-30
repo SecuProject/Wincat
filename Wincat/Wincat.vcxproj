@@ -130,7 +130,7 @@
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>PeFile/;Wincat/PeFile/;$(LibraryPath)</LibraryPath>
     <IncludePath>PeFile/;PsScript/;loadAPI/;$(IncludePath)</IncludePath>
-    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -237,7 +237,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>..\convert\Others\WindowsDefenderCheck.exe ..\x64\Release\Wincat.exe</Command>
+      <Command>..\convert\Others\DefenderCheckC.exe ..\x64\Release\Wincat.exe</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseFull|x64'">
@@ -278,6 +278,7 @@
     <ClCompile Include="EDRChecker.c" />
     <ClCompile Include="GetDefaultPath.c" />
     <ClCompile Include="GetSystem.c" />
+    <ClCompile Include="HookLoad.c" />
     <ClCompile Include="loadAPI\CalcAPI.c" />
     <ClCompile Include="loadAPI\Decryption.c" />
     <ClCompile Include="loadAPI\LoadAPI.c" />
@@ -311,6 +312,7 @@
     <ClInclude Include="EDRNameHash.h" />
     <ClInclude Include="GetDefaultPath.h" />
     <ClInclude Include="GetSystem.h" />
+    <ClInclude Include="HookLoad.h" />
     <ClInclude Include="loadAPI\CalcAPI.h" />
     <ClInclude Include="loadAPI\Decryption.h" />
     <ClInclude Include="loadAPI\LoadAPI.h" />

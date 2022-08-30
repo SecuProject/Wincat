@@ -106,6 +106,9 @@
     <Filter Include="Source Files\ProtectProcess\Tools\CheckSystem">
       <UniqueIdentifier>{c9cb738e-89c0-4be1-a9f2-ee3cad0940de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ProtectProcess\HookLoad">
+      <UniqueIdentifier>{08d63ff8-3e1e-4162-b79d-6985d8363d1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -197,6 +200,9 @@
     </ClCompile>
     <ClCompile Include="loadAPI\Decryption.c">
       <Filter>Source Files\LoadAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="HookLoad.c">
+      <Filter>Source Files\ProtectProcess\HookLoad</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +382,9 @@
     </ClInclude>
     <ClInclude Include="loadAPI\CalcAPI.h">
       <Filter>Source Files\LoadAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="HookLoad.h">
+      <Filter>Source Files\ProtectProcess\HookLoad</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
